@@ -1,0 +1,123 @@
+.raffle {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+
+  &__raffle-content {
+    flex: 1;
+    width: 100%;
+    
+    &__container {
+      width: 100%;
+      max-width: 600px;
+      margin: 25px auto;
+      background-color: $dark;
+      border-radius: 10px;
+      padding: 16px 12px;
+
+      &__above-box {
+        display: flex;
+        align-items: flex-end;
+        gap: 5px;
+        margin-bottom: 10px;
+
+        &__title {
+          color: $white;
+          font-size: 1.35rem;
+          font-weight: 600;
+        }
+
+        &__desc {
+          color: $white;
+          opacity: 0.7;
+          font-size: 0.9rem;
+        }
+      }
+
+      &__filter-box {
+        width: 100%;        
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: $darkPurple;
+        padding: 8px;
+        border-radius: 10px;
+        gap: 5px;
+        margin-bottom: 8px;
+
+        &__desc {
+          font-size: 0.9rem;
+          color: $white;
+          opacity: 0.7;
+        }
+
+        &__btn-wrapper {
+          display: flex;
+          align-items: center;
+          border-radius: 4px;
+          overflow: hidden;
+
+          &__btn {
+            background-color: #f9fafb;
+            border: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            padding: 8px;
+            display: block;
+            outline: none;
+            cursor: pointer;
+            transition: background 0.4s ease, color 0.4s ease;
+          }
+
+          .filter-btn-active {
+            background-color: #0dcaf0;
+            color: $white;
+          }
+        }
+      }
+
+      &__prizes-wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-bottom: 8px;
+      }
+
+      &__pages-btn-wrapper {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        gap: 25px;
+
+        &__btn {
+          background-color: #ffc107;
+          border: none;
+          border-radius: 4px;
+          width: calc(50% - 12.5px);
+          padding: 10px 12px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 5px;
+          font-size: 1rem;
+          font-weight: 600;
+          outline: none;
+          cursor: pointer;
+
+          @include breakpoint(largeScreen) {
+            transition: background 0.2s ease;
+
+            &:hover {
+              background-color: #ffca2c;
+            }
+          }
+        }
+
+        .desactive {
+          pointer-events: none;
+          opacity: 0;
+        }
+      }
+    }
+  }
+}

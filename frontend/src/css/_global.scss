@@ -1,0 +1,50 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: $montserrat;
+}
+
+html {
+  width: 100%;
+  height: 100%;
+}
+
+body {
+  width: 100%;
+  min-height: 100%;
+  background-color: $veryDarkBlue;
+}
+
+html, body {
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.wrapper {
+  padding-left: 25px;
+  padding-right: 25px;
+
+  @include breakpoint(tablet) {
+    padding-left: 60px;
+    padding-right: 60px;
+  }
+
+  @include breakpoint(largeScreen) {
+    padding-left: 120px;
+    padding-right: 120px;
+  }
+
+  @include breakpoint(xLargeScreen) {
+    padding-left: 50px;
+    padding-right: 50px;
+    margin: 0 auto 0 auto;
+    max-width: 1500px;
+  }
+}

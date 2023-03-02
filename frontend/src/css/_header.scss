@@ -1,0 +1,460 @@
+.header {
+  background-color: $darkBlue;
+  padding: 15px 25px;
+  
+  &__container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 600px;
+    margin: auto;
+
+    &__logo-box {
+      width: auto;
+      height: 55px;
+      display: flex;
+      align-items: center;
+      font-size: 2rem;
+      font-weight: 600;
+      
+      a {
+        text-decoration: none;
+        color: $white;
+      }
+    }
+
+    &__menu-box {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+
+      &__cart-btn {
+        background-color: transparent;
+        border: none;
+        outline: none;
+        cursor: pointer;
+        font-size: 1.7rem;
+        color: $darkGray;
+      }
+
+      &__menu-btn {
+        background-color: transparent;
+        border: none;
+        outline: none;
+        cursor: pointer;
+        font-size: 2.5rem;
+        color: $white;
+      }
+    }
+  }
+
+  // header menu
+
+  &__menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: $darkBlue;
+    display: flex;
+    z-index: 6;
+    flex-direction: column;
+    opacity: 0;
+    animation: menuIn 0.4s ease forwards;
+
+    &__above {
+      background-color: #141842;
+      padding: 15px 25px;
+      
+      &__container {
+        max-width: 600px;
+        margin: auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        &__logo-box {
+          width: auto;
+          height: 55px;
+          display: flex;
+          align-items: center;
+          color: $white;
+          font-size: 2rem;
+          font-weight: 600;
+        }
+
+        &__close-btn {
+          background-color: transparent;
+          border: none;
+          color: $white;
+          font-size: 2.5rem;
+          cursor: pointer;
+          outline: none;  
+        }
+      }
+    }
+
+    &__middle {
+      padding: 20px 25px 0;
+      flex: 1;
+      
+      &__container {
+        width: 100%;
+        max-width: 600px;
+        margin: auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+
+        &__menu-list {
+          width: 100%;
+          display: flex;
+          flex-direction: column;
+          list-style: none;
+
+          &__menu-item {
+            width: 100%;
+            display: block;
+
+            a {
+              padding: 16px;
+              display: flex;
+              align-items: center;
+              gap: 20px;
+              border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+              text-decoration: none;
+              color: $white;
+              font-size: 1rem;
+
+              @include breakpoint(largeScreen) {
+                transition: filter 0.2s ease;
+
+                &:hover {
+                  filter: brightness(70%);  
+                }
+              }
+
+              svg {
+                width: 25px;
+                height: 25px;
+                object-fit: contain;
+              }
+            }
+          }
+        }
+
+        &__login-btn {
+          width: 100%;
+          background-color: $blue;
+          border: none;
+          border-radius: 30px;
+          padding: 15px 30px;
+          color: $white;
+          font-size: 1rem;
+          font-weight: 600;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 5px;
+          cursor: pointer;
+          outline: none;
+
+          @include breakpoint(largeScreen) {
+            transition: background 0.4s ease;
+
+            &:hover {
+              background-color: $darkBlueHover;
+            }
+          }
+        }
+      }
+    }
+
+    &__bottom {
+      padding: 15px 25px;
+
+      &__container {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 50px;
+
+        &__desc {
+          color: $white;
+          font-size: 1rem;
+          pointer-events: none;
+          user-select: none;
+        }
+
+        &__socials-list {
+          list-style: none;
+          display: flex;
+          align-items: center;
+          gap: 30px;
+
+          &__socials-items {
+            &__facebook,
+            &__instagram,
+            &__whatsapp {
+              font-size: 1.25rem;
+              text-decoration: none;
+
+              svg {
+                color: $white;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  //login modal
+
+  &__login-modal-overlay {
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color:  rgba(32, 33, 36, .5);
+    backdrop-filter: blur(10px);
+    overflow: auto;
+    padding: 40px;
+    z-index: 6;
+    opacity: 0;
+    animation: loginFadeIn 0.2s ease forwards;
+
+    &::before {
+      content: '';
+      height: 100%;
+      display: inline-block;
+      vertical-align: middle;
+    }
+
+    &__box {
+      background-color: $white;
+      display: inline-block;
+      width: 100%;
+      height: auto;
+      max-width: 300px;
+      vertical-align: middle;
+      position: relative;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 1rem;
+      border-radius: 10px;
+      z-index: 7;
+      opacity: 0;
+      animation: loginBoxIn 0.4s ease forwards;
+
+      &__content {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+
+        &__head {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: 32px;
+
+          &__title {
+            font-size: 1.5rem;
+            font-weight: 500;
+            color: #333;
+          }
+
+          &__close-btn {
+            background-color: transparent;
+            border: none;
+            font-size: 2rem;
+            color: $gray;
+            cursor: pointer;
+            outline: none;
+          }
+        }
+
+        &__desc {
+          font-size: 0.9rem;
+          color: $gray;
+          margin-bottom: 20px;
+        }
+
+        &__form {
+          display: flex;
+          flex-direction: column;
+
+          &__username-box,
+          &__password-box {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 10px;
+            position: relative;
+
+            &__label {
+              position: absolute;
+              top: 50%;
+              left: 16px;
+              transform: translateY(-50%);
+              font-size: 0.9rem;
+              font-weight: 600;
+              transition: transform 0.2s ease, opacity 0.2s ease, top 0.2s ease, left 0.2s ease;
+            }
+
+            .input-selected {
+              transform: scale(0.85);
+              opacity: 0.7;
+              top: 15%;
+              left: 12px;
+            }
+
+            &__input {
+              width: 100%;
+              padding: 30px 16px 10px;
+              border: 1px solid #c9c9c9;
+              border-radius: 10px;
+              box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 5%);
+              outline: none;
+              font-size: 1rem;
+              color: #5a5a5a;
+            }
+          }
+
+          &__forget-password {
+            color: $blue;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-decoration: none;
+            margin-bottom: 30px;
+
+            @include breakpoint(largeScreen) {
+              transition: color 0.2s ease;
+
+              &:hover {
+                color: $darkBlueHover;
+              }
+            }
+          }
+
+          &__submit-btn {
+            width: fit-content;
+            margin: auto;
+            padding: 15px 50px;
+            background-color: $blue;
+            border: none;
+            border-radius: 30px;
+            color: $white;
+            font-size: 1rem;
+            font-weight: 600;
+            outline: none;
+            cursor: pointer;
+            margin-bottom: 10px;
+
+            @include breakpoint(largeScreen) {
+              transition: background 0.4s ease;
+
+              &:hover {
+                background-color: $darkBlueHover;
+              }
+            }
+          }
+
+          &__register-btn {
+            margin: auto;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: $blue;
+
+            @include breakpoint(largeScreen) {
+              transition: color 0.2s ease;
+
+              &:hover {
+                color: $darkBlueHover;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+// login modal animations
+
+@keyframes loginFadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes loginBoxIn {
+  from {
+    transform: translateY(-25%) translateX(-50%);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0) translateX(-50%);
+    opacity: 1;
+  }
+}
+
+@keyframes loginFadeOut {
+  from {
+    opacity: 1;
+  } 
+
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes loginBoxOut {
+  from {
+    transform: translateY(0) translateX(-50%);
+    opacity: 1;
+  }
+
+  to {
+    transform: translateY(-50%) translateX(-50%);
+    opacity: 0;
+  }
+}
+
+// menu animations
+
+@keyframes menuIn {
+  from {
+    opacity: 0;
+    transform: translateY(-25%);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes menuOut {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateY(-25%);
+  }
+}
