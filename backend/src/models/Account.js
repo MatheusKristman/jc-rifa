@@ -11,10 +11,10 @@ const AccountSchema = new mongoose.Schema({
   address: { type: String },
   number: { type: String },
   neighborhood: { type: String },
-  complement: { type: String, default: "não preenchido" },
+  complement: { type: String },
   uf: { type: String },
   city: { type: String },
-  reference: { type: String, default: "não preenchido" },
+  reference: { type: String },
   admin: { type: Boolean, default: false }
 });
 

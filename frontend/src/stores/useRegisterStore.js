@@ -27,11 +27,15 @@ const useRegisterStore = create((set) => ({
   setConfirmTel: (value) => set(() => ({ confirmTel: value })),
   setCep: (value) => set(() => ({ cep: value })),
   setAddress: (e) => set(() => ({ address: e.target.value })),
+  setAddressFromCep: (value) => set(() => ({ address: value })),
   setNumber: (e) => set(() => ({ number: e.target.value })),
   setNeighborhood: (e) => set(() => ({ neighborhood: e.target.value })),
+  setNeighborhoodFromCep: (value) => set(() => ({ neighborhood: value })),
   setComplement: (e) => set(() => ({ complement: e.target.value })),
   setUf: (e) => set(() => ({ uf: e.target.value })),
+  setUfFromCep: (value) => set(() => ({ uf: value })),
   setCity: (e) => set(() => ({ city: e.target.value })),
+  setCityFromCep: (value) => set(() => ({ city: value })),
   setReference: (e) => set(() => ({ reference: e.target.value })),
   isSubmitting: false,
   submitting: () => set(() => ({ isSubmitting: true })),
@@ -39,6 +43,10 @@ const useRegisterStore = create((set) => ({
   isRegisterCompleted: false,
   registerComplete: () => set(() => ({ isRegisterCompleted: true })),
   registerNotComplete: () => set(() => ({ isRegisterCompleted: false })),
+  ufOptions: [],
+  setUfOptions: (values) => set(() => ({ ufOptions: values })),
+  cityOptions: [],
+  setCityOptions: (values) => set(() => ({ cityOptions: values })),
 }));
 
 export default useRegisterStore;

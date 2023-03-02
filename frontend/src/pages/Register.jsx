@@ -6,20 +6,10 @@ import RegisterMessageBox from './components/register/RegisterMessageBox';
 
 const Register = () => {
   const {
-    isSubmitting,
-    submitting,
-    notSubmitting,
     isRegisterCompleted,
-    registerComplete,
-    registerNotComplete,
   } = useRegisterStore(
     (state) => ({
-      isSubmitting: state.isSubmitting,
-      submitting: state.submitting,
-      notSubmitting: state.notSubmitting,
       isRegisterCompleted: state.isRegisterCompleted,
-      registerComplete: state.registerComplete,
-      registerNotComplete: state.registerNotComplete,
     })
   )
 

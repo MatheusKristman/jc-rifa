@@ -7,17 +7,21 @@ import {
   BsFacebook,
   BsInstagram,
   BsWhatsapp,
+  BsFillKeyFill,
 } from "react-icons/bs";
 import { BiHome, BiListCheck } from "react-icons/bi";
 import { IoEnterOutline } from "react-icons/io5";
 import { IoIosCloseCircleOutline } from "react-icons/io";
 import { MdClose } from "react-icons/md";
-import { HiOutlineMail } from "react-icons/hi";
+import { HiOutlineMail , HiUserCircle} from "react-icons/hi";
+import { RxExit } from 'react-icons/rx'
 import { HiOutlineBars3BottomRight } from "react-icons/hi2";
 import { Link } from "react-router-dom";
 import useHeaderStore from "../../stores/useHeaderStore";
 import { shallow } from "zustand/shallow";
 import { useNavigate } from 'react-router-dom';
+import useUserStore from "../../stores/useUserStore";
+import noUserPhoto from '../../assets/no-user-photo.png';
 
 const HeaderMenu = () => {
   const { closeMenu, openLogin } = useHeaderStore(
@@ -62,7 +66,7 @@ const HeaderMenu = () => {
       </div>
 
       <div className="header__menu__middle">
-        <nav className="header__menu__middle__container">
+        <nav className="header__menu__middle__container">          
           <ul className="header__menu__middle__container__menu-list">
             <li className="header__menu__middle__container__menu-list__menu-item">
               <Link onClick={closeMenu} to="/">
@@ -156,6 +160,170 @@ const HeaderMenu = () => {
     </div>
   );
 };
+
+const HeaderMenuLogged = () => {
+  const { closeMenu, openLogin } = useHeaderStore(
+    (state) => ({
+      closeMenu: state.closeMenu,
+      openLogin: state.openLogin,
+    }),
+    shallow
+  );
+
+  const { user } = useUserStore((state) => ({ user: state.user }));
+
+  const menuRef = useRef(null);
+
+  const handleCloseMenu = () => {
+    menuRef.current.style.animation = 'menuOut 0.4s ease forwards';
+
+    setTimeout(() => {
+      closeMenu();
+    }, 400);
+  }
+
+  const handleLoginOpen = () => {
+    menuRef.current.style.animation = 'menuOut 0.2s ease forwards';
+
+    setTimeout(() => {
+      closeMenu();
+      openLogin();
+    }, 200)
+  }
+
+  const _arrayBufferToBase64 = ( buffer ) => {
+    var binary = '';
+    var bytes = new Uint8Array( buffer );
+    var len = bytes.byteLength;
+    for (var i = 0; i < len; i++) {
+        binary += String.fromCharCode( bytes[ i ] );
+    }
+    return window.btoa( binary );
+  }
+
+  return (
+    <div ref={menuRef} className="header__menu">
+      <div className="header__menu__above">
+        <div className="header__menu__above__container">
+          <div className="header__menu__above__container__logo-box">
+            LOGO
+          </div>
+
+          <button type="button" onClick={handleCloseMenu} className="header__menu__above__container__close-btn">
+            <IoIosCloseCircleOutline />
+          </button>
+        </div>
+      </div>
+
+      <div className="header__menu__middle">
+        <nav className="header__menu__middle__container">
+          <div className="header__menu__middle__container__user-box">
+            <div className="header__menu__middle__container__user-box__infos">
+              <div className="header__menu__middle__container__user-box__infos__image-box">
+                <img src={user.profileImage.data ? `data:${user.profileImage.contentType};base64,${_arrayBufferToBase64(user.profileImage.data.data)}` : noUserPhoto} alt="Imagem do Perfil" className="header__menu__middle__container__user-box__infos__image-box__image" />
+              </div>
+              <h4 className="header__menu__middle__container__user-box__infos__greetings">{`Olá, ${user.name}`}</h4>
+            </div>
+
+            <button type="button" className="header__menu__middle__container__user-box__logout-btn">
+              <RxExit />
+            </button>
+          </div>
+          <ul className="header__menu__middle__container__menu-list">
+            <li className="header__menu__middle__container__menu-list__menu-item">
+              <Link onClick={closeMenu} to="/">
+                <BiHome /> Início
+              </Link>
+            </li>
+
+            <li className="header__menu__middle__container__menu-list__menu-item">
+              <Link onClick={closeMenu} to="/raffles">
+                <BsCardList /> Sorteios
+              </Link>
+            </li>
+
+            <li className="header__menu__middle__container__menu-list__menu-item">
+              <Link onClick={closeMenu} to="/query-numbers">
+                <BsCardList /> Meus Números
+              </Link>
+            </li>
+
+            <li className="header__menu__middle__container__menu-list__menu-item">
+              <Link onClick={closeMenu} to="/updateRegistration">
+                <HiUserCircle /> Atualizar cadastro
+              </Link>
+            </li>
+
+            <li className="header__menu__middle__container__menu-list__menu-item">
+              <Link onClick={closeMenu} to="/myPurchases">
+                <BsCartCheck /> Minhas compras
+              </Link>
+            </li>
+
+            <li className="header__menu__middle__container__menu-list__menu-item">
+              <Link onClick={closeMenu} to="/changePassword">
+                <BsFillKeyFill /> Alterar senha
+              </Link>
+            </li>
+
+            <li className="header__menu__middle__container__menu-list__menu-item">
+              <Link onClick={closeMenu} to="/winners">
+                <BsTrophy /> Ganhadores
+              </Link>
+            </li>
+
+            <li className="header__menu__middle__container__menu-list__menu-item">
+              <Link onClick={closeMenu} to="/terms">
+                <BiListCheck /> Termos de uso
+              </Link>
+            </li>
+
+            <li className="header__menu__middle__container__menu-list__menu-item">
+              <Link onClick={closeMenu} to="/contact">
+                <HiOutlineMail /> Entrar em contato
+              </Link>
+            </li>
+          </ul>
+        </nav>
+      </div>
+
+      <div className="header__menu__bottom">
+        <div className="header__menu__bottom__container">
+          <span className="header__menu__bottom__container__desc">COMPARTILHE</span>
+
+          <ul className="header__menu__bottom__container__socials-list">
+            <li className="header__menu__bottom__container__socials-list__socials-items">
+              <a
+                href="#"
+                className="header__menu__bottom__container__socials-list__socials-items__facebook"
+              >
+                <BsFacebook />
+              </a>
+            </li>
+
+            <li className="header__menu__bottom__container__socials-list__socials-items">
+              <a
+                href="#"
+                className="header__menu__bottom__container__socials-list__socials-items__instagram"
+              >
+                <BsInstagram />
+              </a>
+            </li>
+
+            <li className="header__menu__bottom__container__socials-list__socials-items">
+              <a
+                href="#"
+                className="header__menu__bottom__container__socials-list__socials-items__whatsapp"
+              >
+                <BsWhatsapp />
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 const LogInModal = () => {
   const {
@@ -312,6 +480,14 @@ const Header = () => {
       openMenu: state.openMenu,
     }),
     shallow
+  );  
+
+  const {
+    isUserLogged,
+  } = useUserStore(
+    (state) => ({
+      isUserLogged: state.isUserLogged,
+    })
   );
 
   const navigate = useNavigate();
@@ -346,8 +522,9 @@ const Header = () => {
           </button>
         </div>
       </div>
-      {isMenuOpen && <HeaderMenu /> }
+      {isMenuOpen && !isUserLogged && <HeaderMenu /> }
       {isLoginModalOpen && <LogInModal />}
+      {isMenuOpen && isUserLogged && <HeaderMenuLogged />}
     </header>
   );
 };

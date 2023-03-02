@@ -31,6 +31,7 @@ const useIsUserLogged = (path) => {
     .catch((error) => {
       console.log(error);
       userNotLogged();
+      localStorage.removeItem('userToken');
     });
   }, []);
 }
