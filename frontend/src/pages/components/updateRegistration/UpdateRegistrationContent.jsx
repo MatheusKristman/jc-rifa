@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useLayoutEffect } from "react";
 import { shallow } from "zustand/shallow";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -6,6 +6,7 @@ import * as Yup from "yup";
 import api from '../../../services/api';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import _arrayBufferToBase64 from "../../../hooks/useArrayBufferToBase64";
 
 
 import noUserPhoto from "../../../assets/no-user-photo.png";
@@ -19,38 +20,48 @@ const UpdateRegistrationContent = () => {
     setProfileImage,
     name,
     setName,
+    setNameFromFetch,
     cpf,
-    setCpf,
+    setCpfFromFetch,
     email,
     setEmail,
+    setEmailFromFetch,
     tel,
     setTel,
+    setTelFromFetch,
     cep,
-    setCep,
+    setCepFromFetch,
     address,
     setAddress,
-    setAddressFromCep,
+    setAddressFromFetch,
     number,
     setNumber,
+    setNumberFromFetch,
     neighborhood,
     setNeighborhood,
-    setNeighborhoodFromCep,
+    setNeighborhoodFromFetch,
     complement,
     setComplement,
+    setComplementFromFetch,
     uf,
     setUf,
-    setUfFromCep,
+    setUfFromFetch,
     city,
     setCity,
-    setCityFromCep,
+    setCityFromFetch,
     reference,
     setReference,
+    setReferenceFromFetch,
     isSubmitting,
     submitting,
     notSubmitting,
     isRegisterCompleted,
     registerComplete,
     registerNotComplete,
+    errorSubmitting,
+    errorExist,
+    errorDontExist,
+    setRegisterMessage,
     ufOptions,
     setUfOptions,
     cityOptions,
@@ -61,38 +72,48 @@ const UpdateRegistrationContent = () => {
       setProfileImage: state.setProfileImage,
       name: state.name,
       setName: state.setName,
+      setNameFromFetch: state.setNameFromFetch,
       cpf: state.cpf,
-      setCpf: state.setCpf,
+      setCpfFromFetch: state.setCpfFromFetch,
       email: state.email,
-      setEmail: state.setEmail,      
+      setEmail: state.setEmail,   
+      setEmailFromFetch: state.setEmailFromFetch,   
       tel: state.tel,
-      setTel: state.setTel,      
+      setTel: state.setTel,
+      setTelFromFetch: state.setTelFromFetch,   
       cep: state.cep,
-      setCep: state.setCep,
+      setCepFromFetch: state.setCepFromFetch,
       address: state.address,
       setAddress: state.setAddress,
-      setAddressFromCep: state.setAddressFromCep,
+      setAddressFromFetch: state.setAddressFromFetch,
       number: state.number,
       setNumber: state.setNumber,
+      setNumberFromFetch: state.setNumberFromFetch,
       neighborhood: state.neighborhood,
       setNeighborhood: state.setNeighborhood,
-      setNeighborhoodFromCep: state.setNeighborhoodFromCep,
+      setNeighborhoodFromFetch: state.setNeighborhoodFromFetch,
       complement: state.complement,
       setComplement: state.setComplement,
+      setComplementFromFetch: state.setComplementFromFetch,
       uf: state.uf,
       setUf: state.setUf,
-      setUfFromCep: state.setUfFromCep,
+      setUfFromFetch: state.setUfFromFetch,
       city: state.city,
       setCity: state.setCity,
-      setCityFromCep: state.setCityFromCep,
+      setCityFromFetch: state.setCityFromFetch,
       reference: state.reference,
       setReference: state.setReference,
+      setReferenceFromFetch: state.setReferenceFromFetch,
       isSubmitting: state.isSubmitting,
       submitting: state.submitting,
       notSubmitting: state.notSubmitting,
       isRegisterCompleted: state.isRegisterCompleted,
       registerComplete: state.registerComplete,
       registerNotComplete: state.registerNotComplete,
+      errorSubmitting: state.errorSubmitting,
+      errorExist: state.errorExist,
+      errorDontExist: state.errorDontExist,
+      setRegisterMessage: state.setRegisterMessage,
       ufOptions: state.ufOptions,
       setUfOptions: state.setUfOptions,
       cityOptions: state.cityOptions,
@@ -101,11 +122,62 @@ const UpdateRegistrationContent = () => {
     shallow
   );
 
-  const { user } = useUserStore((state) => ({
+  const { user, isUserLogged, setUser } = useUserStore((state) => ({
     user: state.user,
+    isUserLogged: state.isUserLogged,
+    setUser: state.setUser,
   }));
 
   const navigate = useNavigate();  
+
+  useLayoutEffect(() => {
+    const fetchingUserData = () => {
+      if(isUserLogged) {
+        setProfileImage({
+          url: user.profileImage.data ? `data:${user.profileImage.contentType};base64,${_arrayBufferToBase64(user.profileImage.data.data)}` : null,
+        });
+
+        setNameFromFetch(user.name);
+        setValue('name', user.name);
+
+        setEmailFromFetch(user.email);
+        setValue('email', user.email);
+
+        setTelFromFetch(user.tel);
+        setValue('tel', user.tel);
+
+        setCpfFromFetch(user.cpf);
+        setValue('cpf', user.cpf);
+
+        setCepFromFetch(user.cep);
+        setValue('cep', user.cep);
+
+        setAddressFromFetch(user.address);
+        setValue('address', user.address);
+
+        setNumberFromFetch(user.number);
+        setValue('number', user.number);
+
+        setNeighborhoodFromFetch(user.neighborhood);
+        setValue('neighborhood', user.neighborhood);
+
+        setComplementFromFetch(user.complement);
+        setValue('complement', user.complement);
+
+        setUfFromFetch(user.uf);
+        setValue('uf', user.uf);
+
+        setCityFromFetch(user.city);
+        setValue('city', user.city);
+
+        setReferenceFromFetch(user.reference);
+        setValue('reference', user.reference);
+      }
+    }
+
+
+    fetchingUserData();
+  }, [user]);
 
   useEffect(() => {
     axios.get('https://servicodados.ibge.gov.br/api/v1/localidades/estados/')
@@ -131,16 +203,16 @@ const UpdateRegistrationContent = () => {
     if (cep.replace('-', '').length === 8) {
       axios.get(`https://viacep.com.br/ws/${cep.replace('-', '')}/json/`)
       .then(res => {
-        setAddressFromCep(res.data.logradouro);
+        setAddressFromFetch(res.data.logradouro);
         setValue('address', res.data.logradouro);
 
-        setNeighborhoodFromCep(res.data.bairro);
+        setNeighborhoodFromFetch(res.data.bairro);
         setValue('neighborhood', res.data.bairro);
 
-        setUfFromCep(res.data.uf);
+        setUfFromFetch(res.data.uf);
         setValue('uf', res.data.uf);
 
-        setCityFromCep(res.data.localidade);
+        setCityFromFetch(res.data.localidade);
         setValue('city', res.data.localidade);
       });
     }
@@ -151,6 +223,7 @@ const UpdateRegistrationContent = () => {
       if (isSubmitting) {
         const sendToDB = () => {
           const formData = new FormData();
+          formData.append('id', user._id);
           formData.append('profileImage', profileImage.file ? profileImage.file : noUserPhoto);
           formData.append('name', name);
           formData.append('email', email);
@@ -165,18 +238,24 @@ const UpdateRegistrationContent = () => {
           formData.append('city', city);
           formData.append('reference', reference);
 
-          // montar o backend ainda
-          // api
-          //   .post("/register/registerAccount", formData, {
-          //     headers: {
-          //       'Content-Type': 'multipart/form-data',
-          //     }
-          //   })
-          //   .then((res) => {
-          //     registerComplete();
-          //     localStorage.setItem('userToken', res.data);
-          //   })
-          //   .catch((error) => console.log(error));
+          api
+            .put("/updateRegistration/updating", formData, {
+              headers: {
+                'Content-Type': 'multipart/form-data',
+              }
+            })
+            .then((res) => {
+              registerComplete();
+              setRegisterMessage('Cadastro atualizado com sucesso');
+              setUser({...res.data});
+            })
+            .catch((error) => {
+              if (error) {
+                setRegisterMessage('Ocorreu um erro na atualização do cadastro');
+              }
+              errorExist();
+              console.log(error);
+            });
         };
         sendToDB();
       }
@@ -193,9 +272,16 @@ const UpdateRegistrationContent = () => {
         navigate('/');
       }, 3000);
     }
-  }, [isRegisterCompleted]);
 
-  // useIsUserLogged('/register'); //pegar dados do login
+    if (errorSubmitting) {
+      setTimeout(() => {
+        errorDontExist();
+        notSubmitting();
+      }, 4000);
+    }
+  }, [isRegisterCompleted, errorSubmitting]);
+
+  useIsUserLogged('/updateRegistration');
 
   const handleFileChange = async (e) => {
     const file = await e.target.files[0];
@@ -277,7 +363,6 @@ const UpdateRegistrationContent = () => {
   const { errors } = formState;
 
   const onSubmit = (data) => {
-    console.log(data);
     if (!profileImage.file) {
       setProfileImage({
         file: null,
@@ -385,7 +470,7 @@ const UpdateRegistrationContent = () => {
               name="cpf"
               id="cpf"
               value={cpf}
-              onChange={(e) => setCpf(handleCpfChange(e))}
+              onChange={(e) => setCpfFromFetch(handleCpfChange(e))}
               style={errors.cpf ? { border: "2px solid rgb(209, 52, 52)" } : {}}
               className="register__register-content__form__profile-data-box__label__input"
             />
@@ -405,7 +490,7 @@ const UpdateRegistrationContent = () => {
               name="cep"
               id="cep"
               value={cep}
-              onChange={(e) => setCep(handleCepChange(e))}
+              onChange={(e) => setCepFromFetch(handleCepChange(e))}
               style={errors.cep ? { border: "2px solid rgb(209, 52, 52)" } : {}}
               className="register__register-content__form__location-data-box__label__input"
             />

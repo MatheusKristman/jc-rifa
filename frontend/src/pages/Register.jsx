@@ -7,9 +7,11 @@ import RegisterMessageBox from './components/register/RegisterMessageBox';
 const Register = () => {
   const {
     isRegisterCompleted,
+    errorSubmitting,
   } = useRegisterStore(
     (state) => ({
       isRegisterCompleted: state.isRegisterCompleted,
+      errorSubmitting: state.errorSubmitting,
     })
   )
 
@@ -19,6 +21,7 @@ const Register = () => {
       <RegisterContent />
       <Footer />
       {isRegisterCompleted && <RegisterMessageBox />}
+      {errorSubmitting && <RegisterMessageBox />}
     </div>
   )
 }

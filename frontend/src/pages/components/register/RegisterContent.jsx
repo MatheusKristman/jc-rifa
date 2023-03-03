@@ -20,7 +20,7 @@ const RegisterContent = () => {
     name,
     setName,
     cpf,
-    setCpf,
+    setCpfFromFetch,
     email,
     setEmail,
     password,
@@ -28,27 +28,27 @@ const RegisterContent = () => {
     confirmPassword,
     setConfirmPassword,
     tel,
-    setTel,
+    setTelFromFetch,
     confirmTel,
-    setConfirmTel,
+    setConfirmTelFromFetch,
     cep,
-    setCep,
+    setCepFromFetch,
     address,
     setAddress,
-    setAddressFromCep,
+    setAddressFromFetch,
     number,
     setNumber,
     neighborhood,
     setNeighborhood,
-    setNeighborhoodFromCep,
+    setNeighborhoodFromFetch,
     complement,
     setComplement,
     uf,
     setUf,
-    setUfFromCep,
+    setUfFromFetch,
     city,
     setCity,
-    setCityFromCep,
+    setCityFromFetch,
     reference,
     setReference,
     isSubmitting,
@@ -57,6 +57,10 @@ const RegisterContent = () => {
     isRegisterCompleted,
     registerComplete,
     registerNotComplete,
+    errorSubmitting,
+    errorExist,
+    errorDontExist,
+    setRegisterMessage,
     ufOptions,
     setUfOptions,
     cityOptions,
@@ -68,7 +72,7 @@ const RegisterContent = () => {
       name: state.name,
       setName: state.setName,
       cpf: state.cpf,
-      setCpf: state.setCpf,
+      setCpfFromFetch: state.setCpfFromFetch,
       email: state.email,
       setEmail: state.setEmail,
       password: state.password,
@@ -76,27 +80,27 @@ const RegisterContent = () => {
       confirmPassword: state.confirmPassword,
       setConfirmPassword: state.setConfirmPassword,
       tel: state.tel,
-      setTel: state.setTel,
+      setTelFromFetch: state.setTelFromFetch,
       confirmTel: state.confirmTel,
-      setConfirmTel: state.setConfirmTel,
+      setConfirmTelFromFetch: state.setConfirmTelFromFetch,
       cep: state.cep,
-      setCep: state.setCep,
+      setCepFromFetch: state.setCepFromFetch,
       address: state.address,
       setAddress: state.setAddress,
-      setAddressFromCep: state.setAddressFromCep,
+      setAddressFromFetch: state.setAddressFromFetch,
       number: state.number,
       setNumber: state.setNumber,
       neighborhood: state.neighborhood,
       setNeighborhood: state.setNeighborhood,
-      setNeighborhoodFromCep: state.setNeighborhoodFromCep,
+      setNeighborhoodFromFetch: state.setNeighborhoodFromFetch,
       complement: state.complement,
       setComplement: state.setComplement,
       uf: state.uf,
       setUf: state.setUf,
-      setUfFromCep: state.setUfFromCep,
+      setUfFromFetch: state.setUfFromFetch,
       city: state.city,
       setCity: state.setCity,
-      setCityFromCep: state.setCityFromCep,
+      setCityFromFetch: state.setCityFromFetch,
       reference: state.reference,
       setReference: state.setReference,
       isSubmitting: state.isSubmitting,
@@ -105,6 +109,10 @@ const RegisterContent = () => {
       isRegisterCompleted: state.isRegisterCompleted,
       registerComplete: state.registerComplete,
       registerNotComplete: state.registerNotComplete,
+      errorSubmitting: state.errorSubmitting,
+      errorExist: state.errorExist,
+      errorDontExist: state.errorDontExist,
+      setRegisterMessage: state.setRegisterMessage,
       ufOptions: state.ufOptions,
       setUfOptions: state.setUfOptions,
       cityOptions: state.cityOptions,
@@ -145,16 +153,16 @@ const RegisterContent = () => {
     if (cep.replace('-', '').length === 8) {
       axios.get(`https://viacep.com.br/ws/${cep.replace('-', '')}/json/`)
       .then(res => {
-        setAddressFromCep(res.data.logradouro);
+        setAddressFromFetch(res.data.logradouro);
         setValue('address', res.data.logradouro);
 
-        setNeighborhoodFromCep(res.data.bairro);
+        setNeighborhoodFromFetch(res.data.bairro);
         setValue('neighborhood', res.data.bairro);
 
-        setUfFromCep(res.data.uf);
+        setUfFromFetch(res.data.uf);
         setValue('uf', res.data.uf);
 
-        setCityFromCep(res.data.localidade);
+        setCityFromFetch(res.data.localidade);
         setValue('city', res.data.localidade);
       });
     }
@@ -189,9 +197,20 @@ const RegisterContent = () => {
             })
             .then((res) => {
               registerComplete();
+              setRegisterMessage('Cadastro realizado com sucesso');
               localStorage.setItem('userToken', res.data);
             })
-            .catch((error) => console.log(error));
+            .catch((error) => {
+              window.scrollTo(0, 0);              
+              if (error.response.data === 'Telefone Já cadastrado') {
+                console.log('ja registrado')
+                setRegisterMessage('Cadastro já registrado no sistema')
+              } else {
+                setRegisterMessage('Ocorreu um erro no cadastro');
+              }
+              errorExist();
+              console.log(error);
+            });
         };
         sendToDB();        
       }
@@ -208,7 +227,14 @@ const RegisterContent = () => {
         navigate('/');
       }, 3000);
     }
-  }, [isRegisterCompleted]);
+
+    if (errorSubmitting) {
+      setTimeout(() => {        
+        errorDontExist();
+        notSubmitting();
+      }, 4000);
+    }
+  }, [isRegisterCompleted, errorSubmitting]);
 
   useIsUserLogged('/register');
 
@@ -366,7 +392,7 @@ const RegisterContent = () => {
               name="cpf"
               id="cpf"
               value={cpf}
-              onChange={(e) => setCpf(handleCpfChange(e))}
+              onChange={(e) => setCpfFromFetch(handleCpfChange(e))}
               style={errors.cpf ? { border: "2px solid rgb(209, 52, 52)" } : {}}
               className="register__register-content__form__profile-data-box__label__input"
             />
@@ -446,7 +472,7 @@ const RegisterContent = () => {
               name="tel"
               id="tel"
               value={tel}
-              onChange={(e) => setTel(handleTelChange(e))}
+              onChange={(e) => setTelFromFetch(handleTelChange(e))}
               placeholder="(__) _____-____"
               style={errors.tel ? { border: "2px solid rgb(209, 52, 52)" } : {}}
               className="register__register-content__form__profile-data-box__label__input"
@@ -467,7 +493,7 @@ const RegisterContent = () => {
               name="confirmTel"
               id="confirmTel"
               value={confirmTel}
-              onChange={(e) => setConfirmTel(handleTelChange(e))}
+              onChange={(e) => setConfirmTelFromFetch(handleTelChange(e))}
               placeholder="(__) _____-____"
               style={errors.confirmTel ? { border: "2px solid rgb(209, 52, 52)" } : {}}
               className="register__register-content__form__profile-data-box__label__input"
@@ -488,7 +514,7 @@ const RegisterContent = () => {
               name="cep"
               id="cep"
               value={cep}
-              onChange={(e) => setCep(handleCepChange(e))}
+              onChange={(e) => setCepFromFetch(handleCepChange(e))}
               style={errors.cep ? { border: "2px solid rgb(209, 52, 52)" } : {}}
               className="register__register-content__form__location-data-box__label__input"
             />
@@ -610,9 +636,7 @@ const RegisterContent = () => {
                 cityOptions.map((data) => (
                   <option key={data.id} value={data.nome}>{data.nome}</option>
                 ))
-              }
-              {/* <option value="example 2">Example 2</option>
-              <option value="example 3">Example 3</option> */}
+              }              
             </select>
           </label>
           {errors.city && <span>{errors.city.message}</span>}

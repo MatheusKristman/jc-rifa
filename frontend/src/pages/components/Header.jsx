@@ -22,6 +22,7 @@ import { shallow } from "zustand/shallow";
 import { useNavigate } from 'react-router-dom';
 import useUserStore from "../../stores/useUserStore";
 import noUserPhoto from '../../assets/no-user-photo.png';
+import _arrayBufferToBase64 from "../../hooks/useArrayBufferToBase64";
 
 const HeaderMenu = () => {
   const { closeMenu, openLogin } = useHeaderStore(
@@ -189,16 +190,6 @@ const HeaderMenuLogged = () => {
       closeMenu();
       openLogin();
     }, 200)
-  }
-
-  const _arrayBufferToBase64 = ( buffer ) => {
-    var binary = '';
-    var bytes = new Uint8Array( buffer );
-    var len = bytes.byteLength;
-    for (var i = 0; i < len; i++) {
-        binary += String.fromCharCode( bytes[ i ] );
-    }
-    return window.btoa( binary );
   }
 
   return (

@@ -1,8 +1,15 @@
-import React from 'react'
+import React from 'react';
+
+import { Header, Footer } from './components';
+import MyPurchasesContent from './components/myPurchases/MyPurchasesContent';
 
 const MyPurchases = () => {
   return (
-    <div>MyPurchases</div>
+    <div className="my-purchases">
+      <Header />
+      <MyPurchasesContent />
+      <Footer />
+    </div>
   )
 }
 

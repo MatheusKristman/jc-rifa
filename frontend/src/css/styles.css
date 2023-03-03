@@ -106,6 +106,7 @@ html, body {
   bottom: 0;
   background-color: #151944;
   display: flex;
+  overflow-y: auto;
   z-index: 6;
   flex-direction: column;
   opacity: 0;
@@ -2006,4 +2007,128 @@ html, body {
   .contact__contact-content__container__form__submit-btn:hover {
     filter: brightness(80%);
   }
+}
+
+.my-purchases {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+.my-purchases__my-purchases-content {
+  flex: 1;
+  width: 100%;
+}
+.my-purchases__my-purchases-content__container {
+  width: 100%;
+  max-width: 600px;
+  margin: 25px auto;
+  background-color: #080812;
+  padding: 16px 12px;
+  border-radius: 10px;
+}
+.my-purchases__my-purchases-content__container__info-wrapper {
+  display: flex;
+  align-items: flex-end;
+  gap: 5px;
+  margin-bottom: 10px;
+}
+.my-purchases__my-purchases-content__container__info-wrapper__title {
+  color: #fff;
+  font-size: 1.35rem;
+  font-weight: 600;
+}
+.my-purchases__my-purchases-content__container__info-wrapper__desc {
+  color: #fff;
+  font-size: 0.9rem;
+  opacity: 0.7;
+}
+.my-purchases__my-purchases-content__container__result-box {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.my-purchases__my-purchases-content__container__result-box__alert-box {
+  width: 100%;
+  background-color: #CFF4FC;
+  padding: 15px 20px;
+  border-radius: 6px;
+}
+.my-purchases__my-purchases-content__container__result-box__alert-box__desc {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 1rem;
+  color: #055160;
+}
+
+.change-password {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+.change-password__content {
+  width: 100%;
+  flex: 1;
+}
+.change-password__content__container {
+  width: 100%;
+  max-width: 600px;
+  margin: 25px auto;
+  background-color: #080812;
+  border-radius: 10px;
+  padding: 16px 12px;
+}
+.change-password__content__container__title {
+  color: #fff;
+  font-size: 1.35rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+.change-password__content__container__form {
+  width: 100%;
+}
+.change-password__content__container__form__wrapper {
+  display: flex;
+  flex-direction: column;
+  background-color: #15152A;
+  border-radius: 10px;
+  padding: 10px;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.change-password__content__container__form__wrapper span {
+  color: rgb(209, 52, 52);
+  font-size: 0.9rem;
+}
+.change-password__content__container__form__wrapper__label {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #fff;
+}
+.change-password__content__container__form__wrapper__label__input {
+  padding: 8px 12px;
+  font-size: 1rem;
+  color: #5a5a5a;
+  border-radius: 10px;
+  border: none;
+  outline: none;
+  transition: border 0.4s ease;
+}
+.change-password__content__container__form__submit-btn {
+  width: 100%;
+  border-radius: 4px;
+  border: none;
+  background-color: #5c636a;
+  padding: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fff;
+  cursor: pointer;
+  outline: none;
 }/*# sourceMappingURL=styles.css.map */

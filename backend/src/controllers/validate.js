@@ -1,4 +1,5 @@
 const Joi = require('@hapi/joi');
+const { schema } = require('../models/Account');
 
 const registerValidate = (data) => {
   const schema = Joi.object({
@@ -42,6 +43,16 @@ const updateValidate = (data) => {
   return schema.validate(data);
 };
 
+const updatePasswordValidate = (data) => {
+  const schema = Joi.object({
+    id: Joi.string().required(),
+    password: Joi.string().required(),
+    newPassword: Joi.string().required().min(6).max(200),
+  });
+
+  return schema.validate(data);
+}
+
 const loginValidate = (data) => {
   const schema = Joi.object({
     tel: Joi.string().required().min(14).max(16),
@@ -54,3 +65,4 @@ const loginValidate = (data) => {
 module.exports.registerValidate = registerValidate;
 module.exports.loginValidate = loginValidate;
 module.exports.updateValidate = updateValidate;
+module.exports.updatePasswordValidate = updatePasswordValidate;

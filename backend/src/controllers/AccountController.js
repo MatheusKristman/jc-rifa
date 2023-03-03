@@ -2,7 +2,7 @@ const Account = require('../models/Account');
 
 const fs = require('fs');
 const multer = require('multer');
-const { registerValidate, loginValidate, updateValidate } = require('./validate');
+const { registerValidate, loginValidate, updateValidate, updatePasswordValidate } = require('./validate');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
@@ -54,11 +54,16 @@ module.exports = {
     };
 
     try {
-      await Account.create(user);
+      const userCreated = await Account.create(user);
+
+      if (userCreated && req.file) {
+        fs.unlinkSync(`public/data/uploads/${req.file.filename}`);
+        console.log('imagem removida com sucesso');
+      }
 
       const selectedUser = await Account.findOne({ tel: req.body.tel });
 
-      console.log('selectedUser' + selectedUser);
+      // console.log('selectedUser' + selectedUser);
       
       const daysToExpire = '15d';
       const token = jwt.sign({ _id: selectedUser._id, admin: selectedUser.admin }, process.env.TOKEN_SECRET, { expiresIn: daysToExpire });
@@ -88,11 +93,14 @@ module.exports = {
       return res.status(400).send(error.message);
     }
 
+    const user = await Account.findOne({ _id: req.body.id });
+
+    console.log(user);
+
     const userData = {
-      id: req.body.id,
       profileImage: {
-        data: req.file ? fs.readFileSync('public/data/uploads/' + req.file.filename) : null,
-        contentType: req.file ? req.file.mimetype : null,
+        data: req.file ? fs.readFileSync('public/data/uploads/' + req.file.filename) : user.profileImage.data,
+        contentType: req.file ? req.file.mimetype : user.profileImage.contentType,
       },
       name: req.body.name,
       email: req.body.email,
@@ -110,27 +118,48 @@ module.exports = {
     console.log(userData);
 
     try {
-      const selectedUser = await Account.findOneAndUpdate({ _id: req.body.id }, {
-        profileImage: userData.profileImage,
-        name: userData.name,
-        email: userData.email,
-        tel: userData.tel,
-        cpf: userData.cpf,
-        cep: userData.cep,
-        address: userData.address,
-        number: userData.number,
-        neighborhood: userData.neighborhood,
-        complement: userData.complement,
-        uf: userData.uf,
-        city: userData.city,
-        reference: userData.reference,
-      });
+      const selectedUser = await Account.findOneAndUpdate({ _id: req.body.id }, userData);
 
+      if (selectedUser && req.file) {
+        fs.unlinkSync(`public/data/uploads/${req.file.filename}`);
+        console.log('imagem removida com sucesso');
+      }
 
-      return res.json(selectedUser);
+      const selectedUserUpdated = await Account.findById(req.body.id);
+
+      return res.json(selectedUserUpdated);
     } catch (error) {
       return res.status(400).send(error.message);
     }
+  },
+  updatePassword: async (req, res) => {
+    const { error } = updatePasswordValidate(req.body);
+
+    if (error) {
+      return res.status(400).send(error.message);
+    }
+
+    const id = req.body.id;
+
+    const selectedUser = await Account.findOne({ _id: id });
+    
+    const passwordMatch = bcrypt.compareSync(req.body.password, selectedUser.password);
+
+    console.log(passwordMatch);
+
+    if (!passwordMatch) {
+      return res.status(401).send('Senha incorreta');
+    }
+
+    try {
+      await Account.updateOne({ _id: id }, { password: bcrypt.hashSync(req.body.newPassword, 10) });
+
+      const userUpdated = await Account.findOne({ _id: id });
+
+      return res.json(userUpdated);
+    } catch (error) {
+      res.status(409).send(error.message);
+    }    
   },
   login: async (req, res) => {
     const { error } = loginValidate(req.body);
