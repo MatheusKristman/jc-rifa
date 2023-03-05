@@ -272,6 +272,83 @@
         }
       }
     }
+
+    .logout-confirmation {
+      position: absolute;
+      left: 50%;
+      top: 100px;
+      transform: translateX(-50%);
+      background-color: $darkPurple;
+      padding: 15px 30px;
+      border-radius: 10px;
+
+      &__container {
+        display: flex;
+        flex-direction: column;
+        gap: 25px;
+
+        &__title {
+          font-size: 1.5rem;
+          font-weight: 500;
+          color: $white;
+        }
+
+        &__btn-wrapper {
+          display: flex;
+          align-items: center;
+          gap: 20px;
+
+          &__confirm-btn {
+            background-color: $blue;
+            border: 2px solid $blue;
+            border-radius: 6px;
+            padding: 10px 15px;
+            font-size: 1rem;
+            font-weight: 500;
+            color: $white;
+            cursor: pointer;
+            outline: none;
+
+            @include breakpoint(largeScreen) {
+              transition: background 0.4s ease, border 0.4s ease;
+
+              &:hover {
+                background-color: $darkBlue;
+                border-color: $darkBlue;
+              }
+            }
+          }
+
+          &__cancel-btn {
+            background-color: $darkPurple;
+            border: 2px solid $blue;
+            border-radius: 6px;
+            padding: 10px 15px;
+            font-size: 1rem;
+            font-weight: 500;
+            color: $blue;
+            cursor: pointer;
+            outline: none;
+
+            @include breakpoint(largeScreen) {
+              transition: background 0.4s ease;
+
+              &:hover {
+                background-color: $darkBlue;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    .active {
+      animation: logoutIn 1s ease forwards;
+    }
+
+    .desactive {
+      animation: logoutOut 1s ease forwards;
+    }
   }
 
   //login modal
@@ -387,6 +464,12 @@
               font-size: 1rem;
               color: #5a5a5a;
             }
+          }
+
+          span {
+            color: rgb(209, 52, 52);
+            font-size: 0.9rem;
+            transform: translateY(-8px);
           }
 
           &__forget-password {
@@ -518,5 +601,27 @@
   to {
     opacity: 0;
     transform: translateY(-25%);
+  }
+}
+
+// logout box animations
+
+@keyframes logoutIn {
+  from {
+    transform: translateY(-200%) translateX(-50%);
+  }
+
+  to {
+    transform: translateY(0%) translateX(-50%);
+  }
+}
+
+@keyframes logoutOut {
+  from {
+    transform: translateY(0%) translateX(-50%);
+  }
+
+  to {
+    transform: translateY(-200%) translateX(-50%);
   }
 }

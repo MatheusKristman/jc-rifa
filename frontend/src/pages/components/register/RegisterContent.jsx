@@ -200,7 +200,7 @@ const RegisterContent = () => {
               setRegisterMessage('Cadastro realizado com sucesso');
               localStorage.setItem('userToken', res.data);
             })
-            .catch((error) => {
+            .catch((error) => {              
               window.scrollTo(0, 0);              
               if (error.response.data === 'Telefone Já cadastrado') {
                 console.log('ja registrado')

@@ -55,7 +55,7 @@ const updatePasswordValidate = (data) => {
 
 const loginValidate = (data) => {
   const schema = Joi.object({
-    tel: Joi.string().required().min(14).max(16),
+    tel: Joi.string().required().min(15).max(16),
     password: Joi.string().required().min(6).max(200),
   });
 

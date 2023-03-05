@@ -16,13 +16,17 @@ import { MdClose } from "react-icons/md";
 import { HiOutlineMail , HiUserCircle} from "react-icons/hi";
 import { RxExit } from 'react-icons/rx'
 import { HiOutlineBars3BottomRight } from "react-icons/hi2";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import useHeaderStore from "../../stores/useHeaderStore";
 import { shallow } from "zustand/shallow";
-import { useNavigate } from 'react-router-dom';
 import useUserStore from "../../stores/useUserStore";
 import noUserPhoto from '../../assets/no-user-photo.png';
 import _arrayBufferToBase64 from "../../hooks/useArrayBufferToBase64";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as Yup from "yup";
+import api from '../../services/api';
+import useIsUserLogged from '../../hooks/useIsUserLogged';
 
 const HeaderMenu = () => {
   const { closeMenu, openLogin } = useHeaderStore(
@@ -162,11 +166,80 @@ const HeaderMenu = () => {
   );
 };
 
+const LogoutConfirmationBox = () => {
+  const {
+    logoutBoxAppears,
+    setToLogoutBoxDontAppear,
+    setToNotConfirmLogout,
+    closeMenu,
+  } = useHeaderStore(
+    (state) => ({
+      logoutBoxAppears: state.logoutBoxAppears,
+      setToLogoutBoxDontAppear: state.setToLogoutBoxDontAppear,
+      setToNotConfirmLogout: state.setToNotConfirmLogout,
+      closeMenu: state.closeMenu,
+    })
+  );
+
+  const {
+    userNotLogged,
+    setUser,
+  } = useUserStore(
+    (state) => ({
+      userNotLogged: state.userNotLogged,
+      setUser: state.setUser,
+    })
+  );
+
+  const navigate = useNavigate();
+
+  const handleCancel = () => {
+    setToLogoutBoxDontAppear();
+
+    setTimeout(() => {
+      setToNotConfirmLogout();
+    }, 1000);
+  }
+
+  const handleLogout = () => {
+    localStorage.removeItem('userToken');
+    userNotLogged();
+    setUser({});
+    setToLogoutBoxDontAppear();
+
+    setTimeout(() => {
+      setToNotConfirmLogout();
+      closeMenu();
+      navigate('/');
+    }, 1000);
+  }
+
+  return (
+    <div className={logoutBoxAppears ? "logout-confirmation active" : "logout-confirmation desactive"}>
+      <div className="logout-confirmation__container">
+        <h6 className="logout-confirmation__container__title">Deseja sair da sua conta?</h6>
+
+        <div className="logout-confirmation__container__btn-wrapper">
+          <button onClick={handleLogout} className="logout-confirmation__container__btn-wrapper__confirm-btn">Sair</button>
+          <button onClick={handleCancel} className="logout-confirmation__container__btn-wrapper__cancel-btn">Cancelar</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 const HeaderMenuLogged = () => {
-  const { closeMenu, openLogin } = useHeaderStore(
+  const {
+    closeMenu,
+    logoutConfirmation,
+    setToConfirmLogout,
+    setToLogoutBoxAppear
+  } = useHeaderStore(
     (state) => ({
       closeMenu: state.closeMenu,
-      openLogin: state.openLogin,
+      logoutConfirmation: state.logoutConfirmation,
+      setToConfirmLogout: state.setToConfirmLogout,
+      setToLogoutBoxAppear: state.setToLogoutBoxAppear,
     }),
     shallow
   );
@@ -183,17 +256,14 @@ const HeaderMenuLogged = () => {
     }, 400);
   }
 
-  const handleLoginOpen = () => {
-    menuRef.current.style.animation = 'menuOut 0.2s ease forwards';
-
-    setTimeout(() => {
-      closeMenu();
-      openLogin();
-    }, 200)
+  const openLogoutConfirmationBox = () => {
+    setToConfirmLogout();
+    setToLogoutBoxAppear();
   }
 
   return (
     <div ref={menuRef} className="header__menu">
+      {logoutConfirmation && <LogoutConfirmationBox />}
       <div className="header__menu__above">
         <div className="header__menu__above__container">
           <div className="header__menu__above__container__logo-box">
@@ -216,7 +286,7 @@ const HeaderMenuLogged = () => {
               <h4 className="header__menu__middle__container__user-box__infos__greetings">{`Olá, ${user.name}`}</h4>
             </div>
 
-            <button type="button" className="header__menu__middle__container__user-box__logout-btn">
+            <button onClick={openLogoutConfirmationBox} type="button" className="header__menu__middle__container__user-box__logout-btn">
               <RxExit />
             </button>
           </div>
@@ -316,6 +386,30 @@ const HeaderMenuLogged = () => {
   );
 }
 
+const LoginMessageBox = () => {
+  const {
+    submitError,
+    doesLoginHappened,
+    loginMessage,
+  } = useHeaderStore(
+    (state) => ({
+      submitError: state.submitError,
+      doesLoginHappened: state.doesLoginHappened,
+      loginMessage: state.loginMessage,
+    })
+  );
+
+  return (
+    <div style={submitError ? {backgroundColor: 'rgb(209, 52, 52)'} : {}} className={doesLoginHappened || submitError ? "register-message-box" : "register-message-box desactive"}>
+      <div className="register-message-box__container">
+        <span className={"register-message-box__container__message"}>
+          {loginMessage}
+        </span>
+      </div>
+    </div>
+  );
+}
+
 const LogInModal = () => {
   const {
     usernameValue,
@@ -329,6 +423,16 @@ const LogInModal = () => {
     selectPassword,
     unselectPassword,
     closeLogin,
+    submitting,
+    isSubmitting,
+    errorExist,
+    doesLoginHappened,
+    submitError,
+    loginFailed,
+    notSubmitting,
+    errorDontExist,
+    setLoginMessage,
+    loginSuccess,
   } = useHeaderStore(
     (state) => ({
       usernameValue: state.usernameValue,
@@ -342,6 +446,16 @@ const LogInModal = () => {
       selectPassword: state.selectPassword,
       unselectPassword: state.unselectPassword,
       closeLogin: state.closeLogin,
+      submitting: state.submitting,
+      isSubmitting: state.isSubmitting,
+      errorExist: state.errorExist,
+      doesLoginHappened: state.doesLoginHappened,
+      submitError: state.submitError,
+      loginFailed: state.loginFailed,
+      notSubmitting: state.notSubmitting,
+      errorDontExist: state.errorDontExist,
+      setLoginMessage: state.setLoginMessage,
+      loginSuccess: state.loginSuccess,
     }),
     shallow
   );
@@ -364,8 +478,100 @@ const LogInModal = () => {
     }
   }
 
+  const handleTelChange = (e) => {
+    const { value } = e.target;
+
+    const phoneNumber = value
+      .replace(/\D/g, "")
+      .replace(/(\d{2})(\d)/, "($1) $2")
+      .replace(/(\d{5})(\d)/, "$1-$2")
+      .replace(/(-\d{4})\d+?$/, "$1");
+
+    return phoneNumber;
+  };
+
+  const navigate = useNavigate();
+  
+  const schema = Yup.object().shape({
+    username: Yup.string()
+      .min(15, "Insira acima de 15 caracteres")
+      .required("Usuário é obrigatório"),    
+    password: Yup.string().required("Senha é obrigatória"),    
+  });
+
+  const { register, handleSubmit, formState, getValues, setValue } = useForm({
+    resolver: yupResolver(schema),
+    defaultValues: { username: usernameValue, password: passwordValue },
+  });
+
+  const { errors } = formState;
+
+  useEffect(() => {
+    const submitData = () => {
+      if (isSubmitting) {
+        const sendDataToDB = () => {
+          api.
+            post('/login', {
+              tel: usernameValue,
+              password: passwordValue,
+            })
+            .then((res) => {
+              console.log('sem erro')
+              loginSuccess();
+              setLoginMessage('Conectado com sucesso');
+              localStorage.setItem('userToken', res.data);
+            })
+            .catch((error) => {
+              console.log('com erro: ', error);
+              errorExist();
+              if (error.response.data === 'Telefone ou senha incorretos') {
+                setLoginMessage('Telefone ou senha incorretos');
+              } else {
+                setLoginMessage('Ocorreu um erro, tente novamente');
+              }
+              console.log(error);
+            });
+        }
+
+        sendDataToDB();
+      }
+    }
+
+    submitData();
+  }, [isSubmitting]);
+
+  useEffect(() => {
+    if (doesLoginHappened) {
+      setTimeout(() => {
+        loginFailed();
+        notSubmitting();
+        closeLogin();
+        window.location.reload(false);
+      }, 3000);
+    }
+
+    if (submitError) {
+      setTimeout(() => {
+        errorDontExist();
+        notSubmitting();
+      }, 3000);
+    }
+  }, [doesLoginHappened, submitError]);
+
+  useEffect(() => {
+    console.log(usernameValue);
+    console.log(passwordValue);
+  }, [usernameValue, passwordValue]);
+
+  const onSubmit = (data) => {
+    console.log(data);
+    submitting();
+  }  
+
   return (
     <div ref={loginModalOverlayRef} onClick={handleCloseLoginOverlay} className="header__login-modal-overlay">
+      {doesLoginHappened && <LoginMessageBox/>}
+      {submitError && <LoginMessageBox/>}
       <div ref={loginModalBoxRef} className="header__login-modal-overlay__box">
         <div className="header__login-modal-overlay__box__content">
           <div className="header__login-modal-overlay__box__content__head">
@@ -384,7 +590,7 @@ const LogInModal = () => {
             Por favor, entre com seus dados ou faça um cadastro.
           </p>
 
-          <form className="header__login-modal-overlay__box__content__form">
+          <form onSubmit={handleSubmit(onSubmit)} className="header__login-modal-overlay__box__content__form">
             <div className="header__login-modal-overlay__box__content__form__username-box">
               <label
                 htmlFor="username"
@@ -397,18 +603,24 @@ const LogInModal = () => {
                 Telefone
               </label>
               <input
-                type="tel"
+                {...register("username")}
+                type="text"
                 name="username"
                 id="username"
                 value={usernameValue}
-                onChange={handleUsernameValue}
+                onChange={(e) => {
+                  handleUsernameValue(handleTelChange(e))
+                  setValue('username', handleTelChange(e));
+                }}
                 onFocus={selectUsername}
                 onBlur={() => (usernameValue === "" ? unselectUsername() : selectUsername())}
                 autoComplete="off"
                 autoCorrect="off"
+                style={errors.username ? {borderColor: "rgb(209, 52, 52)"} : {}}
                 className="header__login-modal-overlay__box__content__form__username-box__input"
               />
             </div>
+            {errors.username && <span>{errors.username.message}</span>}
 
             <div className="header__login-modal-overlay__box__content__form__password-box">
               <label
@@ -423,18 +635,24 @@ const LogInModal = () => {
               </label>
 
               <input
+                {...register("password")}
                 type="password"
                 name="password"
                 id="password"
                 value={passwordValue}
-                onChange={handlePasswordValue}
+                onChange={(e) => {
+                  handlePasswordValue(e);
+                  setValue('password', e.target.value);
+                }}
                 onFocus={selectPassword}
                 onBlur={() => (passwordValue === "" ? unselectPassword() : selectPassword())}
                 autoComplete="off"
                 autoCorrect="off"
+                style={errors.password ? {borderColor: "rgb(209, 52, 52)"} : {}}
                 className="header__login-modal-overlay__box__content__form__password-box__input"
               />
             </div>
+            {errors.password && <span>{errors.password.message}</span>}
 
             <Link
               to="/new-password"

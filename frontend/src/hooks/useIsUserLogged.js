@@ -17,22 +17,24 @@ const useIsUserLogged = (path) => {
   );
 
   useEffect(() => {
-    const token = localStorage.getItem('userToken');
+    const token = localStorage.getItem('userToken') || null;
   
-    api.get(path, {
-      headers: {
-        'authorization-token': token
-      }
-    })
-    .then((res) => {
-      setUser({...res.data})
-      userLogged();
-    })
-    .catch((error) => {
-      console.log(error);
-      userNotLogged();
-      localStorage.removeItem('userToken');
-    });
+    if (token) {
+      api.get(path, {
+        headers: {
+          'authorization-token': token
+        }
+      })
+      .then((res) => {
+        setUser({...res.data})
+        userLogged();
+      })
+      .catch((error) => {
+        console.log(error);
+        userNotLogged();
+        localStorage.removeItem('userToken');
+      });
+    }
   }, []);
 }
 

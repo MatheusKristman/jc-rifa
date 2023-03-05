@@ -171,20 +171,22 @@ module.exports = {
     const selectedUser = await Account.findOne({ tel: req.body.tel });
     if (!selectedUser) {
       return res.status(400).send('Telefone ou senha incorretos');
-    }
+    }    
 
-    const passwordAndUserMatch = req.body.password === selectedUser.password;
+    const passwordAndUserMatch = bcrypt.compareSync(req.body.password, selectedUser.password);
+    console.log(passwordAndUserMatch);
+
     if (!passwordAndUserMatch) {
       console.log(selectedUser.password);
       return res.status(400).send('Telefone ou senha incorretos');
     }
 
+    console.log('passou validação')
+
     const daysToExpire = '15d';
 
     const token = jwt.sign({ _id: selectedUser._id, admin: selectedUser.admin }, process.env.TOKEN_SECRET, { expiresIn: daysToExpire });
 
-    res.header('authorization-token', token);
-
-    res.send(selectedUser);
+    res.json(token);
   }
 }

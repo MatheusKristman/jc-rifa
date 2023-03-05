@@ -300,6 +300,75 @@ html, body {
 .header__menu__bottom__container__socials-list__socials-items__facebook svg, .header__menu__bottom__container__socials-list__socials-items__instagram svg, .header__menu__bottom__container__socials-list__socials-items__whatsapp svg {
   color: #fff;
 }
+.header__menu .logout-confirmation {
+  position: absolute;
+  left: 50%;
+  top: 100px;
+  transform: translateX(-50%);
+  background-color: #15152A;
+  padding: 15px 30px;
+  border-radius: 10px;
+}
+.header__menu .logout-confirmation__container {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+.header__menu .logout-confirmation__container__title {
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: #fff;
+}
+.header__menu .logout-confirmation__container__btn-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.header__menu .logout-confirmation__container__btn-wrapper__confirm-btn {
+  background-color: #0B5ED7;
+  border: 2px solid #0B5ED7;
+  border-radius: 6px;
+  padding: 10px 15px;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #fff;
+  cursor: pointer;
+  outline: none;
+}
+@media screen and (min-width: 1024px) {
+  .header__menu .logout-confirmation__container__btn-wrapper__confirm-btn {
+    transition: background 0.4s ease, border 0.4s ease;
+  }
+  .header__menu .logout-confirmation__container__btn-wrapper__confirm-btn:hover {
+    background-color: #151944;
+    border-color: #151944;
+  }
+}
+.header__menu .logout-confirmation__container__btn-wrapper__cancel-btn {
+  background-color: #15152A;
+  border: 2px solid #0B5ED7;
+  border-radius: 6px;
+  padding: 10px 15px;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #0B5ED7;
+  cursor: pointer;
+  outline: none;
+}
+@media screen and (min-width: 1024px) {
+  .header__menu .logout-confirmation__container__btn-wrapper__cancel-btn {
+    transition: background 0.4s ease;
+  }
+  .header__menu .logout-confirmation__container__btn-wrapper__cancel-btn:hover {
+    background-color: #151944;
+  }
+}
+.header__menu .active {
+  animation: logoutIn 1s ease forwards;
+}
+.header__menu .desactive {
+  animation: logoutOut 1s ease forwards;
+}
 .header__login-modal-overlay {
   width: 100%;
   height: 100%;
@@ -403,6 +472,11 @@ html, body {
   outline: none;
   font-size: 1rem;
   color: #5a5a5a;
+}
+.header__login-modal-overlay__box__content__form span {
+  color: rgb(209, 52, 52);
+  font-size: 0.9rem;
+  transform: translateY(-8px);
 }
 .header__login-modal-overlay__box__content__form__forget-password {
   color: #0B5ED7;
@@ -512,6 +586,22 @@ html, body {
   to {
     opacity: 0;
     transform: translateY(-25%);
+  }
+}
+@keyframes logoutIn {
+  from {
+    transform: translateY(-200%) translateX(-50%);
+  }
+  to {
+    transform: translateY(0%) translateX(-50%);
+  }
+}
+@keyframes logoutOut {
+  from {
+    transform: translateY(0%) translateX(-50%);
+  }
+  to {
+    transform: translateY(-200%) translateX(-50%);
   }
 }
 .hero {
