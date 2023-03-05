@@ -206,10 +206,11 @@ const LogoutConfirmationBox = () => {
     userNotLogged();
     setUser({});
     setToLogoutBoxDontAppear();
+    closeMenu();
+    window.location.reload(false);
 
     setTimeout(() => {
       setToNotConfirmLogout();
-      closeMenu();
       navigate('/');
     }, 1000);
   }
