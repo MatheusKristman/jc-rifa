@@ -9,7 +9,7 @@ import {
   BsWhatsapp,
   BsFillKeyFill,
 } from "react-icons/bs";
-import { BiHome, BiListCheck } from "react-icons/bi";
+import { BiHome, BiListCheck, BiBarChartAlt2 } from "react-icons/bi";
 import { IoEnterOutline } from "react-icons/io5";
 import { IoIosCloseCircleOutline } from "react-icons/io";
 import { MdClose } from "react-icons/md";
@@ -297,6 +297,12 @@ const HeaderMenuLogged = () => {
                 <BiHome /> Início
               </Link>
             </li>
+
+            {user.admin && <li className="header__menu__middle__container__menu-list__menu-item">
+              <Link onClick={closeMenu} to="/raffle-management">
+                <BiBarChartAlt2 /> Rifas
+              </Link>
+            </li>}
 
             <li className="header__menu__middle__container__menu-list__menu-item">
               <Link onClick={closeMenu} to="/raffles">

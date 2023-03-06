@@ -10,7 +10,7 @@ const useChangePasswordStore = create((set) => ({
   isSubmitting: false,
   submitting: () => set(() => ({ isSubmitting: true })),
   notSubmitting: () => set(() => ({ isSubmitting: false })),
-  isChangeCompleted: true,
+  isChangeCompleted: false,
   changeComplete: () => set(() => ({ isChangeCompleted: true })),
   changeNotComplete: () => set(() => ({ isChangeCompleted: false })),
   submitError: false,

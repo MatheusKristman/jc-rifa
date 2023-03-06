@@ -10,6 +10,9 @@ import Terms from './Terms';
 import Contact from './Contact';
 import MyPurchases from './MyPurchases';
 import ChangePassword from './ChangePassword';
+import RaffleManagement from './RaffleManagement';
+import NewRaffle from './NewRaffle';
+import EditRaffle from './EditRaffle';
 
 export {
   Home,
@@ -24,4 +27,7 @@ export {
   Contact,
   MyPurchases,
   ChangePassword,
+  RaffleManagement,
+  NewRaffle,
+  EditRaffle,
 };
