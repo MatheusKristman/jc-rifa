@@ -1,4 +1,4 @@
-.new-raffle {
+.edit-raffle {
   width: 100%;
   min-height: 100vh;
   display: flex;
@@ -20,14 +20,64 @@
         font-size: 1.5rem;
         font-weight: 600;
         color: $white;
-        margin-bottom: 25px;
+        margin-bottom: 10px;
+      }
+
+      &__statistics-wrapper {
+        width: 100%;
+        background-color: $darkPurple;
+        border-radius: 10px;
+        padding: 10px;
+        margin-bottom: 20px;
+
+        &__progress-bar {
+          background-color: $darkBlue;
+          border-radius: 20px;
+          overflow: hidden;
+          height: 25px;
+          margin-bottom: 10px;
+
+          &__bar {
+            background-color: $blue;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: width 0.4s ease;
+          }
+        }
+
+        &__numbers-buyed {
+          border: 2px solid $darkBlue;
+          border-radius: 10px;
+          padding: 10px;
+          display: flex;
+          flex-direction: column;
+          gap: 15px;
+          margin-bottom: 10px;
+        }
+
+        &__remaining-numbers {
+          border: 2px solid $darkBlue;
+          background-color: transparent;
+          border-radius: 10px;
+          width: 100%;
+          height: 150px;
+          padding: 10px;
+          font-size: 1rem;
+          color: $white;
+          outline: none;
+          resize: none;
+        }
       }
 
       &__form {
-        width: 100%;
+        background-color: $darkPurple;
+        border-radius: 10px;
+        padding: 10px;
         display: flex;
         flex-direction: column;
-        align-items: center;
+        margin-bottom: 20px;
 
         &__image-label {
           width: 100%;
@@ -35,11 +85,12 @@
           flex-direction: column;
           align-items: center;
           margin-bottom: 25px;
+          margin-top: 15px;
 
           &__image-box {
             width: 100%;
-            max-width: 150px;
             height: 100%;
+            max-width: 150px;
             max-height: 150px;
             border-radius: 50%;
             overflow: hidden;
@@ -60,12 +111,9 @@
 
         &__inputs-box {
           width: 100%;
-          background-color: $darkPurple;
-          border-radius: 10px;
           display: flex;
           flex-direction: column;
           gap: 10px;
-          padding: 10px;
           margin-bottom: 10px;
 
           &__label {
@@ -114,11 +162,6 @@
               transition: border 0.4s ease;
             }
           }
-
-          span {
-            color: rgb(209, 52, 52);
-            font-size: 0.9rem;
-          }
         }
 
         &__submit-btn {
@@ -132,6 +175,53 @@
           color: $white;
           cursor: pointer;
           outline: none;
+        }
+      }
+
+      &__finish-raffle-container {
+        width: 100%;
+        background-color: $darkPurple;
+        border-radius: 10px;
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+
+        &__title {
+          font-size: 1.125rem;
+          color: $white;
+          font-weight: 600;
+          margin-bottom: 20px;
+        }
+
+        &__input {
+          padding: 8px 12px;
+          font-size: 1rem;
+          color: #5a5a5a;
+          border-radius: 10px;
+          border: none;
+          outline: none;
+          transition: border 0.4s ease;
+          margin-bottom: 10px;
+        }
+
+        &__btn {
+          background-color: $green;
+          padding: 10px 15px;
+          border-radius: 6px;
+          border: none;
+          font-size: 1rem;
+          font-weight: 600;
+          color: $white;
+          cursor: pointer;
+          outline: none;
+
+          @include breakpoint(largeScreen) {
+            transition: filter 0.4s ease;
+
+            &:hover {
+              filter: brightness(80%);
+            }
+          }
         }
       }
     }

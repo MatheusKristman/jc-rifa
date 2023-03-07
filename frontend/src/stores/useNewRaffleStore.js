@@ -11,8 +11,8 @@ const useNewRaffleStore = create((set) => ({
   setDescription: (e) => set(() => ({ description: e.target.value })),
   price: '',
   setPrice: (value) => set(() => ({ price: value })),
-  raffleNumbers: 0,
-  setRaffleNumbers: (e) => set(() => ({ raffleNumbers: e.target.value })),
+  raffleNumbers: 25,
+  setRaffleNumbers: (e) => set(() => ({ raffleNumbers: Number(e.target.value) })),
   numbersOptions: [
     25,
     50,
@@ -53,7 +53,26 @@ const useNewRaffleStore = create((set) => ({
     80000,
     90000,
     100000,
-  ]
+  ],
+  isSubmitting: false,
+  submitConfirm: () => set(() => ({ isSubmitting: true })),
+  submitCancel: () => set(() => ({ isSubmitting: false })),
+  isRaffleCreated: false,
+  raffleCreatedSuccess: () => set(() => ({ isRaffleCreated: true })),
+  raffleCreatedCancel: () => set(() => ({ isRaffleCreated: false })),
+  submitError: false,
+  errorExist: () => set(() => ({ submitError: true })),
+  errorDontExist: () => set(() => ({ submitError: false })),
+  raffleCreatedMessage: '',
+  setRaffleCreatedMessage: (value) => set(() => ({ raffleCreatedMessage: value })),
+  resetValues: () => set(() => ({
+    raffleImage: '',
+    title: '',
+    subtitle: '',
+    description: '',
+    price: '',
+    raffleNumbers: 25,
+  }))
 }));
 
 export default useNewRaffleStore;

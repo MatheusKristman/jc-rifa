@@ -1,21 +1,22 @@
 import React from 'react'
 import { BsChevronCompactRight } from 'react-icons/bs';
 import prize1 from '../../assets/prize-1.jpg';
+import DefaultImage from '../../assets/default-prize.jpg';
 
-const Prizes = () => {
+const Prizes = ({ title, subtitle, image }) => {
   return (
     <div className="prizes">
       <div className="prizes__image-box">
-        <img src={prize1} alt="Prêmio" className="prizes__image-box__image" />
+        <img src={image === null ? DefaultImage : image} alt="Prêmio" className="prizes__image-box__image" />
       </div>
 
       <div className="prizes__infos-box">
         <h3 className="prizes__infos-box__title">
-          vw - voyage gl ou 20k no pix!!!!
+          {title}
         </h3>
 
         <span className="prizes__infos-box__desc">
-          mais uma nave top familia
+          {subtitle}
         </span>
 
         <span className="prizes__infos-box__status waiting-raffle">

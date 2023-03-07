@@ -1,8 +1,14 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { shallow } from "zustand/shallow";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as Yup from "yup";
+import api from "../../../services/api";
+import { useNavigate } from "react-router-dom";
 
 import DefaultPrize from "../../../assets/default-prize.jpg";
 import useNewRaffleStore from "../../../stores/useNewRaffleStore";
+import useRaffleStore from "../../../stores/useRaffleStore";
 
 const NewRaffleContent = () => {
   const {
@@ -19,6 +25,17 @@ const NewRaffleContent = () => {
     setPrice,
     raffleNumbers,
     setRaffleNumbers,
+    isSubmitting,
+    submitConfirm,
+    submitCancel,
+    isRaffleCreated,
+    raffleCreatedSuccess,
+    raffleCreatedCancel,
+    submitError,
+    errorExist,
+    errorDontExist,
+    setRaffleCreatedMessage,
+    resetValues,
   } = useNewRaffleStore(
     (state) => ({
       numbersOptions: state.numbersOptions,
@@ -34,9 +51,22 @@ const NewRaffleContent = () => {
       setPrice: state.setPrice,
       raffleNumbers: state.raffleNumbers,
       setRaffleNumbers: state.setRaffleNumbers,
+      isSubmitting: state.isSubmitting,
+      submitConfirm: state.submitConfirm,
+      submitCancel: state.submitCancel,
+      isRaffleCreated: state.isRaffleCreated,
+      raffleCreatedSuccess: state.raffleCreatedSuccess,
+      raffleCreatedCancel: state.raffleCreatedCancel,
+      submitError: state.submitError,
+      errorExist: state.errorExist,
+      errorDontExist: state.errorDontExist,
+      setRaffleCreatedMessage: state.setRaffleCreatedMessage,
+      resetValues: state.resetValues,
     }),
     shallow
   );
+
+  const { setRaffles } = useRaffleStore((state) => ({ setRaffles: state.setRaffles }), shallow);
 
   const handleFileChange = async (e) => {
     const file = await e.target.files[0];
@@ -54,29 +84,134 @@ const NewRaffleContent = () => {
     }
   };
 
+  const schema = Yup.object().shape({
+    raffleImage: Yup.mixed(),
+    title: Yup.string().required("Título é obrigatório"),
+    subtitle: Yup.string().required("Subtítulo é obrigatório"),
+    description: Yup.string(),
+    price: Yup.string().required("Preço é obrigatório"),
+    QuantNumbers: Yup.number().required("Quantidade de Números é obrigatória"),
+  });
+
+  const { register, handleSubmit, formState, reset } = useForm({
+    resolver: yupResolver(schema),
+  });
+
+  const { errors } = formState;
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const submitData = () => {
+      if (isSubmitting) {
+        const sendRaffleToDB = () => {
+          const formData = new FormData();
+
+          formData.append("raffleImage", raffleImage.file ? raffleImage.file : DefaultPrize);
+          formData.append("title", title);
+          formData.append("subtitle", subtitle);
+          formData.append("description", description);
+          formData.append("price", price);
+          formData.append("QuantNumbers", raffleNumbers);
+
+          api
+            .post("/create-new-raffle/creating", formData, {
+              headers: {
+                "Content-Type": "multipart/form-data",
+              },
+            })
+            .then((res) => {
+              api
+                .get('/create-new-raffle/get-raffles')
+                .then((res) => {
+                  setRaffles(res.data);
+                })
+                .catch((error) => {
+                  console.log(error);
+                })
+
+              raffleCreatedSuccess();
+              setRaffleCreatedMessage("Rifa criada com sucesso");
+            })
+            .catch((error) => {
+              if (error.response?.data === 'Rifa já cadastrada') {
+                setRaffleCreatedMessage('Rifa já cadastrada');
+              } else {
+                setRaffleCreatedMessage('Ocorreu um erro na criação da rifa');
+              }
+
+              errorExist();
+              console.log(error);
+            });
+        };
+
+        sendRaffleToDB();
+      }
+    };
+
+    submitData();
+  }, [isSubmitting]);
+
+  useEffect(() => {
+    if (isRaffleCreated) {
+      setTimeout(() => {
+        raffleCreatedCancel();
+        submitCancel();
+        resetValues(); 
+        navigate('/raffle-management');
+      }, 3000);
+    }
+
+    if (submitError) {
+      setTimeout(() => {
+        errorDontExist();
+        submitCancel();
+      }, 4000);
+    }
+  }, [isRaffleCreated, submitError]);
+
   function coinMask(event) {
     const onlyDigits = event.target.value
       .split("")
-      .filter(s => /\d/.test(s))
+      .filter((s) => /\d/.test(s))
       .join("")
-      .padStart(3, "0")
-    const digitsFloat = onlyDigits.slice(0, -2) + "." + onlyDigits.slice(-2)
-    event.target.value = maskCurrency(digitsFloat)
+      .padStart(3, "0");
+      const digitsFloat = onlyDigits.slice(0, -2) + "." + onlyDigits.slice(-2);
+    event.target.value = maskCurrency(digitsFloat);
   }
-  
-  function maskCurrency(valor, locale = 'pt-BR', currency = 'BRL') {
-    return new Intl.NumberFormat(locale, {
-      style: 'currency',
-      currency
-    }).format(valor)
+
+  function maskCurrency(valor, locale = "pt-BR", currency = "BRL") {
+    const valueConverted = new Intl.NumberFormat(locale, {
+      style: "currency",
+      currency,
+    }).format(valor);
+
+    setPrice(valueConverted);
+
+    return valueConverted;
   }
+
+  const onSubmit = (data) => {
+    if (!raffleImage.file) {
+      setRaffleImage({
+        file: null,
+        url: DefaultPrize,
+      });
+    }
+
+    submitConfirm();    
+  };
+
+  useEffect(() => {
+    console.log(raffleNumbers);
+  }, [raffleNumbers]);
 
   return (
     <div className="new-raffle__content">
       <div className="new-raffle__content__container">
         <h1 className="new-raffle__content__container__title">Criando uma nova rifa</h1>
 
-        <form className="new-raffle__content__container__form">
+        <form onSubmit={handleSubmit(onSubmit)} className="new-raffle__content__container__form">
           <label
             htmlFor="raffleImage"
             className="new-raffle__content__container__form__image-label"
@@ -90,6 +225,7 @@ const NewRaffleContent = () => {
             </div>
 
             <input
+              {...register("raffleImage")}
               type="file"
               name="raffleImage"
               id="raffleImage"
@@ -105,14 +241,17 @@ const NewRaffleContent = () => {
             >
               Título
               <input
+                {...register("title")}
                 type="text"
                 name="title"
                 id="title"
                 value={title}
                 onChange={setTitle}
+                style={errors.title ? { border: "2px solid rgb(209, 52, 52)" } : {}}
                 className="new-raffle__content__container__form__inputs-box__label__input"
               />
             </label>
+            {errors.title && <span>{errors.title.message}</span>}
 
             <label
               htmlFor="subtitle"
@@ -120,14 +259,17 @@ const NewRaffleContent = () => {
             >
               Subtítulo
               <input
+                {...register("subtitle")}
                 type="text"
                 name="subtitle"
                 id="subtitle"
                 value={subtitle}
                 onChange={setSubtitle}
+                style={errors.subtitle ? { border: "2px solid rgb(209, 52, 52)" } : {}}
                 className="new-raffle__content__container__form__inputs-box__label__input"
               />
             </label>
+            {errors.subtitle && <span>{errors.subtitle.message}</span>}
 
             <label
               htmlFor="description"
@@ -135,13 +277,16 @@ const NewRaffleContent = () => {
             >
               Descrição
               <textarea
+                {...register("description")}
                 id="description"
                 name="description"
                 value={description}
                 onChange={setDescription}
+                style={errors.description ? { border: "2px solid rgb(209, 52, 52)" } : {}}
                 className="new-raffle__content__container__form__inputs-box__label__textarea"
               />
             </label>
+            {errors.description && <span>{errors.description.message}</span>}
 
             <label
               htmlFor="price"
@@ -149,28 +294,32 @@ const NewRaffleContent = () => {
             >
               Preço por números
               <input
+                {...register("price")}
                 type="text"
                 name="price"
                 id="price"
                 value={price}
-                onChange={(e) => setPrice(coinMask(e))}
+                onChange={(e) => coinMask(e)}
+                style={errors.price ? { border: "2px solid rgb(209, 52, 52)" } : {}}
                 className="new-raffle__content__container__form__inputs-box__label__input"
               />
             </label>
+            {errors.price && <span>{errors.price.message}</span>}
 
             <label
-              htmlFor="raffleNumbers"
+              htmlFor="QuantNumbers"
               className="new-raffle__content__container__form__inputs-box__label"
             >
               Quantidade de Números
               <select
-                name="raffleNumbers"
-                id="raffleNumbers"
+                {...register("QuantNumbers")}
+                name="QuantNumbers"
+                id="QuantNumbers"
                 value={raffleNumbers}
                 onChange={setRaffleNumbers}
+                style={errors.QuantNumbers ? { border: "2px solid rgb(209, 52, 52)" } : {}}
                 className="new-raffle__content__container__form__inputs-box__label__select"
               >
-                <option>-- Selecionar --</option>
                 {numbersOptions.map((numbers, index) => (
                   <option key={`number-${index}`} value={numbers}>
                     {numbers}
@@ -178,6 +327,7 @@ const NewRaffleContent = () => {
                 ))}
               </select>
             </label>
+            {errors.QuantNumbers && <span>{errors.QuantNumbers.message}</span>}
           </div>
 
           <button type="submit" className="new-raffle__content__container__form__submit-btn">

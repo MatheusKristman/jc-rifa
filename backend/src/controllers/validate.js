@@ -1,5 +1,4 @@
 const Joi = require('@hapi/joi');
-const { schema } = require('../models/Account');
 
 const registerValidate = (data) => {
   const schema = Joi.object({
@@ -62,7 +61,22 @@ const loginValidate = (data) => {
   return schema.validate(data);
 }
 
+const createNewRaffleValidate = (data) => {
+  const schema = Joi.object({
+    raffleImage: Joi.binary(),
+    title: Joi.string().required(),
+    subtitle: Joi.string().required(),
+    description: Joi.string().allow(null, ''),
+    price: Joi.string(),
+    QuantNumbers: Joi.number(),
+  });
+
+  return schema.validate(data);
+}
+
 module.exports.registerValidate = registerValidate;
 module.exports.loginValidate = loginValidate;
 module.exports.updateValidate = updateValidate;
 module.exports.updatePasswordValidate = updatePasswordValidate;
+
+module.exports.createNewRaffleValidate = createNewRaffleValidate;
