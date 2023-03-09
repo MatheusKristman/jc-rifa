@@ -202,10 +202,6 @@ const NewRaffleContent = () => {
     submitConfirm();    
   };
 
-  useEffect(() => {
-    console.log(raffleNumbers);
-  }, [raffleNumbers]);
-
   return (
     <div className="new-raffle__content">
       <div className="new-raffle__content__container">

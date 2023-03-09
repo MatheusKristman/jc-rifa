@@ -1,5 +1,6 @@
 const Raffle = require('../models/Raffle');
-const { createNewRaffleValidate } = require('./validate');
+const Account = require('../models/Account');
+const { createNewRaffleValidate, updateRaffleValidate } = require('./validate');
 
 const fs = require('fs');
 const multer = require('multer');
@@ -80,7 +81,7 @@ module.exports = {
       description: req.body.description,
       price: req.body.price,
       QuantNumbers: req.body.QuantNumbers,
-      NumbersAvailable: generateNumbers(req.body.QuantNumbers),
+      NumbersAvailable: generateNumbers(req.body.QuantNumbers),      
     };
 
     try {
@@ -96,14 +97,99 @@ module.exports = {
       return res.status(400).send(error.message);
     }
   },
-  read: async (req, res) => {
-    
+  read: async (req, res) => {    
     try {
       const allRaffles = await Raffle.find({});
 
       res.json(allRaffles);
     } catch(error) {
       res.status(400).send(error.message);
+    }
+  },
+  readOne: async (req, res) => {
+    const { id } = req.params
+    
+    try {
+      const raffleSelected = await Raffle.findOne({ _id: id });
+
+      res.json(raffleSelected)
+    } catch (error) {
+      res.status(404).send(error.message);
+    }
+  },
+  readBuyedNumbers: async (req, res) => {
+    const { id } = req.body;
+
+    console.log(id);
+
+    try {
+      const users = await Account.find({ "rafflesBuyed.raffleId": id });
+
+      console.log(users);
+      res.send(users);
+    } catch(error) {
+      console.log(error);
+      res.status(404).send(error.message);
+    }
+  },
+  update: async (req, res) => {
+    const { error } = updateRaffleValidate(req.body);
+
+    if (error) {
+      return res.status(400).send(error.message);
+    }
+
+    const raffle = await Raffle.findOne({ _id: req.body.id });
+
+    console.log(raffle);
+
+    const newRaffle = {
+      raffleImage: {
+        data: req.file ? fs.readFileSync('public/data/uploads/' + req.file.filename) : raffle.raffleImage.data,
+        contentType: req.file ? req.file.mimetype : null,
+      },
+      title: req.body.title,
+      subtitle: req.body.subtitle,
+      description: req.body.description,
+      price: req.body.price,
+    }
+
+    try {
+      const selectedRaffle = await Raffle.findOneAndUpdate({ _id: req.body.id }, newRaffle);
+
+      if (selectedRaffle && req.file) {
+        fs.unlinkSync(`public/data/uploads/${req.file.filename}`);
+        console.log('Imagem removida com sucesso');
+      }
+
+      const selectedRaffleUpdated = await Raffle.findById(req.body.id);
+
+      return res.json(selectedRaffleUpdated);
+    } catch(error) {
+      return res.status(400).send(error.message);
+    }
+  },
+  finishRaffle: async (req, res) => {
+    const { id, number } = req.body;
+
+    const raffleSelected = await Raffle.findOne({ _id: id });
+
+    const chosenNumberContainsOnRaffle = raffleSelected.BuyedNumbers.includes(number);
+
+    if (!chosenNumberContainsOnRaffle) {
+      return res.status(404).send('Número não foi comprado, insira outro número');
+    }
+
+    try {
+      const winner = await Account.findOne({ "rafflesBuyed.numbersBuyed": number });
+
+      if (!winner) {
+        return res.status(404).send('Usuário não encontrado, insira um novo número');
+      }
+      
+      res.json(winner);
+    } catch(error) {
+      return res.status(404).send(error.message);
     }
   }
 }

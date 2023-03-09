@@ -2,10 +2,12 @@ const express = require('express');
 const router = express.Router();
 const AccountController = require('./controllers/AccountController');
 const RaffleController = require('./controllers/RaffleController');
+const WinnerController = require('./controllers/WinnerController');
 const auth = require('./controllers/authController');
 
 // Rota Home
 router.get('/', auth, AccountController.read);
+router.get('/get-raffles', RaffleController.read);
 
 // Rota Register
 router.post('/register/registerAccount', AccountController.upload.single('profileImage') ,AccountController.create);
@@ -30,5 +32,19 @@ router.get('/create-new-raffle/get-raffles', RaffleController.read);
 //Rota Gerenciamento Rifa
 router.get('/raffle-management', auth, AccountController.read);
 router.get('/raffle-management/get-raffles', RaffleController.read);
+
+//Rota Editar Rifa
+router.get('/edit-raffle/:id', RaffleController.readOne);
+router.put('/edit-raffle/updating', RaffleController.upload.single('raffleImage'), RaffleController.update);
+router.post('/edit-raffle/finish', RaffleController.finishRaffle);
+
+// Rota Usuários que compraram os números
+router.post('/edit-raffle/get-users', RaffleController.readBuyedNumbers);
+
+// Rota pegar todos os ganhadores
+router.get('/all-winners', WinnerController.readAll);
+
+// Rota raffle selected
+router.get('/raffles/:id', RaffleController.readOne);
 
 module.exports = router;

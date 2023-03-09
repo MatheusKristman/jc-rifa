@@ -366,7 +366,7 @@ const UpdateRegistrationContent = () => {
     if (!profileImage.file) {
       setProfileImage({
         file: null,
-        url: noUserPhoto,
+        url: profileImage.url,
       });
     }
 

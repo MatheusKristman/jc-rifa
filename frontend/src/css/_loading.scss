@@ -1,0 +1,46 @@
+.loading {
+  color: transparent!important;
+  border-radius: 0!important;
+  border: transparent;
+  position: relative;
+  overflow: hidden;
+  z-index: 2;
+  opacity: 1;
+
+  &::before {
+    background: var(--cor-primaria-light);
+    background: -webkit-gradient(linear,left top,right top,color-stop(8%,#d1d1d1),color-stop(18%,#bebebe),color-stop(33%,#d1d1d1));
+    background: -webkit-linear-gradient(left,#d1d1d1 8%,#bebebe 18%,#d1d1d1 33%);
+    background: linear-gradient(90deg,#d1d1d1 8%,#bebebe 18%,#d1d1d1 33%);
+    background-size: 800px 104px;
+    -webkit-animation-iteration-count: infinite;
+    animation-iteration-count: infinite;
+    -webkit-animation-name: placeHolderShimmer;
+    animation-name: placeHolderShimmer;
+    -webkit-animation-timing-function: linear;
+    animation-timing-function: linear;
+    -webkit-animation-fill-mode: forwards;
+    animation-fill-mode: forwards;
+    -webkit-animation-duration: 1s;
+    animation-duration: 1s;
+    border-radius: 0!important;
+    position: absolute;
+    display: block;
+    content: " ";
+    height: 100%;
+    width: 100%;
+    z-index: 2;
+    left: 0;
+    top: 0;
+  }
+}
+
+@keyframes placeHolderShimmer {
+  0% {
+      background-position: -468px 0
+  }
+
+  to {
+      background-position: 468px 0
+  }
+}

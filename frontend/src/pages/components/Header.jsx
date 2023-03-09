@@ -561,7 +561,7 @@ const LogInModal = () => {
       setTimeout(() => {
         errorDontExist();
         notSubmitting();
-      }, 3000);
+      }, 4000);
     }
   }, [doesLoginHappened, submitError]);
 

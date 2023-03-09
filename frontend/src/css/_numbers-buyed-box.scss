@@ -8,13 +8,18 @@
   align-items: center;
 
   &__wrapper {
+    width: 80%;
     display: flex;
     align-items: center;
     gap: 10px;
 
     &__image-box {
       width: 50px;
+      min-width: 50px;
+      max-width: 50px;
       height: 50px;
+      min-height: 50px;
+      max-height: 50px;
       border-radius: 50%;
       overflow: hidden;
 
@@ -27,6 +32,7 @@
     }
 
     &__infos-box {
+      width: 80%;
       display: flex;
       flex-direction: column;
       gap: 5px;
@@ -37,17 +43,29 @@
         font-weight: 500;
       }
 
-      &__numbers {
-        font-size: 1rem;
-        color: $white;
-        opacity: 0.7;
+      &__numbers-box {
+        width: 100%;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+
+        &__number {
+          font-size: 1rem;
+          color: $white;
+          opacity: 0.7;
+        }
       }
+
     }
   }
 
   &__prize-image-box {
     width: 50px;
+    min-width: 50px;
+    max-width: 50px;
     height: 50px;
+    min-height: 50px;
+    max-height: 50px;
     border-radius: 50%;
     overflow: hidden;
 

@@ -74,9 +74,23 @@ const createNewRaffleValidate = (data) => {
   return schema.validate(data);
 }
 
+const updateRaffleValidate = (data) => {
+  const schema = Joi.object({
+    id: Joi.string().required(),
+    raffleImage: Joi.binary(),
+    title: Joi.string().required(),
+    subtitle: Joi.string().required(),
+    description: Joi.string().allow(null, ''),
+    price: Joi.string(),
+  });
+
+  return schema.validate(data);
+}
+
 module.exports.registerValidate = registerValidate;
 module.exports.loginValidate = loginValidate;
 module.exports.updateValidate = updateValidate;
 module.exports.updatePasswordValidate = updatePasswordValidate;
 
 module.exports.createNewRaffleValidate = createNewRaffleValidate;
+module.exports.updateRaffleValidate = updateRaffleValidate;

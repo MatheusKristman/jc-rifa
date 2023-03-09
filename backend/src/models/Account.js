@@ -15,6 +15,7 @@ const AccountSchema = new mongoose.Schema({
   uf: { type: String },
   city: { type: String },
   reference: { type: String },
+  rafflesBuyed: [{ raffleId: String, title: String, raffleImage: { data: Buffer, contentType: String }, numbersBuyed: [ String ] }],
   admin: { type: Boolean, default: false }
 });
 
