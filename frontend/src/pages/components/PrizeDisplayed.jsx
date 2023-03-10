@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import defaultPrize from '../../assets/default-prize.jpg';
 
 import _arrayBufferToBase64 from '../../hooks/useArrayBufferToBase64';
@@ -12,6 +12,10 @@ const PrizeDisplayed = ({ image, title, subtitle, progress }) => {
       isRaffleLoading: state.isRaffleLoading,
     })
   )
+
+  useEffect(() => {
+    console.log(progress);
+  }, []);
 
   return (
     <div className="prize-displayed prize-clickable">
@@ -29,7 +33,7 @@ const PrizeDisplayed = ({ image, title, subtitle, progress }) => {
         </span>
 
         <span className={isRaffleLoading ? "prize-displayed__infos-box__status loading" : progress <= 50 ? "prize-displayed__infos-box__status new" : "prize-displayed__infos-box__status finishing"}>
-          {!progress ? "Status Carregando" : progress <= 50 ? 'Adquira já' : 'Corre que está acabando!'}
+          {progress === null || progress === undefined ? "Status Carregando" : progress <= 50 ? 'Adquira já' : 'Corre que está acabando!'}
         </span>
       </div>
     </div>

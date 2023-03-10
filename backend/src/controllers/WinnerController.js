@@ -17,6 +17,19 @@ const upload = multer({ storage: storage, limits: { fileSize: 2 * 1024 * 1024 } 
 
 module.exports = {
   upload,
+  read: async (req, res) => {
+    const { title } = req.body;
+
+    console.log(title);
+
+    const winnerExist = await Winner.findOne({ raffleTitle: title });
+
+    if (!winnerExist) {
+      return res.status(404).send('Nenhum ganhador foi encontrado');
+    }
+
+    return res.json(winnerExist);
+  },
   readAll: async (req, res) => {
     try {
       const allWinners = await Winner.find({});
@@ -26,4 +39,24 @@ module.exports = {
       return res.status(404).send(error.message);
     }
   },
+  delete: async (req, res) => {
+    const { id } = req.params;
+
+    console.log(id);
+
+    try {
+      const winnerDeleted = await Winner.deleteOne({ _id: id });
+
+      if (!winnerDeleted) {
+        return res.status(400).send('Erro ao deletar ganhador');
+      }
+
+      console.log('ganhador deletado')
+
+      res.send(true);
+    } catch (error) {
+      res.status(400).error(error.message);
+    }
+
+  }
 }

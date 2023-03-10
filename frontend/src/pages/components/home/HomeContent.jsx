@@ -66,7 +66,7 @@ const PrizesHome = () => {
             title={raffle.title}
             subtitle={raffle.subtitle}
             image={
-              raffle.raffleTmage?.data
+              raffle.raffleImage?.data
                 ? `data:${raffle.raffleImage.contentType};base64,${_arrayBufferToBase64(
                     raffle.raffleImage.data.data
                   )}`
@@ -115,7 +115,7 @@ const WinnersHome = () => {
       </div>
 
       <div className="hero__container__winners-box__winners-wrapper">
-        {winners.map((winner) => (
+        {winners.length !== 0 ? (winners.map((winner) => (
           <WinnerBox
             profileImage={
               winner.profileImage?.data
@@ -135,7 +135,11 @@ const WinnersHome = () => {
                 : DefaultPrize
             }
           />
-        ))}
+        ))) : (
+          <span className="hero__container__winners-box__winners-wrapper__no-winner">
+            - Nenhum ganhador no momento
+          </span>
+        )}
       </div>
     </div>
   );

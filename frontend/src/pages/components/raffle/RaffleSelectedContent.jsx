@@ -8,6 +8,7 @@ import PrizeDisplayed from "../PrizeDisplayed";
 import useRaffleStore from "../../../stores/useRaffleStore";
 import api from '../../../services/api';
 import useBuyNumbersStore from "../../../stores/useBuyNumbersStore";
+import useUserStore from "../../../stores/useUserStore";
 
 const RaffleSelectedContent = () => {
   const {
@@ -17,7 +18,7 @@ const RaffleSelectedContent = () => {
     (state) => ({
       raffleSelected: state.raffleSelected,
       setRaffleSelected: state.setRaffleSelected,
-    }), shallow
+    })
   );
 
   const {
@@ -30,28 +31,103 @@ const RaffleSelectedContent = () => {
       incrementNumberQuant: state.incrementNumberQuant,
       decrementNumberQuant: state.decrementNumberQuant,
     })
+  );
+
+  const {
+    user,
+    isUserLogged,
+    setUser,
+  } = useUserStore(
+    (state) => ({
+      user: state.user,
+      isUserLogged: state.isUserLogged,
+      setUser: state.setUser,
+    })
   )
+
+  useEffect(() => {
+    setRaffleSelected({});
+  }, []);
 
   useEffect(() => {
     const fetchRaffleSelected = () => {
       if (!raffleSelected.hasOwnProperty('_id')) {
         api
           .get(window.location.pathname)
-          .then((res) => setRaffleSelected(res.data))
+          .then((res) => {
+            console.log(res.data);
+            setRaffleSelected(res.data)
+          })
           .catch((error) => console.log(error));
       }
     }
 
     fetchRaffleSelected();
-  }, [setRaffleSelected]);
+  }, [setRaffleSelected, raffleSelected]);
   
   useEffect(() => {    
-    console.log(raffleSelected.description)
   }, [raffleSelected]);
+
+  function calcValues(value, factor) {
+    const valueFormated = convertCurrencyToNumber(value);
+    const calc = valueFormated * factor;
+    return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(calc);
+  }
+
+  function convertCurrencyToNumber(value) {
+    if (value) {
+      const onlyDigits = value.replace(/[^\d,-]/g, '');
+      const digitsFloat = onlyDigits.replace(',', '.');
+      const numberValue = parseFloat(digitsFloat);
+
+      return numberValue;
+    }
+  }
 
   const convertProgress = (current, total) => {
     return (100 * current) / total;
   };
+
+  const handleBuy = () => {
+    if (numberQuant === 0) {
+      return // colocar alerta para informar para selecionar um número
+    }
+
+    const numbersAvailableToBuy = [...raffleSelected.NumbersAvailable];
+    const numbersBuyed = [];
+
+
+    if (numberQuant <= numbersAvailableToBuy.length && isUserLogged) {
+      for (let i = 0; i < numberQuant; i++) {
+        const random = Math.floor(Math.random() * numbersAvailableToBuy.length);
+        const chosenNumber = numbersAvailableToBuy.splice(random, 1)[0];
+        numbersBuyed.push(chosenNumber);
+      }
+
+      api
+        .post('/raffles/buy', {
+          id: user._id,
+          raffleId: raffleSelected._id,
+          pricePaid: calcValues(raffleSelected.price, numberQuant),
+          status: 'Processando',
+          numberQuant: numberQuant,
+          numbersBuyed: numbersBuyed,
+          numbersAvailable: numbersAvailableToBuy
+        })
+        .then((res) => console.log(res.data))
+        .catch((error) => {
+          console.log(error);
+          if (error.response.data === 'Usuário não encontrado') {
+            console.log('Usuário não logado');
+          } else {
+            console.log('Ocorreu um erro na compra');
+          }
+        });
+  
+    } else {
+      console.log('selecione a quantidade até ' + numbersAvailableToBuy.length)
+    }
+  }
 
   return (
     <div className="raffle-selected__raffle-selected-content">
@@ -192,13 +268,13 @@ const RaffleSelectedContent = () => {
           </div>
         </div>
 
-        <button type="button" className="raffle-selected__raffle-selected-content__container__buy-btn">
+        <button onClick={handleBuy} type="button" className="raffle-selected__raffle-selected-content__container__buy-btn">
           <span className="raffle-selected__raffle-selected-content__container__buy-btn__desc">
             <BsCheck2Circle /> Participar do sorteio
           </span>
 
           <span className="raffle-selected__raffle-selected-content__container__buy-btn__price">
-            R$ 0,00
+            {calcValues(raffleSelected.price, numberQuant)}
           </span>
         </button>
       </div>

@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const AccountSchema = new mongoose.Schema({
   profileImage: { data: Buffer, contentType: String },
@@ -15,8 +15,18 @@ const AccountSchema = new mongoose.Schema({
   uf: { type: String },
   city: { type: String },
   reference: { type: String },
-  rafflesBuyed: [{ raffleId: String, title: String, raffleImage: { data: Buffer, contentType: String }, numbersBuyed: [ String ] }],
-  admin: { type: Boolean, default: false }
+  rafflesBuyed: [
+    {
+      raffleId: String,
+      title: String,
+      raffleImage: { data: Buffer, contentType: String },
+      pricePaid: { type: String },
+      status: { type: String },
+      numberQuant: { type: Number },
+      numbersBuyed: [String],
+    },
+  ],
+  admin: { type: Boolean, default: false },
 });
 
-module.exports = mongoose.model('Accounts', AccountSchema);
+module.exports = mongoose.model("Accounts", AccountSchema);

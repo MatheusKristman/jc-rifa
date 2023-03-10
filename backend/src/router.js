@@ -17,12 +17,21 @@ router.put('/updateRegistration/updating', AccountController.upload.single('prof
 // Rota Update
 router.get('/updateRegistration', auth, AccountController.read);
 
+// Rota comprar rifa
+router.post('/raffles/buy', AccountController.buyRaffle);
+
+// Rota raffle selected
+router.get('/raffles', auth, AccountController.read);
+
 // Rota Login
 router.post('/login', AccountController.login);
 
 // Rota ChangePassword
 router.get('/changePassword', auth, AccountController.read);
 router.put('/changePassword/updating', AccountController.updatePassword);
+
+// Rota consulta numeros
+router.get('/query-numbers/:cpf', AccountController.readUserBuyedNumbers)
 
 //Rota Criar Rifa
 router.post('/create-new-raffle/creating', RaffleController.upload.single('raffleImage'), RaffleController.create);
@@ -43,6 +52,12 @@ router.post('/edit-raffle/get-users', RaffleController.readBuyedNumbers);
 
 // Rota pegar todos os ganhadores
 router.get('/all-winners', WinnerController.readAll);
+
+// Rota pegar um ganhador
+router.post('/edit-raffle/winner', WinnerController.read);
+
+// Rota deletar ganhador
+router.delete('/edit-raffle/cancel/:id', WinnerController.delete);
 
 // Rota raffle selected
 router.get('/raffles/:id', RaffleController.readOne);
