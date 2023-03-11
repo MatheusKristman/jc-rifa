@@ -3,16 +3,18 @@ import useNewRaffleStore from '../stores/useNewRaffleStore';
 
 import { Header, Footer } from './components';
 import EditRaffleContent from './components/edit-raffle/EditRaffleContent';
-import NewRaffleMessageBox from './components/new-raffle/NewRaffleMessageBox';
+import AlertBox from './components/AlertBox';
 
 const EditRaffle = () => {
   const {
     isRaffleCreated,
     submitError,
+    raffleCreatedMessage,
   } = useNewRaffleStore(
     (state) => ({
       isRaffleCreated: state.isRaffleCreated,
       submitError: state.submitError,
+      raffleCreatedMessage: state.raffleCreatedMessage,
     })
   );
 
@@ -21,8 +23,8 @@ const EditRaffle = () => {
       <Header />
       <EditRaffleContent />
       <Footer />
-      {isRaffleCreated && <NewRaffleMessageBox />}
-      {submitError && <NewRaffleMessageBox />}
+      {isRaffleCreated && <AlertBox success={isRaffleCreated} error={submitError} message={raffleCreatedMessage} />}
+      {submitError && <AlertBox success={isRaffleCreated} error={submitError} message={raffleCreatedMessage} />}
     </div>
   )
 }

@@ -27,6 +27,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
 import api from '../../services/api';
 import useIsUserLogged from '../../hooks/useIsUserLogged';
+import AlertBox from './AlertBox';
 
 const HeaderMenu = () => {
   const { closeMenu, openLogin } = useHeaderStore(
@@ -440,6 +441,7 @@ const LogInModal = () => {
     errorDontExist,
     setLoginMessage,
     loginSuccess,
+    loginMessage,
   } = useHeaderStore(
     (state) => ({
       usernameValue: state.usernameValue,
@@ -463,6 +465,7 @@ const LogInModal = () => {
       errorDontExist: state.errorDontExist,
       setLoginMessage: state.setLoginMessage,
       loginSuccess: state.loginSuccess,
+      loginMessage: state.loginMessage,
     }),
     shallow
   );
@@ -577,8 +580,8 @@ const LogInModal = () => {
 
   return (
     <div ref={loginModalOverlayRef} onClick={handleCloseLoginOverlay} className="header__login-modal-overlay">
-      {doesLoginHappened && <LoginMessageBox/>}
-      {submitError && <LoginMessageBox/>}
+      {doesLoginHappened && <AlertBox success={doesLoginHappened} error={submitError} message={loginMessage} />}
+      {submitError && <AlertBox success={doesLoginHappened} error={submitError} message={loginMessage} />}
       <div ref={loginModalBoxRef} className="header__login-modal-overlay__box">
         <div className="header__login-modal-overlay__box__content">
           <div className="header__login-modal-overlay__box__content__head">

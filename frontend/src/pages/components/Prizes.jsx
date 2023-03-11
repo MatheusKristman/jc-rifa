@@ -3,7 +3,7 @@ import { BsChevronCompactRight } from 'react-icons/bs';
 import prize1 from '../../assets/prize-1.jpg';
 import DefaultImage from '../../assets/default-prize.jpg';
 
-const Prizes = ({ title, subtitle, image, progress }) => {
+const Prizes = ({ title, subtitle, image, progress, winner }) => {
   return (
     <div className="prizes">
       <div className="prizes__image-box">
@@ -19,8 +19,8 @@ const Prizes = ({ title, subtitle, image, progress }) => {
           {subtitle}
         </span>
 
-        <span className={progress <= 50 ? "prizes__infos-box__status new" : "prizes__infos-box__status finishing"}>
-          {progress <= 50 ? 'Adquira já' : 'Corre que está acabando!'}
+        <span className={winner ? "prizes__infos-box__status finished" : progress <= 50 ? "prizes__infos-box__status new" : "prizes__infos-box__status finishing"}>
+          {winner ? "Concluído" : progress <= 50 ? 'Adquira já' : 'Corre que está acabando!'}
         </span>
       </div>
 

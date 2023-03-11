@@ -2,13 +2,14 @@ import React from 'react'
 import useRegisterStore from '../stores/useRegisterStore';
 import { Header, Footer } from './components';
 import UpdateRegistrationContent from './components/updateRegistration/UpdateRegistrationContent';
-import UpdateRegistrationMessageBox from './components/updateRegistration/UpdateRegistrationMessageBox';
+import AlertBox from './components/AlertBox';
 
 const UpdateRegistration = () => {
-  const { isRegisterCompleted, errorSubmitting } = useRegisterStore(
+  const { isRegisterCompleted, errorSubmitting, registerMessage } = useRegisterStore(
     (state) => ({
       isRegisterCompleted: state.isRegisterCompleted,
       errorSubmitting: state.errorSubmitting,
+      registerMessage: state.registerMessage,
     })
   )
 
@@ -17,8 +18,8 @@ const UpdateRegistration = () => {
       <Header />
       <UpdateRegistrationContent />
       <Footer />
-      {isRegisterCompleted && <UpdateRegistrationMessageBox />}
-      {errorSubmitting && <UpdateRegistrationMessageBox />}
+      {isRegisterCompleted && <AlertBox success={isRegisterCompleted} error={errorSubmitting} message={registerMessage} />}
+      {errorSubmitting && <AlertBox success={isRegisterCompleted} error={errorSubmitting} message={registerMessage} />}
     </div>
   )
 }

@@ -2,16 +2,18 @@ import React from 'react';
 import { Header, Footer } from './components';
 import RegisterContent from './components/register/RegisterContent';
 import useRegisterStore from '../stores/useRegisterStore';
-import RegisterMessageBox from './components/register/RegisterMessageBox';
+import AlertBox from './components/AlertBox';
 
 const Register = () => {
   const {
     isRegisterCompleted,
     errorSubmitting,
+    registerMessage,
   } = useRegisterStore(
     (state) => ({
       isRegisterCompleted: state.isRegisterCompleted,
       errorSubmitting: state.errorSubmitting,
+      registerMessage: state.registerMessage,
     })
   )
 
@@ -20,8 +22,8 @@ const Register = () => {
       <Header />
       <RegisterContent />
       <Footer />
-      {isRegisterCompleted && <RegisterMessageBox />}
-      {errorSubmitting && <RegisterMessageBox />}
+      {isRegisterCompleted && <AlertBox success={isRegisterCompleted} error={errorSubmitting} message={registerMessage} />}
+      {errorSubmitting && <AlertBox success={isRegisterCompleted} error={errorSubmitting} message={registerMessage} />}
     </div>
   )
 }

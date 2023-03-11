@@ -4,16 +4,18 @@ import useNewRaffleStore from '../stores/useNewRaffleStore';
 
 import { Header, Footer } from './components';
 import NewRaffleContent from './components/new-raffle/NewRaffleContent';
-import NewRaffleMessageBox from './components/new-raffle/NewRaffleMessageBox';
+import AlertBox from './components/AlertBox';
 
 const NewRaffle = () => {
   const {
     isRaffleCreated,
     submitError,
+    raffleCreatedMessage,
   } = useNewRaffleStore(
     (state) => ({
       isRaffleCreated: state.isRaffleCreated,
       submitError: state.submitError,
+      raffleCreatedMessage: state.raffleCreatedMessage
     })
   );
 
@@ -24,8 +26,8 @@ const NewRaffle = () => {
       <Header />
       <NewRaffleContent />
       <Footer />
-      {isRaffleCreated && <NewRaffleMessageBox />}
-      {submitError && <NewRaffleMessageBox />}
+      {isRaffleCreated && <AlertBox success={isRaffleCreated} error={submitError} message={raffleCreatedMessage} />}
+      {submitError && <AlertBox success={isRaffleCreated} error={submitError} message={raffleCreatedMessage} />}
     </div>
   )
 }

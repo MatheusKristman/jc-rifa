@@ -36,6 +36,10 @@ const RaffleManagementContent = () => {
     console.log(raffles);
   }, [raffles]);
 
+  const convertProgress = (current, total) => {
+    return (100 * current) / total;
+  };
+
   return (
     <div className="raffle-management__content">
       <div className="raffle-management__content__container">
@@ -55,7 +59,11 @@ const RaffleManagementContent = () => {
               raffles.map((raffle) => (
                 <li key={raffle._id} className="raffle-management__content__container__raffle-wrapper__list__list-item">
                   <Link to={`/edit-raffle/${raffle._id}`} className="raffle-management__content__container__raffle-wrapper__list__list-item__link">
-                    <Prizes title={raffle.title} subtitle={raffle.subtitle} image={raffle.raffleImage.data ? `data:${raffle.raffleImage.contentType};base64,${_arrayBufferToBase64(raffle.raffleImage.data.data)}` : null} />
+                    <Prizes title={raffle.title} subtitle={raffle.subtitle} image={raffle.raffleImage.data ? `data:${raffle.raffleImage.contentType};base64,${_arrayBufferToBase64(raffle.raffleImage.data.data)}` : null} progress={convertProgress(
+                      raffle?.QuantNumbers - raffle?.NumbersAvailable.length,
+                      raffle?.QuantNumbers
+                    )}
+                    winner={raffle?.isFinished} />
                   </Link>
                 </li>
               ))

@@ -59,7 +59,11 @@ router.post('/edit-raffle/winner', WinnerController.read);
 // Rota deletar ganhador
 router.delete('/edit-raffle/cancel/:id', WinnerController.delete);
 
+// Rota all raffles
+router.get('/raffles/get-all', RaffleController.read);
+
 // Rota raffle selected
 router.get('/raffles/:id', RaffleController.readOne);
+
 
 module.exports = router;

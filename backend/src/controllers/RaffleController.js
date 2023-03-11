@@ -213,6 +213,12 @@ module.exports = {
         raffleImage: raffleSelected.raffleImage,
       });
 
+      await Raffle.updateOne({ _id: id }, {
+        '$set': {
+          isFinished: true,
+        },
+      });
+
       res.json(winnerCreated);
     } catch (error) {
       return res.status(404).send(error.message);

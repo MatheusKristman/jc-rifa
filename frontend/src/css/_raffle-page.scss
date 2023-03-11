@@ -81,6 +81,10 @@
         flex-direction: column;
         gap: 8px;
         margin-bottom: 8px;
+
+        a {
+          text-decoration: none;
+        }
       }
 
       &__pages-btn-wrapper {

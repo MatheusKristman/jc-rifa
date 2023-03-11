@@ -9,6 +9,7 @@ const RaffleSchema = new mongoose.Schema({
   QuantNumbers: { type: Number },
   NumbersAvailable: { type: Array },
   BuyedNumbers: { type: Array, default: [] },
+  isFinished: { type: Boolean, default: false },
 });
 
 module.exports = mongoose.model('Raffles', RaffleSchema);

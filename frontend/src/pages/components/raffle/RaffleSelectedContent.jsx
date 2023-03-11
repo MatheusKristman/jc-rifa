@@ -9,6 +9,7 @@ import useRaffleStore from "../../../stores/useRaffleStore";
 import api from '../../../services/api';
 import useBuyNumbersStore from "../../../stores/useBuyNumbersStore";
 import useUserStore from "../../../stores/useUserStore";
+import useHeaderStore from "../../../stores/useHeaderStore";
 
 const RaffleSelectedContent = () => {
   const {
@@ -25,13 +26,35 @@ const RaffleSelectedContent = () => {
     numberQuant,
     incrementNumberQuant,
     decrementNumberQuant,
+    isMessageBoxDisplaying,
+    setToMessageBoxDisplay,
+    setToMessageBoxDontDisplay,
+    setMessageText,
+    isErrorBoxDisplaying,
+    setToErrorBoxDisplay,
+    setToErrorBoxDontDisplay,
   } = useBuyNumbersStore(
     (state) => ({
       numberQuant: state.numberQuant,
       incrementNumberQuant: state.incrementNumberQuant,
       decrementNumberQuant: state.decrementNumberQuant,
-    })
+      isMessageBoxDisplaying: state.isMessageBoxDisplaying,
+      setToMessageBoxDisplay: state.setToMessageBoxDisplay,
+      setToMessageBoxDontDisplay: state.setToMessageBoxDontDisplay,
+      setMessageText: state.setMessageText,
+      isErrorBoxDisplaying: state.isErrorBoxDisplaying,
+      setToErrorBoxDisplay: state.setToErrorBoxDisplay,
+      setToErrorBoxDontDisplay: state.setToErrorBoxDontDisplay,
+    }), shallow
   );
+
+  const {
+    openLogin,
+  } = useHeaderStore(
+    (state) => ({
+      openLogin: state.openLogin,
+    })
+  )
 
   const {
     user,
@@ -67,6 +90,20 @@ const RaffleSelectedContent = () => {
   
   useEffect(() => {    
   }, [raffleSelected]);
+
+  useEffect(() => {
+    if (isMessageBoxDisplaying) {
+      setTimeout(() => {
+        setToMessageBoxDontDisplay();
+      }, 4000);
+    }
+
+    if (isErrorBoxDisplaying) {
+      setTimeout(() => {
+        setToErrorBoxDontDisplay();
+      }, 4000);
+    }
+  }, [isMessageBoxDisplaying, isErrorBoxDisplaying]);
 
   function calcValues(value, factor) {
     const valueFormated = convertCurrencyToNumber(value);
@@ -114,18 +151,24 @@ const RaffleSelectedContent = () => {
           numbersBuyed: numbersBuyed,
           numbersAvailable: numbersAvailableToBuy
         })
-        .then((res) => console.log(res.data))
+        .then((res) => {
+          setToMessageBoxDisplay();
+          setMessageText('Compra efetuada com sucesso!');
+          setUser(res.data);
+        })
         .catch((error) => {
           console.log(error);
           if (error.response.data === 'Usuário não encontrado') {
-            console.log('Usuário não logado');
+            openLogin();
           } else {
-            console.log('Ocorreu um erro na compra');
+            setToErrorBoxDisplay();
+            setMessageText('Ocorreu um erro na compra, tente novamente');
           }
         });
   
     } else {
-      console.log('selecione a quantidade até ' + numbersAvailableToBuy.length)
+      setToMessageBoxDisplay();
+      setMessageText('Selecione a quantidade até ' + numbersAvailableToBuy.length);
     }
   }
 
