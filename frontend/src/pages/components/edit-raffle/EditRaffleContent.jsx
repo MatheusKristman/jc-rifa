@@ -22,6 +22,7 @@ const EditRaffleContent = () => {
     setParticipants,
     finishNumber,
     setFinishNumber,
+    setFinishNumberFromFetch,
     winner,
     setWinner,
     finishNumberError,
@@ -36,6 +37,7 @@ const EditRaffleContent = () => {
       setParticipants: state.setParticipants,
       finishNumber: state.finishNumber,
       setFinishNumber: state.setFinishNumber,
+      setFinishNumberFromFetch: state.setFinishNumberFromFetch,
       winner: state.winner,
       setWinner: state.setWinner,
       finishNumberError: state.finishNumberError,
@@ -138,6 +140,9 @@ const EditRaffleContent = () => {
       setFinishNumberError("");
 
       setParticipants([])
+
+      setWinner({});
+      setFinishNumberFromFetch('');
     }
   }, [raffleSelected]);
 
@@ -345,6 +350,7 @@ const EditRaffleContent = () => {
       .then((res) => {
         if (res.data) {
           setWinner({});
+          setFinishNumberFromFetch('');
           setFinishNumberError("");
         }
       })

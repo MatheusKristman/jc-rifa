@@ -56,7 +56,7 @@ const Home = () => {
         api
           .get('/get-raffles')
           .then((res) => {
-            setRaffles(res.data);
+            setRaffles(res.data.filter((raffle) => raffle.isFinished === false));
             setToRaffleNotLoad();
           })
           .catch((error) => console.log(error))

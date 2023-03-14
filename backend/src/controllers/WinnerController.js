@@ -2,6 +2,7 @@ const Winner = require('../models/Winner');
 
 const fs = require('fs');
 const multer = require('multer');
+const Raffle = require('../models/Raffle');
 
 const storage = multer.diskStorage({
   destination: function(req, file, cb) {
@@ -45,13 +46,21 @@ module.exports = {
     console.log(id);
 
     try {
-      const winnerDeleted = await Winner.deleteOne({ _id: id });
+      const selectedWinner = await Winner.findOne({ _id: id });
 
+      await Raffle.updateOne({ _id: selectedWinner.raffleId }, {
+        "$set": {
+          isFinished: false,
+        },
+      });
+
+      const winnerDeleted = await Winner.deleteOne({ _id: id });
+      
       if (!winnerDeleted) {
         return res.status(400).send('Erro ao deletar ganhador');
       }
 
-      console.log('ganhador deletado')
+      console.log(selectedWinner);
 
       res.send(true);
     } catch (error) {

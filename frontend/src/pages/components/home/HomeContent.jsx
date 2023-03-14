@@ -53,6 +53,7 @@ const PrizesHome = () => {
             raffles[0]?.QuantNumbers - raffles[0]?.NumbersAvailable.length,
             raffles[0]?.QuantNumbers
           )}
+          winner={raffles[0]?.isFinished}
         />
       </div>
 

@@ -4,9 +4,11 @@ const cors = require('cors');
 const router = require('./router');
 const multer = require('multer');
 const path = require('path');
+const mercadopago = require('mercadopago');
 
 require('dotenv').config();
 require('./config/dbConfig');
+require('./config/mercadoPagoConfig');
 
 app.use(cors());
 app.use(express.urlencoded({ extended: false }));
@@ -19,7 +21,6 @@ app.use((err, req, res, next) => {
 });
 app.use('/uploads', express.static(path.join(__dirname, 'public/data/uploads')));
 app.use(router);
-
 
 app.listen(process.env.PORT, () => {
   console.log(`Running on port ${process.env.PORT}`);

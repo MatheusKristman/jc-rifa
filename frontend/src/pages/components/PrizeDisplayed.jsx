@@ -4,7 +4,7 @@ import defaultPrize from '../../assets/default-prize.jpg';
 import _arrayBufferToBase64 from '../../hooks/useArrayBufferToBase64';
 import useGeneralStore from '../../stores/useGeneralStore';
 
-const PrizeDisplayed = ({ image, title, subtitle, progress }) => {
+const PrizeDisplayed = ({ image, title, subtitle, progress, winner }) => {
   const {
     isRaffleLoading
   } = useGeneralStore(
@@ -32,8 +32,8 @@ const PrizeDisplayed = ({ image, title, subtitle, progress }) => {
           {subtitle ? subtitle : "Subtítulo Carregando"}
         </span>
 
-        <span className={isRaffleLoading ? "prize-displayed__infos-box__status loading" : progress <= 50 ? "prize-displayed__infos-box__status new" : "prize-displayed__infos-box__status finishing"}>
-          {progress === null || progress === undefined ? "Status Carregando" : progress <= 50 ? 'Adquira já' : 'Corre que está acabando!'}
+        <span className={isRaffleLoading ? "prize-displayed__infos-box__status loading" : winner ? "prize-displayed__infos-box__status finished" : progress <= 50 ? "prize-displayed__infos-box__status new" : "prize-displayed__infos-box__status finishing"}>
+          {winner ? "Concluído" : progress <= 50 ? 'Adquira já' : 'Corre que está acabando!'}
         </span>
       </div>
     </div>

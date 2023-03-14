@@ -24,6 +24,7 @@ import ProtectedRouteAdmin from "./ProtectedRouteAdmin";
 import "./css/styles.css";
 
 function App() {
+
   return (
     <>
       <Router>

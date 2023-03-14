@@ -11,6 +11,7 @@ const useRaffleStore = create((set) => ({
   setParticipants: (value) => set(() => ({ participants: value })),
   finishNumber: '',
   setFinishNumber: (e) => set(() => ({ finishNumber: e.target.value })),
+  setFinishNumberFromFetch: (value) => set(() => ({ finishNumber: value })),
   winner: {},
   setWinner: (value) => set(() => ({ winner: value })),
   finishNumberError: '',

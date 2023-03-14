@@ -3,6 +3,7 @@ const router = express.Router();
 const AccountController = require('./controllers/AccountController');
 const RaffleController = require('./controllers/RaffleController');
 const WinnerController = require('./controllers/WinnerController');
+const paymentsController = require('./controllers/paymentsController');
 const auth = require('./controllers/authController');
 
 // Rota Home
@@ -65,5 +66,7 @@ router.get('/raffles/get-all', RaffleController.read);
 // Rota raffle selected
 router.get('/raffles/:id', RaffleController.readOne);
 
+// Rota pagamento
+router.post('/payment', paymentsController.pay);
 
 module.exports = router;

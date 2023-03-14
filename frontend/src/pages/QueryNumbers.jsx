@@ -18,7 +18,6 @@ const QueryNumbers = () => {
       isQueryNumbersModalOpen: state.isQueryNumbersModalOpen,
       openModal: state.openModal,
       setCpf: state.setCpf,
-      userRafflesBuyed: state.userRafflesBuyed,
       setUserRafflesBuyed: state.setUserRafflesBuyed,
     }),
     shallow
@@ -38,7 +37,10 @@ const QueryNumbers = () => {
     if (isUserLogged) {
       api
         .get(`/query-numbers/${user.cpf}`)
-        .then((res) => setUserRafflesBuyed(res.data))
+        .then((res) => {
+          setUserRafflesBuyed(res.data)
+          console.log('numeros achados; ', res.data)
+        })
         .catch((error) => console.log(error));
     } else {
       openModal();

@@ -34,7 +34,7 @@ const QueryNumbersContent = () => {
 
         {userRafflesBuyed.length !== 0 ? (
           userRafflesBuyed.map((raffle) => (
-            <div className="query-numbers__query-numbers-content__container__raffle-box">
+            <div key={raffle._id} className="query-numbers__query-numbers-content__container__raffle-box">
               <div className="query-numbers__query-numbers-content__container__raffle-box__image-box">
                 <img
                   src={

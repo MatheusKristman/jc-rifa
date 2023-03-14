@@ -285,7 +285,9 @@ module.exports = {
 
     const userSelected = await Account.findOne({ cpf });
 
-    const userRafflesBuyed = userSelected.rafflesBuyed.map((raffle) => raffle);    
+    const userRafflesBuyed = userSelected.rafflesBuyed.map((raffle) => raffle);
+    
+    console.log(userSelected);
 
     res.send(userRafflesBuyed);
   },
