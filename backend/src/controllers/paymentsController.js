@@ -1,5 +1,7 @@
 const mercadopago = require("mercadopago");
-require("dotenv").config();
+const path = require("path");
+
+console.log(process.env.MERCADO_PAGO_ACCESS_TOKEN);
 
 mercadopago.configure({ access_token: process.env.MERCADO_PAGO_ACCESS_TOKEN });
 

@@ -61,7 +61,7 @@ const Home = () => {
                   numberQuant: res.data.additional_info.items[0].quantity,
                 })
                 .then((res) => {
-                  window.location.replace("http://localhost:5173");
+                  window.location.replace("https://jc-rifa.onrender.com");
                 })
                 .catch((error) => {
                   console.log(error);

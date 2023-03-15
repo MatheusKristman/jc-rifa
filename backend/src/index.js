@@ -4,13 +4,13 @@ const cors = require("cors");
 const router = require("./router");
 const multer = require("multer");
 const path = require("path");
-const corsOptions = require("./config/corsOptions");
+const mercadopago = require("mercadopago");
 
 require("dotenv").config();
 require("./config/dbConfig");
 require("./config/mercadoPagoConfig");
 
-app.use(cors(corsOptions));
+app.use(cors());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use((err, req, res, next) => {
