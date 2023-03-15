@@ -25,7 +25,7 @@
         &__title {
           color: $white;
           font-size: 1.35rem;
-          font-weight: 600;          
+          font-weight: 600;
         }
 
         &__search-btn {
@@ -106,6 +106,17 @@
             display: block;
           }
 
+          &__status-finished {
+            background-color: $dark;
+            width: fit-content;
+            padding: 10px;
+            border-radius: 6px;
+            color: $white;
+            font-size: 1rem;
+            font-weight: 500;
+            display: block;
+          }
+
           &__numbers-box {
             display: flex;
             align-items: center;
@@ -119,7 +130,7 @@
               padding: 10px;
               border-radius: 6px;
               color: $white;
-              font-size: 1rem;              
+              font-size: 1rem;
             }
           }
         }
@@ -162,7 +173,7 @@
     left: 0;
     bottom: 0;
     right: 0;
-    background-color: rgba(32, 33, 36, .5);
+    background-color: rgba(32, 33, 36, 0.5);
     backdrop-filter: blur(10px);
     overflow: auto;
     padding: 40px;
@@ -171,7 +182,7 @@
     animation: loginFadeIn 0.4s ease forwards;
 
     &::before {
-      content: '';
+      content: "";
       height: 100%;
       display: inline-block;
       vertical-align: middle;

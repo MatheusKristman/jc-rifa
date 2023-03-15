@@ -1,0 +1,18 @@
+GET https://webhook.site/token/56747dd4-9027-4df6-bea2-32de92933dcd/requests?query=content:payment
+
+###
+
+GET https://api.mercadopago.com/v1/payments/1312077818
+Authorization: Bearer TEST-2809521109003364-031314-75b481d40a96f70a36dadc83ea3138e4-1329767041
+
+###
+
+POST http://localhost:3000/payment
+Content-Type: application/json
+
+{
+  "title": "Titulo 1 teste",
+  "quantity": 3,
+  "id": "640f534d7f6fa76b5461036c",
+  "unit_price": 0.25
+}

@@ -12,7 +12,6 @@ import {
   Winners,
   Terms,
   Contact,
-  MyPurchases,
   ChangePassword,
   RaffleManagement,
   NewRaffle,
@@ -24,7 +23,6 @@ import ProtectedRouteAdmin from "./ProtectedRouteAdmin";
 import "./css/styles.css";
 
 function App() {
-
   return (
     <>
       <Router>
@@ -39,14 +37,6 @@ function App() {
             element={
               <ProtectedRoute>
                 <UpdateRegistration />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/myPurchases"
-            element={
-              <ProtectedRoute>
-                <MyPurchases />
               </ProtectedRoute>
             }
           />

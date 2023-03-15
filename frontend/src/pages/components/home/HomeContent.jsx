@@ -116,27 +116,30 @@ const WinnersHome = () => {
       </div>
 
       <div className="hero__container__winners-box__winners-wrapper">
-        {winners.length !== 0 ? (winners.map((winner) => (
-          <WinnerBox
-            profileImage={
-              winner.profileImage?.data
-                ? `data:${winner.profileImage.contentType};base64,${_arrayBufferToBase64(
-                    winner.profileImage.data.data
-                  )}`
-                : NoUserPhoto
-            }
-            name={winner.name}
-            raffleTitle={winner.raffleTitle}
-            raffleNumber={winner.raffleNumber}
-            raffleImage={
-              winner.raffleImage?.data
-                ? `data:${winner.raffleImage.contentType};base64,${_arrayBufferToBase64(
-                    winner.raffleImage.data.data
-                  )}`
-                : DefaultPrize
-            }
-          />
-        ))) : (
+        {winners.length !== 0 ? (
+          winners.map((winner) => (
+            <WinnerBox
+              key={winner._id}
+              profileImage={
+                winner.profileImage?.data
+                  ? `data:${winner.profileImage.contentType};base64,${_arrayBufferToBase64(
+                      winner.profileImage.data.data
+                    )}`
+                  : NoUserPhoto
+              }
+              name={winner.name}
+              raffleTitle={winner.raffleTitle}
+              raffleNumber={winner.raffleNumber}
+              raffleImage={
+                winner.raffleImage?.data
+                  ? `data:${winner.raffleImage.contentType};base64,${_arrayBufferToBase64(
+                      winner.raffleImage.data.data
+                    )}`
+                  : DefaultPrize
+              }
+            />
+          ))
+        ) : (
           <span className="hero__container__winners-box__winners-wrapper__no-winner">
             - Nenhum ganhador no momento
           </span>

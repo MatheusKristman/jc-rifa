@@ -1,19 +1,24 @@
-const Account = require('../models/Account');
-const Raffle = require('../models/Raffle');
+const Account = require("../models/Account");
+const Raffle = require("../models/Raffle");
 
-const fs = require('fs');
-const multer = require('multer');
-const { registerValidate, loginValidate, updateValidate, updatePasswordValidate } = require('./validate');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
+const fs = require("fs");
+const multer = require("multer");
+const {
+  registerValidate,
+  loginValidate,
+  updateValidate,
+  updatePasswordValidate,
+} = require("./validate");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
 const storage = multer.diskStorage({
-  destination: function(req, file, cb) {
-    cb(null, './public/data/uploads/');
+  destination: function (req, file, cb) {
+    cb(null, "./public/data/uploads/");
   },
   filename: function (req, file, cb) {
-    let fileExtension = file.originalname.split('.')[1];
-    cb(null, file.fieldname + '-' + Date.now() + '.' + fileExtension);
+    let fileExtension = file.originalname.split(".")[1];
+    cb(null, file.fieldname + "-" + Date.now() + "." + fileExtension);
   },
 });
 
@@ -31,12 +36,12 @@ module.exports = {
     const selectedUser = await Account.findOne({ tel: req.body.tel });
 
     if (selectedUser) {
-      return res.status(400).send('Telefone Já cadastrado');
+      return res.status(400).send("Telefone Já cadastrado");
     }
 
     const user = {
       profileImage: {
-        data: req.file ? fs.readFileSync('public/data/uploads/' + req.file.filename) : null,
+        data: req.file ? fs.readFileSync("public/data/uploads/" + req.file.filename) : null,
         contentType: req.file ? req.file.mimetype : null,
       },
       name: req.body.name,
@@ -59,20 +64,24 @@ module.exports = {
 
       if (userCreated && req.file) {
         fs.unlinkSync(`public/data/uploads/${req.file.filename}`);
-        console.log('imagem removida com sucesso');
+        console.log("imagem removida com sucesso");
       }
 
       const selectedUser = await Account.findOne({ tel: req.body.tel });
 
       // console.log('selectedUser' + selectedUser);
-      
-      const daysToExpire = '15d';
-      const token = jwt.sign({ _id: selectedUser._id, admin: selectedUser.admin }, process.env.TOKEN_SECRET, { expiresIn: daysToExpire });
-      
+
+      const daysToExpire = "15d";
+      const token = jwt.sign(
+        { _id: selectedUser._id, admin: selectedUser.admin },
+        process.env.TOKEN_SECRET,
+        { expiresIn: daysToExpire }
+      );
+
       console.log(token);
 
       res.json(token);
-    } catch(error) {
+    } catch (error) {
       return res.status(400).send(error.message);
     }
   },
@@ -82,9 +91,8 @@ module.exports = {
     if (id) {
       const user = await Account.findOne({ _id: id });
       return res.json(user);
-
     } else {
-      return res.status(400).send('Acesso negado on controlador');
+      return res.status(400).send("Acesso negado on controlador");
     }
   },
   update: async (req, res) => {
@@ -100,7 +108,9 @@ module.exports = {
 
     const userData = {
       profileImage: {
-        data: req.file ? fs.readFileSync('public/data/uploads/' + req.file.filename) : user.profileImage.data,
+        data: req.file
+          ? fs.readFileSync("public/data/uploads/" + req.file.filename)
+          : user.profileImage.data,
         contentType: req.file ? req.file.mimetype : user.profileImage.contentType,
       },
       name: req.body.name,
@@ -115,7 +125,7 @@ module.exports = {
       uf: req.body.uf,
       city: req.body.city,
       reference: req.body.reference,
-    }
+    };
     console.log(userData);
 
     try {
@@ -123,7 +133,7 @@ module.exports = {
 
       if (selectedUser && req.file) {
         fs.unlinkSync(`public/data/uploads/${req.file.filename}`);
-        console.log('imagem removida com sucesso');
+        console.log("imagem removida com sucesso");
       }
 
       const selectedUserUpdated = await Account.findById(req.body.id);
@@ -143,13 +153,13 @@ module.exports = {
     const id = req.body.id;
 
     const selectedUser = await Account.findOne({ _id: id });
-    
+
     const passwordMatch = bcrypt.compareSync(req.body.password, selectedUser.password);
 
     console.log(passwordMatch);
 
     if (!passwordMatch) {
-      return res.status(401).send('Senha incorreta');
+      return res.status(401).send("Senha incorreta");
     }
 
     try {
@@ -160,7 +170,7 @@ module.exports = {
       return res.json(userUpdated);
     } catch (error) {
       res.status(409).send(error.message);
-    }    
+    }
   },
   login: async (req, res) => {
     const { error } = loginValidate(req.body);
@@ -171,22 +181,26 @@ module.exports = {
 
     const selectedUser = await Account.findOne({ tel: req.body.tel });
     if (!selectedUser) {
-      return res.status(400).send('Telefone ou senha incorretos');
-    }    
+      return res.status(400).send("Telefone ou senha incorretos");
+    }
 
     const passwordAndUserMatch = bcrypt.compareSync(req.body.password, selectedUser.password);
     console.log(passwordAndUserMatch);
 
     if (!passwordAndUserMatch) {
       console.log(selectedUser.password);
-      return res.status(400).send('Telefone ou senha incorretos');
+      return res.status(400).send("Telefone ou senha incorretos");
     }
 
-    console.log('passou validação')
+    console.log("passou validação");
 
-    const daysToExpire = '15d';
+    const daysToExpire = "15d";
 
-    const token = jwt.sign({ _id: selectedUser._id, admin: selectedUser.admin }, process.env.TOKEN_SECRET, { expiresIn: daysToExpire });
+    const token = jwt.sign(
+      { _id: selectedUser._id, admin: selectedUser.admin },
+      process.env.TOKEN_SECRET,
+      { expiresIn: daysToExpire }
+    );
 
     res.json(token);
   },
@@ -196,86 +210,144 @@ module.exports = {
     const selectedUser = await Account.findOne({ _id: id });
 
     if (!selectedUser) {
-      return res.status(404).send('Usuário não encontrado');
+      return res.status(404).send("Usuário não encontrado");
     }
 
     const raffleSelected = await Raffle.findOne({ _id: raffleId });
-    
+    console.log(
+      "🚀 ~ file: AccountController.js:217 ~ buyRaffle: ~ raffleSelected:",
+      raffleSelected
+    );
+
     if (!raffleSelected) {
-      return res.status(404).send('Rifa não encontrada');
-    }    
+      return res.status(404).send("Rifa não encontrada");
+    }
 
-    const newNumbersBuyed = [...raffleSelected.BuyedNumbers, ...req.body.numbersBuyed];
+    const numbersAvailableToBuy = [...raffleSelected.NumbersAvailable];
+    console.log(
+      "🚀 ~ file: AccountController.js:223 ~ buyRaffle: ~ numbersAvailableToBuy:",
+      numbersAvailableToBuy
+    );
+    let numbersAlreadyBuyed = [...raffleSelected.BuyedNumbers];
+    let numbersBuyed = [];
 
-    console.log(req.body.numbersAvailable.length);
+    for (let i = 0; i < req.body.numberQuant; i++) {
+      const random = Math.floor(Math.random() * numbersAvailableToBuy.length);
+      const chosenNumber = numbersAvailableToBuy.splice(random, 1)[0];
+      numbersBuyed.push(chosenNumber);
+    }
+    console.log("🚀 ~ file: AccountController.js:237 ~ buyRaffle: ~ numbersBuyed:", numbersBuyed);
+    console.log(
+      "🚀 ~ file: AccountController.js:223 ~ buyRaffle: ~ numbersAvailableToBuy:",
+      numbersAvailableToBuy
+    );
+
+    numbersAlreadyBuyed = [...numbersAlreadyBuyed, ...numbersBuyed];
 
     try {
-      await Raffle.findOneAndUpdate({ _id: raffleId }, { NumbersAvailable: req.body.numbersAvailable, BuyedNumbers: newNumbersBuyed });
+      await Raffle.findOneAndUpdate(
+        { _id: raffleId },
+        {
+          $set: {
+            NumbersAvailable: numbersAvailableToBuy,
+            BuyedNumbers: numbersAlreadyBuyed,
+          },
+        }
+      );
     } catch (error) {
       return res.status(400).send(error.message);
     }
 
-    let actualNumberQuant = 0;
+    const alreadyBuyedNumbers = await Account.find({
+      "rafflesBuyed.raffleId": { $eq: raffleId },
+      _id: id,
+    });
+
     let actualNumbersBuyed = [];
 
-    const alreadyBuyedNumbers = await Account.find({ "rafflesBuyed.raffleId": { "$eq": raffleSelected._id }, _id: id });
-
     if (alreadyBuyedNumbers.length !== 0) {
-      console.log('achou');
-      actualNumberQuant = alreadyBuyedNumbers[0].rafflesBuyed[0].numberQuant;
-      actualNumbersBuyed = [...alreadyBuyedNumbers[0].rafflesBuyed[0].numbersBuyed];
+      actualNumbersBuyed = [
+        ...selectedUser.rafflesBuyed.filter((raffle) => raffle.raffleId === raffleId)[0]
+          .numbersBuyed,
+      ];
+
+      console.log(
+        "🚀 ~ file: AccountController.js:262 ~ buyRaffle: ~ actualNumbersBuyed:",
+        actualNumbersBuyed
+      );
     }
-    
+
     const newRaffleBuyed = {
-      raffleId,
+      raffleId: raffleId,
       title: raffleSelected.title,
       raffleImage: raffleSelected.raffleImage,
-      pricePaid: req.body.pricePaid,
+      pricePaid: Number(req.body.pricePaid) * Number(req.body.numberQuant),
       status: req.body.status,
-      numberQuant: actualNumberQuant !== 0 ? actualNumberQuant + req.body.numberQuant : req.body.numberQuant,
-      numbersBuyed: actualNumbersBuyed.length !== 0 ? [...actualNumbersBuyed, ...req.body.numbersBuyed] : req.body.numbersBuyed,
-    }
+      numberQuant: Number(req.body.numberQuant),
+      numbersBuyed:
+        actualNumbersBuyed.length !== 0 ? [...actualNumbersBuyed, ...numbersBuyed] : numbersBuyed,
+    };
+    console.log(
+      "🚀 ~ file: AccountController.js:285 ~ buyRaffle: ~ newRaffleBuyed:",
+      newRaffleBuyed.numberQuant
+    );
+    console.log(
+      "🚀 ~ file: AccountController.js:285 ~ buyRaffle: ~ newRaffleBuyed:",
+      newRaffleBuyed.numbersBuyed
+    );
 
     if (alreadyBuyedNumbers.length !== 0) {
-      try {        
-        await Account.updateOne({ _id: id, "rafflesBuyed.raffleId": raffleSelected._id }, {
-          "$set": {
-            "rafflesBuyed.$": {
-              raffleId: newRaffleBuyed.raffleId,
-              title: newRaffleBuyed.title,
-              raffleImage: newRaffleBuyed.raffleImage,
-              pricePaid: newRaffleBuyed.pricePaid,
-              status: newRaffleBuyed.status,
-              numberQuant: newRaffleBuyed.numberQuant,
-              numbersBuyed: newRaffleBuyed.numbersBuyed,
-            }
+      try {
+        console.log("rodando atualização");
+        await Account.findOneAndUpdate(
+          { _id: id },
+          {
+            $set: {
+              "rafflesBuyed.$[elem].numbersBuyed": newRaffleBuyed.numbersBuyed,
+            },
+            $inc: {
+              "rafflesBuyed.$[elem].numberQuant": newRaffleBuyed.numberQuant,
+              "rafflesBuyed.$[elem].pricePaid": Number(newRaffleBuyed.pricePaid),
+            },
+          },
+          {
+            arrayFilters: [
+              {
+                "elem.raffleId": newRaffleBuyed.raffleId,
+              },
+            ],
           }
-        });
+        );
       } catch (error) {
-        return res.status(400).send('erro com atualização');
+        return res.status(400).send(error.message);
       }
     } else {
       try {
-        await Account.findOneAndUpdate({ _id: id }, {
-          "$push": {
-            rafflesBuyed: [
-              {
-                raffleId: newRaffleBuyed.raffleId,
-                title: newRaffleBuyed.title,
-                raffleImage: newRaffleBuyed.raffleImage,
-                pricePaid: newRaffleBuyed.pricePaid,
-                status: newRaffleBuyed.status,
-                numberQuant: newRaffleBuyed.numberQuant,
-                numbersBuyed: newRaffleBuyed.numbersBuyed
-              }
-            ]
+        console.log("rodando adição");
+        await Account.findOneAndUpdate(
+          { _id: id },
+          {
+            $push: {
+              rafflesBuyed: [
+                {
+                  paymentId: req.body.paymentId,
+                  raffleId: newRaffleBuyed.raffleId,
+                  title: newRaffleBuyed.title,
+                  raffleImage: newRaffleBuyed.raffleImage,
+                  pricePaid: newRaffleBuyed.pricePaid,
+                  status: newRaffleBuyed.status,
+                  numberQuant: newRaffleBuyed.numberQuant,
+                  numbersBuyed: newRaffleBuyed.numbersBuyed,
+                },
+              ],
+            },
           }
-        });
-      } catch(error) {
-        return res.status(400).send('erro com adição');
+        );
+      } catch (error) {
+        return res.status(400).send(error.message);
       }
     }
-  
+
     const userUpdated = await Account.findOne({ _id: id });
 
     res.json(userUpdated);
@@ -286,9 +358,25 @@ module.exports = {
     const userSelected = await Account.findOne({ cpf });
 
     const userRafflesBuyed = userSelected.rafflesBuyed.map((raffle) => raffle);
-    
+
     console.log(userSelected);
 
     res.send(userRafflesBuyed);
   },
-}
+  readPayment: async (req, res) => {
+    const paymentId = req.query.collection_id;
+    const id = req.query.external_reference;
+
+    const alreadyHavePaymentId = await Account.findOne({ "rafflesBuyed.paymentId": paymentId });
+
+    if (paymentId && id !== "null") {
+      try {
+        return res.send(paymentId);
+      } catch (error) {
+        return res.status(404).send(error.message);
+      }
+    } else {
+      return res.status(400).send("Sem referencia");
+    }
+  },
+};

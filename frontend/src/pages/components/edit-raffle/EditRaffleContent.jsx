@@ -139,10 +139,10 @@ const EditRaffleContent = () => {
 
       setFinishNumberError("");
 
-      setParticipants([])
+      setParticipants([]);
 
       setWinner({});
-      setFinishNumberFromFetch('');
+      setFinishNumberFromFetch("");
     }
   }, [raffleSelected]);
 
@@ -161,24 +161,21 @@ const EditRaffleContent = () => {
     if (raffleSelected.hasOwnProperty("NumbersAvailable")) {
       const actualProgress = raffleSelected.QuantNumbers - raffleSelected.NumbersAvailable.length;
       setProgress(actualProgress, raffleSelected.QuantNumbers);
-      console.log(raffleSelected);
     }
   }, [raffleSelected]);
 
   useEffect(() => {
     const fetchRaffleParticipants = () => {
       if (raffleSelected.hasOwnProperty("_id") && participants.length === 0) {
-        console.log("executando participantes da rifa");
         api
           .post("/edit-raffle/get-users", {
             id: raffleSelected._id,
           })
           .then((res) => {
-            console.log(res.data);
             setParticipants(res.data);
           })
           .catch((error) => {
-            console.log(error)
+            console.log(error);
             setParticipants([]);
           });
       }
@@ -191,7 +188,6 @@ const EditRaffleContent = () => {
     function fetchWinner() {
       if (!winner.hasOwnProperty("_id") && raffleSelected.hasOwnProperty("_id")) {
         api.post("/edit-raffle/winner", { title: raffleSelected.title }).then((res) => {
-          console.log(res.data);
           setWinner(res.data);
         });
       }
@@ -257,14 +253,6 @@ const EditRaffleContent = () => {
     }
   }, [isRaffleCreated, submitError]);
 
-  useEffect(() => {
-    console.log(
-      participants.map((user) =>
-        user.rafflesBuyed.filter((raffle) => raffle.raffleId === raffleSelected._id)
-      )
-    );
-  }, []);
-
   function coinMask(event) {
     const onlyDigits = event.target.value
       .split("")
@@ -322,7 +310,6 @@ const EditRaffleContent = () => {
         })
         .then((res) => {
           setWinner(res.data);
-          console.log(res.data);
           setFinishNumberError("");
         })
         .catch((error) => {
@@ -350,7 +337,7 @@ const EditRaffleContent = () => {
       .then((res) => {
         if (res.data) {
           setWinner({});
-          setFinishNumberFromFetch('');
+          setFinishNumberFromFetch("");
           setFinishNumberError("");
         }
       })
@@ -531,7 +518,10 @@ const EditRaffleContent = () => {
 
           <div className="edit-raffle__content__container__finish-raffle-container__winner-display-box">
             {winner.hasOwnProperty("_id") ? (
-              <div key={winner._id} className="edit-raffle__content__container__finish-raffle-container__winner-display-box__winner-box">
+              <div
+                key={winner._id}
+                className="edit-raffle__content__container__finish-raffle-container__winner-display-box__winner-box"
+              >
                 <div className="edit-raffle__content__container__finish-raffle-container__winner-display-box__winner-box__image-box">
                   <img
                     className="edit-raffle__content__container__finish-raffle-container__winner-display-box__winner-box__image-box__image"

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { HiOutlineSearch } from "react-icons/hi";
 import { FiAlertTriangle } from "react-icons/fi";
 import { shallow } from "zustand/shallow";
@@ -6,15 +6,19 @@ import { shallow } from "zustand/shallow";
 import DefaultPrize from "../../../assets/default-prize.jpg";
 import useQueryNumbersStore from "../../../stores/useQueryNumbersStore";
 import _arrayBufferToBase64 from "../../../hooks/useArrayBufferToBase64";
+import useRaffleStore from "../../../stores/useRaffleStore";
 
 const QueryNumbersContent = () => {
-  const { openModal, userRafflesBuyed } = useQueryNumbersStore(
+  const { openModal, userRafflesBuyed, rafflesConcluded } = useQueryNumbersStore(
     (state) => ({
       openModal: state.openModal,
       userRafflesBuyed: state.userRafflesBuyed,
+      rafflesConcluded: state.rafflesConcluded,
     }),
     shallow
   );
+
+  const { raffles } = useRaffleStore((state) => ({ raffles: state.raffles }));
 
   return (
     <div className="query-numbers__query-numbers-content">
@@ -33,15 +37,18 @@ const QueryNumbersContent = () => {
         </div>
 
         {userRafflesBuyed.length !== 0 ? (
-          userRafflesBuyed.map((raffle) => (
-            <div key={raffle._id} className="query-numbers__query-numbers-content__container__raffle-box">
+          userRafflesBuyed.map((raffle, index) => (
+            <div
+              key={raffle._id}
+              className="query-numbers__query-numbers-content__container__raffle-box"
+            >
               <div className="query-numbers__query-numbers-content__container__raffle-box__image-box">
                 <img
                   src={
                     raffle.raffleImage.data
-                      ? `data:${
-                          raffle.raffleImage.contentType
-                        };base64,${_arrayBufferToBase64(raffle.raffleImage.data.data)}`
+                      ? `data:${raffle.raffleImage.contentType};base64,${_arrayBufferToBase64(
+                          raffle.raffleImage.data.data
+                        )}`
                       : DefaultPrize
                   }
                   alt="Rifa"
@@ -54,12 +61,24 @@ const QueryNumbersContent = () => {
                   {raffle.title}
                 </h3>
 
-                <span className="query-numbers__query-numbers-content__container__raffle-box__info-box__status">
-                  {raffle.status}
+                <span
+                  className={
+                    raffle.numbersBuyed.includes(rafflesConcluded[index]?.raffleNumber) ||
+                    raffles[index]?.isFinished
+                      ? "query-numbers__query-numbers-content__container__raffle-box__info-box__status-finished"
+                      : "query-numbers__query-numbers-content__container__raffle-box__info-box__status"
+                  }
+                >
+                  {raffle.numbersBuyed.includes(rafflesConcluded[index]?.raffleNumber) ||
+                  raffles[index]?.isFinished
+                    ? "Concluído"
+                    : raffle.status === "approved"
+                    ? "Aguarde sorteio"
+                    : "Processando"}
                 </span>
 
                 <div className="query-numbers__query-numbers-content__container__raffle-box__info-box__numbers-box">
-                  Números: 
+                  Números:
                   <span className="query-numbers__query-numbers-content__container__raffle-box__info-box__numbers-box__numbers">
                     {raffle.numbersBuyed.map((number) => " " + number)}
                   </span>

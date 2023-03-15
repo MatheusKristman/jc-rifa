@@ -75,9 +75,6 @@ const RafflePageContent = () => {
         .get("/raffles/get-all")
         .then((res) => setRaffles(res.data))
         .catch((error) => console.log(error));
-
-      console.log("executando fetch");
-      console.log("raffles: ", raffles);
     };
 
     fetchRaffles();
@@ -85,37 +82,25 @@ const RafflePageContent = () => {
 
   useEffect(() => {
     const handlePage = () => {
-      if (raffles.length !== 0) {        
+      if (raffles.length !== 0) {
         if (raffles.length > 10 && rafflesDisplaying.length <= 10) {
           showPreviousPageBtn();
           showNextPageBtn();
-          console.log("sliceEnd: ", sliceEnd);
-          console.log("sliceBegin: ", sliceBegin);
-          console.log("mostrar os dois botões");
         }
 
         if (sliceBegin === 0 && rafflesDisplaying.length <= 10) {
           hidePreviousPageBtn();
           hideNextPageBtn();
-          console.log("sliceEnd: ", sliceEnd);
-          console.log("sliceBegin: ", sliceBegin);
-          console.log("sumir os dois botões");
         }
 
         if (sliceEnd >= raffles.length) {
           showPreviousPageBtn();
           hideNextPageBtn();
-          console.log("sliceEnd: ", sliceEnd);
-          console.log("sliceBegin: ", sliceBegin);
-          console.log("sumit botão de próximo");
         }
 
         if (sliceBegin === 0 && raffles.length > 10) {
           hidePreviousPageBtn();
           showNextPageBtn();
-          console.log("sliceEnd: ", sliceEnd);
-          console.log("sliceBegin: ", sliceBegin);
-          console.log("sumir botão de voltar");
         }
 
         if (isConcludedOn) {
@@ -139,19 +124,15 @@ const RafflePageContent = () => {
 
         if (isConcludedOn) {
           setRafflesDisplaying(
-            raffles
-              .filter(
-                (raffle) =>
-                  convertProgress(
-                    raffle?.QuantNumbers - raffle?.NumbersAvailable.length,
-                    raffle?.QuantNumbers
-                  ) === 100 || raffle?.isFinished
-              )
+            raffles.filter(
+              (raffle) =>
+                convertProgress(
+                  raffle?.QuantNumbers - raffle?.NumbersAvailable.length,
+                  raffle?.QuantNumbers
+                ) === 100 || raffle?.isFinished
+            )
           );
         }
-        console.log("executando exibição das rifas");
-        console.log("rafflesDisplaying: ", rafflesDisplaying);
-        console.log("raffles depois do rafflesDisplaying: ", raffles);
       }
     };
 

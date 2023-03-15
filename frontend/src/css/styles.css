@@ -1753,6 +1753,17 @@ html, body {
   font-weight: 500;
   display: block;
 }
+.query-numbers__query-numbers-content__container__raffle-box__info-box__status-finished {
+  background-color: #080812;
+  width: -moz-fit-content;
+  width: fit-content;
+  padding: 10px;
+  border-radius: 6px;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 500;
+  display: block;
+}
 .query-numbers__query-numbers-content__container__raffle-box__info-box__numbers-box {
   display: flex;
   align-items: center;

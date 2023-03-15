@@ -6,7 +6,6 @@ import useBuyNumbersStore from "../stores/useBuyNumbersStore";
 import RaffleSelectedContent from "./components/raffle/RaffleSelectedContent";
 import useIsUserLogged from "../hooks/useIsUserLogged";
 import AlertBox from "./components/AlertBox";
-import Checkout from "../Checkout";
 
 const RaffleSelected = () => {
   useIsUserLogged("/raffles");
@@ -38,7 +37,6 @@ const RaffleSelected = () => {
           message={messageText}
         />
       )}
-      <Checkout />
       <Footer />
     </div>
   );

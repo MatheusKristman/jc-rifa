@@ -3,10 +3,9 @@ import { shallow } from "zustand/shallow";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
-import api from '../../../services/api';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-
+import api from "../../../services/api";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 import noUserPhoto from "../../../assets/no-user-photo.png";
 import useRegisterStore from "../../../stores/useRegisterStore";
@@ -125,94 +124,93 @@ const RegisterContent = () => {
     user: state.user,
   }));
 
-  const navigate = useNavigate();  
+  const navigate = useNavigate();
 
   useEffect(() => {
-    axios.get('https://servicodados.ibge.gov.br/api/v1/localidades/estados/')
-    .then((res) => {
-      setUfOptions(res.data);
-    })
-    .catch((error) => console.error(error));
-
+    axios
+      .get("https://servicodados.ibge.gov.br/api/v1/localidades/estados/")
+      .then((res) => {
+        setUfOptions(res.data);
+      })
+      .catch((error) => console.error(error));
   }, []);
-  
+
   useEffect(() => {
     const ufSelected = ufOptions.filter((option) => option.sigla === uf);
 
     if (ufSelected.length > 0) {
-      axios.get(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${ufSelected[0].id}/municipios`)
-      .then((res) => setCityOptions(res.data))
-      .catch((error) => console.error(error));
+      axios
+        .get(
+          `https://servicodados.ibge.gov.br/api/v1/localidades/estados/${ufSelected[0].id}/municipios`
+        )
+        .then((res) => setCityOptions(res.data))
+        .catch((error) => console.error(error));
     } else {
       setCityOptions([]);
     }
-
   }, [uf]);
 
   useEffect(() => {
-    if (cep.replace('-', '').length === 8) {
-      axios.get(`https://viacep.com.br/ws/${cep.replace('-', '')}/json/`)
-      .then(res => {
+    if (cep.replace("-", "").length === 8) {
+      axios.get(`https://viacep.com.br/ws/${cep.replace("-", "")}/json/`).then((res) => {
         setAddressFromFetch(res.data.logradouro);
-        setValue('address', res.data.logradouro);
+        setValue("address", res.data.logradouro);
 
         setNeighborhoodFromFetch(res.data.bairro);
-        setValue('neighborhood', res.data.bairro);
+        setValue("neighborhood", res.data.bairro);
 
         setUfFromFetch(res.data.uf);
-        setValue('uf', res.data.uf);
+        setValue("uf", res.data.uf);
 
         setCityFromFetch(res.data.localidade);
-        setValue('city', res.data.localidade);
+        setValue("city", res.data.localidade);
       });
     }
   }, [cep]);
 
   useEffect(() => {
-    function submitData() {      
-      console.log('enviando')
+    function submitData() {
       if (isSubmitting) {
         const sendToDB = () => {
           const formData = new FormData();
-          formData.append('profileImage', profileImage.file ? profileImage.file : noUserPhoto);
-          formData.append('name', name);
-          formData.append('cpf', cpf);
-          formData.append('email', email);
-          formData.append('password', password);
-          formData.append('tel', tel);
-          formData.append('cep', cep);
-          formData.append('address', address);
-          formData.append('number', number);
-          formData.append('neighborhood', neighborhood);
-          formData.append('complement', complement);
-          formData.append('uf', uf);
-          formData.append('city', city);
-          formData.append('reference', reference);
+          formData.append("profileImage", profileImage.file ? profileImage.file : noUserPhoto);
+          formData.append("name", name);
+          formData.append("cpf", cpf);
+          formData.append("email", email);
+          formData.append("password", password);
+          formData.append("tel", tel);
+          formData.append("cep", cep);
+          formData.append("address", address);
+          formData.append("number", number);
+          formData.append("neighborhood", neighborhood);
+          formData.append("complement", complement);
+          formData.append("uf", uf);
+          formData.append("city", city);
+          formData.append("reference", reference);
 
           api
             .post("/register/registerAccount", formData, {
               headers: {
-                'Content-Type': 'multipart/form-data',
-              }
+                "Content-Type": "multipart/form-data",
+              },
             })
             .then((res) => {
               registerComplete();
-              setRegisterMessage('Cadastro realizado com sucesso');
-              localStorage.setItem('userToken', res.data);
+              setRegisterMessage("Cadastro realizado com sucesso");
+              localStorage.setItem("userToken", res.data);
             })
-            .catch((error) => {              
-              window.scrollTo(0, 0);              
-              if (error.response.data === 'Telefone Já cadastrado') {
-                console.log('ja registrado')
-                setRegisterMessage('Cadastro já registrado no sistema')
+            .catch((error) => {
+              window.scrollTo(0, 0);
+              if (error.response.data === "Telefone Já cadastrado") {
+                setRegisterMessage("Cadastro já registrado no sistema");
               } else {
-                setRegisterMessage('Ocorreu um erro no cadastro');
+                setRegisterMessage("Ocorreu um erro no cadastro");
               }
               errorExist();
               console.log(error);
             });
         };
-        sendToDB();        
+        sendToDB();
       }
     }
 
@@ -224,19 +222,19 @@ const RegisterContent = () => {
       setTimeout(() => {
         registerNotComplete();
         notSubmitting();
-        navigate('/');
+        navigate("/");
       }, 3000);
     }
 
     if (errorSubmitting) {
-      setTimeout(() => {        
+      setTimeout(() => {
         errorDontExist();
         notSubmitting();
       }, 4000);
     }
   }, [isRegisterCompleted, errorSubmitting]);
 
-  useIsUserLogged('/register');
+  useIsUserLogged("/register");
 
   const handleFileChange = async (e) => {
     const file = await e.target.files[0];
@@ -358,7 +356,10 @@ const RegisterContent = () => {
           />
         </label>
 
-        <div style={user.length > 0 ? { display: 'none' } : {}} className="register__register-content__form__profile-data-box">
+        <div
+          style={user.length > 0 ? { display: "none" } : {}}
+          className="register__register-content__form__profile-data-box"
+        >
           <label
             htmlFor="name"
             className="register__register-content__form__profile-data-box__label"
@@ -608,11 +609,11 @@ const RegisterContent = () => {
               className="register__register-content__form__location-data-box__label__select"
             >
               <option>-- UF --</option>
-              {
-                ufOptions.map((data) => (
-                  <option key={data.id} value={data.sigla}>{data.nome}</option>
-                ))
-              }
+              {ufOptions.map((data) => (
+                <option key={data.id} value={data.sigla}>
+                  {data.nome}
+                </option>
+              ))}
             </select>
           </label>
           {errors.uf && <span>{errors.uf.message}</span>}
@@ -632,11 +633,11 @@ const RegisterContent = () => {
               className="register__register-content__form__location-data-box__label__select"
             >
               <option value="example">-- Cidade --</option>
-              {
-                cityOptions.map((data) => (
-                  <option key={data.id} value={data.nome}>{data.nome}</option>
-                ))
-              }              
+              {cityOptions.map((data) => (
+                <option key={data.id} value={data.nome}>
+                  {data.nome}
+                </option>
+              ))}
             </select>
           </label>
           {errors.city && <span>{errors.city.message}</span>}
