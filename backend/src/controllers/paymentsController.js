@@ -24,7 +24,7 @@ module.exports = {
         },
       },
       back_urls: {
-        success: "http://localhost:5173",
+        success: "https://jc-rifa.onrender.com",
         failure: "",
         pending: "",
       },
