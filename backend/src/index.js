@@ -4,7 +4,6 @@ const cors = require("cors");
 const router = require("./router");
 const multer = require("multer");
 const path = require("path");
-const mercadopago = require("mercadopago");
 
 require("dotenv").config();
 require("./config/dbConfig");

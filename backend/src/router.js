@@ -3,13 +3,14 @@ const router = express.Router();
 const AccountController = require("./controllers/AccountController");
 const RaffleController = require("./controllers/RaffleController");
 const WinnerController = require("./controllers/WinnerController");
-// const paymentsController = require("./controllers/paymentsController");
+const paymentsController = require("./controllers/paymentsController");
 const auth = require("./controllers/authController");
 
 // Rota Home
 router.get("/", auth, AccountController.read);
 router.get("/get-raffles", RaffleController.read);
-router.get("/get-payment-data", AccountController.readPayment);
+router.post("/get-payment-data", AccountController.readPayment);
+router.delete("/payment-cancel", AccountController.paymentCanceled);
 
 // Rota Register
 router.post(
@@ -86,6 +87,6 @@ router.get("/raffles/get-all", RaffleController.read);
 router.get("/raffles/:id", RaffleController.readOne);
 
 // Rota pagamento
-// router.post("/payment", paymentsController.pay);
+router.post("/payment", paymentsController.pay);
 
 module.exports = router;

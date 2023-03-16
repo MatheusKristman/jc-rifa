@@ -704,6 +704,8 @@ const LogInModal = () => {
       </div>
     </div>
   );
+
+  // TODO loading no botão de login até aparecer a informação de logado
 };
 
 const Header = () => {

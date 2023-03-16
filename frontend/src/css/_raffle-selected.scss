@@ -31,7 +31,7 @@
         font-size: 0.9rem;
         margin-bottom: 10px;
         pointer-events: none;
-        
+
         strong {
           background-color: #151944;
           border-radius: 4px;
@@ -266,6 +266,11 @@
           color: $white;
           width: 85%;
           text-align: center;
+
+          img {
+            width: 15px;
+            transform: translateY(1px) scale(1.7);
+          }
         }
 
         &__price {
@@ -284,6 +289,146 @@
           }
         }
       }
+
+      &__payment-overlay {
+        width: 100%;
+        height: 100%;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(32, 33, 36, 0.5);
+        backdrop-filter: blur(10px);
+        overflow: auto;
+        padding: 40px;
+        z-index: 6;
+        opacity: 0;
+        animation: paymentFadeIn 0.2s ease forwards;
+
+        &::before {
+          content: "";
+          height: 100%;
+          display: inline-block;
+          vertical-align: middle;
+        }
+
+        &__payment-box {
+          background-color: $dark;
+          display: inline-block;
+          width: 100%;
+          height: auto;
+          max-width: 300px;
+          vertical-align: middle;
+          position: relative;
+          left: 50%;
+          transform: translateX(-50%);
+          padding: 1rem;
+          border-radius: 10px;
+          z-index: 7;
+          opacity: 0;
+          animation: paymentModalIn 0.4s ease forwards;
+
+          &__qrcode-box {
+            margin-bottom: 20px;
+            width: 100%;
+            height: auto;
+            border: 2px solid white;
+
+            svg {
+              width: 100%;
+              height: auto;
+            }
+          }
+
+          &__payment-link {
+            display: block;
+            width: 100%;
+            padding: 10px 20px;
+            margin-bottom: 10px;
+            background-color: $green;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            color: $white;
+            outline: none;
+            cursor: pointer;
+
+            @include breakpoint(largeScreen) {
+              transition: filter 0.4s ease;
+
+              &:hover {
+                filter: brightness(80%);
+              }
+            }
+          }
+
+          &__close-btn {
+            display: block;
+            width: 100%;
+            padding: 10px 20px;
+            background-color: $blue;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            color: $white;
+            outline: none;
+            cursor: pointer;
+
+            @include breakpoint(largeScreen) {
+              transition: filter 0.4s ease;
+
+              &:hover {
+                filter: brightness(80%);
+              }
+            }
+          }
+        }
+      }
     }
+  }
+}
+
+@keyframes paymentFadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes paymentModalIn {
+  from {
+    transform: translateY(-25%) translateX(-50%);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0) translateX(-50%);
+    opacity: 1;
+  }
+}
+
+@keyframes paymentModalOut {
+  from {
+    transform: translateY(0) translateX(-50%);
+    opacity: 1;
+  }
+
+  to {
+    transform: translateY(-50%) translateX(-50%);
+    opacity: 0;
+  }
+}
+
+@keyframes paymentFadeOut {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
   }
 }

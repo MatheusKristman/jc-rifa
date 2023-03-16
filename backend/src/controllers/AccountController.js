@@ -205,7 +205,16 @@ module.exports = {
     res.json(token);
   },
   buyRaffle: async (req, res) => {
-    const { id, raffleId } = req.body;
+    const {
+      id,
+      raffleId,
+      paymentId,
+      numbersAvailableToBuy,
+      numbersBuyed,
+      pricePaid,
+      status,
+      numberQuant,
+    } = req.body;
 
     const selectedUser = await Account.findOne({ _id: id });
 
@@ -214,35 +223,14 @@ module.exports = {
     }
 
     const raffleSelected = await Raffle.findOne({ _id: raffleId });
-    console.log(
-      "🚀 ~ file: AccountController.js:217 ~ buyRaffle: ~ raffleSelected:",
-      raffleSelected
-    );
 
     if (!raffleSelected) {
       return res.status(404).send("Rifa não encontrada");
     }
 
-    const numbersAvailableToBuy = [...raffleSelected.NumbersAvailable];
-    console.log(
-      "🚀 ~ file: AccountController.js:223 ~ buyRaffle: ~ numbersAvailableToBuy:",
-      numbersAvailableToBuy
-    );
     let numbersAlreadyBuyed = [...raffleSelected.BuyedNumbers];
-    let numbersBuyed = [];
 
-    for (let i = 0; i < req.body.numberQuant; i++) {
-      const random = Math.floor(Math.random() * numbersAvailableToBuy.length);
-      const chosenNumber = numbersAvailableToBuy.splice(random, 1)[0];
-      numbersBuyed.push(chosenNumber);
-    }
-    console.log("🚀 ~ file: AccountController.js:237 ~ buyRaffle: ~ numbersBuyed:", numbersBuyed);
-    console.log(
-      "🚀 ~ file: AccountController.js:223 ~ buyRaffle: ~ numbersAvailableToBuy:",
-      numbersAvailableToBuy
-    );
-
-    numbersAlreadyBuyed = [...numbersAlreadyBuyed, ...numbersBuyed];
+    numbersAlreadyBuyed = [...numbersAlreadyBuyed, ...req.body.numbersBuyed];
 
     try {
       await Raffle.findOneAndUpdate(
@@ -270,40 +258,29 @@ module.exports = {
         ...selectedUser.rafflesBuyed.filter((raffle) => raffle.raffleId === raffleId)[0]
           .numbersBuyed,
       ];
-
-      console.log(
-        "🚀 ~ file: AccountController.js:262 ~ buyRaffle: ~ actualNumbersBuyed:",
-        actualNumbersBuyed
-      );
     }
 
     const newRaffleBuyed = {
       raffleId: raffleId,
       title: raffleSelected.title,
       raffleImage: raffleSelected.raffleImage,
-      pricePaid: Number(req.body.pricePaid) * Number(req.body.numberQuant),
-      status: req.body.status,
-      numberQuant: Number(req.body.numberQuant),
+      pricePaid: Number(pricePaid),
+      paymentId: paymentId,
+      status: status,
+      numberQuant: Number(numberQuant),
       numbersBuyed:
         actualNumbersBuyed.length !== 0 ? [...actualNumbersBuyed, ...numbersBuyed] : numbersBuyed,
     };
-    console.log(
-      "🚀 ~ file: AccountController.js:285 ~ buyRaffle: ~ newRaffleBuyed:",
-      newRaffleBuyed.numberQuant
-    );
-    console.log(
-      "🚀 ~ file: AccountController.js:285 ~ buyRaffle: ~ newRaffleBuyed:",
-      newRaffleBuyed.numbersBuyed
-    );
 
     if (alreadyBuyedNumbers.length !== 0) {
       try {
-        console.log("rodando atualização");
         await Account.findOneAndUpdate(
           { _id: id },
           {
             $set: {
               "rafflesBuyed.$[elem].numbersBuyed": newRaffleBuyed.numbersBuyed,
+              "rafflesBuyed.$[elem].paymentId": newRaffleBuyed.paymentId,
+              "rafflesBuyed.$[elem].status": newRaffleBuyed.status,
             },
             $inc: {
               "rafflesBuyed.$[elem].numberQuant": newRaffleBuyed.numberQuant,
@@ -323,18 +300,17 @@ module.exports = {
       }
     } else {
       try {
-        console.log("rodando adição");
         await Account.findOneAndUpdate(
           { _id: id },
           {
             $push: {
               rafflesBuyed: [
                 {
-                  paymentId: req.body.paymentId,
                   raffleId: newRaffleBuyed.raffleId,
                   title: newRaffleBuyed.title,
                   raffleImage: newRaffleBuyed.raffleImage,
                   pricePaid: newRaffleBuyed.pricePaid,
+                  paymentId: newRaffleBuyed.paymentId,
                   status: newRaffleBuyed.status,
                   numberQuant: newRaffleBuyed.numberQuant,
                   numbersBuyed: newRaffleBuyed.numbersBuyed,
@@ -364,19 +340,64 @@ module.exports = {
     res.send(userRafflesBuyed);
   },
   readPayment: async (req, res) => {
-    const paymentId = req.query.collection_id;
-    const id = req.query.external_reference;
+    const paymentId = req.body.paymentId;
+    const id = req.body.id;
+    const status = req.body.status;
 
-    const alreadyHavePaymentId = await Account.findOne({ "rafflesBuyed.paymentId": paymentId });
-
-    if (paymentId && id !== "null") {
+    if (paymentId && id) {
       try {
-        return res.send(paymentId);
+        const userSelected = await Account.findOneAndUpdate(
+          { _id: id },
+          {
+            $set: {
+              "rafflesBuyed.$[elem].status": status,
+            },
+          },
+          {
+            arrayFilters: [
+              {
+                "elem.paymentId": paymentId,
+              },
+            ],
+            new: true,
+          }
+        );
+
+        return res.send(userSelected);
       } catch (error) {
         return res.status(404).send(error.message);
       }
     } else {
       return res.status(400).send("Sem referencia");
+    }
+  },
+  paymentCanceled: async (req, res) => {
+    const { id, paymentId, raffleId } = req.query;
+
+    let userToModify = await Account.findOne({ _id: id });
+
+    userToModify = userToModify.rafflesBuyed.filter((raffle) => {
+      return raffle.raffleId !== raffleId;
+    });
+
+    if (paymentId && id) {
+      try {
+        const userSelected = await Account.findOneAndUpdate(
+          { _id: id },
+          {
+            $set: {
+              rafflesBuyed: userToModify,
+            },
+          },
+          {
+            new: true,
+          }
+        );
+
+        return res.send(userSelected);
+      } catch (error) {
+        return res.status(400).send(error.message);
+      }
     }
   },
 };

@@ -10,6 +10,7 @@ import {
 import { CiCircleMinus, CiCirclePlus } from "react-icons/ci";
 import { Link } from "react-router-dom";
 import { shallow } from "zustand/shallow";
+import buyingLoading from "../../../assets/buying-loading.svg";
 
 import PrizeDisplayed from "../PrizeDisplayed";
 import useRaffleStore from "../../../stores/useRaffleStore";
@@ -37,6 +38,13 @@ const RaffleSelectedContent = () => {
     isErrorBoxDisplaying,
     setToErrorBoxDisplay,
     setToErrorBoxDontDisplay,
+    openPaymentModal,
+    closePaymentModal,
+    isBuying,
+    setToBuy,
+    setToNotBuy,
+    setQrCodePayment,
+    setPaymentLink,
   } = useBuyNumbersStore(
     (state) => ({
       numberQuant: state.numberQuant,
@@ -49,6 +57,13 @@ const RaffleSelectedContent = () => {
       isErrorBoxDisplaying: state.isErrorBoxDisplaying,
       setToErrorBoxDisplay: state.setToErrorBoxDisplay,
       setToErrorBoxDontDisplay: state.setToErrorBoxDontDisplay,
+      openPaymentModal: state.openPaymentModal,
+      closePaymentModal: state.closePaymentModal,
+      isBuying: state.isBuying,
+      setToBuy: state.setToBuy,
+      setToNotBuy: state.setToNotBuy,
+      setQrCodePayment: state.setQrCodePayment,
+      setPaymentLink: state.setPaymentLink,
     }),
     shallow
   );
@@ -65,6 +80,9 @@ const RaffleSelectedContent = () => {
 
   useEffect(() => {
     setRaffleSelected({});
+    setQrCodePayment("");
+    setPaymentLink("");
+    setToNotBuy();
   }, []);
 
   useEffect(() => {
@@ -98,6 +116,14 @@ const RaffleSelectedContent = () => {
     }
   }, [isMessageBoxDisplaying, isErrorBoxDisplaying]);
 
+  useEffect(() => {
+    if (isBuying) {
+      document.documentElement.style.overflowY = "hidden";
+    } else {
+      document.documentElement.style.overflowY = "unset";
+    }
+  }, [isBuying]);
+
   function calcValues(value, factor) {
     const valueFormated = convertCurrencyToNumber(value);
     const calc = valueFormated * factor;
@@ -127,20 +153,63 @@ const RaffleSelectedContent = () => {
     const numbersBuyed = [];
 
     if (numberQuant <= numbersAvailableToBuy.length && isUserLogged) {
+      setToBuy();
+
       const priceNumber = convertCurrencyToNumber(raffleSelected.price);
 
+      for (let i = 0; i < numberQuant; i++) {
+        const random = Math.floor(Math.random() * numbersAvailableToBuy.length);
+        const chosenNumber = numbersAvailableToBuy.splice(random, 1)[0];
+        numbersBuyed.push(chosenNumber);
+      }
+
+      console.log(
+        "🚀 ~ file: RaffleSelectedContent.jsx:147 ~ handleBuy ~ numbersBuyed:",
+        numbersBuyed
+      );
+      console.log(
+        "🚀 ~ file: RaffleSelectedContent.jsx:146 ~ handleBuy ~ numbersAvailableToBuy:",
+        numbersAvailableToBuy
+      );
       api
         .post(`/payment`, {
           id: user._id,
+          fullPrice: priceNumber * numberQuant,
           title: raffleSelected.title,
-          quantity: numberQuant,
-          raffleId: raffleSelected._id,
-          unit_price: priceNumber,
-          ddd: user.tel.slice(0, 4),
-          tel: Number(user.tel.slice(5, user.tel.length).replace("-", "")),
+          email: user.email,
+          firstName: user.name.split(" ")[0],
+          lastName: user.name.split(" ").slice(1).join(" "),
+          cpf: user.cpf,
         })
         .then((res) => {
-          window.location.href = res.data.response.response.sandbox_init_point;
+          console.log(res.data.response.response);
+          setQrCodePayment(
+            res.data.response.response.point_of_interaction.transaction_data.qr_code
+          );
+
+          setPaymentLink(
+            res.data.response.response.point_of_interaction.transaction_data.ticket_url
+          );
+
+          api
+            .post("/raffles/buy", {
+              id: user._id,
+              raffleId: raffleSelected._id,
+              paymentId: res.data.response.response.id,
+              numbersAvailableToBuy: numbersAvailableToBuy,
+              numbersBuyed: numbersBuyed,
+              pricePaid: res.data.response.response.transaction_amount,
+              status: res.data.response.response.status,
+              numberQuant: numberQuant,
+            })
+            .then((res) => {
+              openPaymentModal();
+              setToNotBuy();
+              setUser(res.data);
+            })
+            .catch((error) => {
+              console.log(error);
+            });
         })
         .catch((error) => console.error(error));
     } else if (numberQuant > numbersAvailableToBuy.length) {
@@ -347,11 +416,18 @@ const RaffleSelectedContent = () => {
         <button
           onClick={handleBuy}
           type="button"
+          style={isBuying ? { filter: "brightness(80%)", pointerEvents: "none" } : {}}
           className="raffle-selected__raffle-selected-content__container__buy-btn"
         >
-          <span className="raffle-selected__raffle-selected-content__container__buy-btn__desc">
-            <BsCheck2Circle /> Participar do sorteio
-          </span>
+          {isBuying ? (
+            <span className="raffle-selected__raffle-selected-content__container__buy-btn__desc">
+              <img src={buyingLoading} alt="Processando..." />
+            </span>
+          ) : (
+            <span className="raffle-selected__raffle-selected-content__container__buy-btn__desc">
+              <BsCheck2Circle /> Participar do sorteio
+            </span>
+          )}
 
           <span className="raffle-selected__raffle-selected-content__container__buy-btn__price">
             {calcValues(raffleSelected.price, numberQuant)}
@@ -363,3 +439,6 @@ const RaffleSelectedContent = () => {
 };
 
 export default RaffleSelectedContent;
+
+// TODO pix do mercado pago
+// TODO colocar loading no botão de compra até ser redirecionado

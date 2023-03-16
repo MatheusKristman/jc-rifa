@@ -2,7 +2,7 @@ import React from "react";
 import { WinnerBox } from "..";
 import useWinnerStore from "../../../stores/useWinnerStore";
 import NoUserPhoto from "../../../assets/no-user-photo.png";
-import DefaultPrize from '../../../assets/default-prize.jpg';
+import DefaultPrize from "../../../assets/default-prize.jpg";
 import _arrayBufferToBase64 from "../../../hooks/useArrayBufferToBase64";
 
 const WinnersContent = () => {
@@ -20,28 +20,31 @@ const WinnersContent = () => {
         </div>
 
         <div className="winners__winners-content__container__wrapper">
-          {winners.length !== 0 && winners.slice(0, 10).map((winner) => (
-            <WinnerBox
-              key={winner._id}
-              profileImage={
-                winner.profileImage?.data
-                  ? `data:${winner.profileImage.contentType};base64,${_arrayBufferToBase64(
-                      winner.profileImage.data.data
-                    )}`
-                  : NoUserPhoto
-              }
-              name={winner.name}
-              raffleTitle={winner.raffleTitle}
-              raffleNumber={winner.raffleNumber}
-              raffleImage={
-                winner.raffleImage?.data
-                  ? `data:${winner.raffleImage.contentType};base64,${_arrayBufferToBase64(
-                      winner.raffleImage.data.data
-                    )}`
-                  : DefaultPrize
-              }
-            />
-          ))}
+          {winners.length !== 0 &&
+            winners
+              .slice(0, 10)
+              .map((winner) => (
+                <WinnerBox
+                  key={winner._id}
+                  profileImage={
+                    winner.profileImage?.data
+                      ? `data:${winner.profileImage.contentType};base64,${_arrayBufferToBase64(
+                          winner.profileImage.data.data
+                        )}`
+                      : NoUserPhoto
+                  }
+                  name={winner.name}
+                  raffleTitle={winner.raffleTitle}
+                  raffleNumber={winner.raffleNumber}
+                  raffleImage={
+                    winner.raffleImage?.data
+                      ? `data:${winner.raffleImage.contentType};base64,${_arrayBufferToBase64(
+                          winner.raffleImage.data.data
+                        )}`
+                      : DefaultPrize
+                  }
+                />
+              ))}
         </div>
       </div>
     </div>
@@ -49,3 +52,5 @@ const WinnersContent = () => {
 };
 
 export default WinnersContent;
+
+// loading enquanto carrega os ganhadores

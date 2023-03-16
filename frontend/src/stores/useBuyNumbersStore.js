@@ -13,8 +13,15 @@ const useBuyNumbersStore = create((set) => ({
   isErrorBoxDisplaying: false,
   setToErrorBoxDisplay: () => set(() => ({ isErrorBoxDisplaying: true })),
   setToErrorBoxDontDisplay: () => set(() => ({ isErrorBoxDisplaying: false })),
-  messageText: '',
+  messageText: "",
   setMessageText: (value) => set(() => ({ messageText: value })),
+  isPaymentModalOpen: false,
+  openPaymentModal: () => set(() => ({ isPaymentModalOpen: true })),
+  closePaymentModal: () => set(() => ({ isPaymentModalOpen: false })),
+  qrCodePayment: "",
+  setQrCodePayment: (value) => set(() => ({ qrCodePayment: value })),
+  paymentLink: "",
+  setPaymentLink: (value) => set(() => ({ paymentLink: value })),
 }));
 
 export default useBuyNumbersStore;

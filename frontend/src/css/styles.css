@@ -1562,6 +1562,10 @@ html, body {
   width: 85%;
   text-align: center;
 }
+.raffle-selected__raffle-selected-content__container__buy-btn__desc img {
+  width: 15px;
+  transform: translateY(1px) scale(1.7);
+}
 .raffle-selected__raffle-selected-content__container__buy-btn__price {
   font-size: 1rem;
   font-weight: 600;
@@ -1577,7 +1581,133 @@ html, body {
     filter: brightness(80%);
   }
 }
+.raffle-selected__raffle-selected-content__container__payment-overlay {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(32, 33, 36, 0.5);
+  -webkit-backdrop-filter: blur(10px);
+          backdrop-filter: blur(10px);
+  overflow: auto;
+  padding: 40px;
+  z-index: 6;
+  opacity: 0;
+  animation: paymentFadeIn 0.2s ease forwards;
+}
+.raffle-selected__raffle-selected-content__container__payment-overlay::before {
+  content: "";
+  height: 100%;
+  display: inline-block;
+  vertical-align: middle;
+}
+.raffle-selected__raffle-selected-content__container__payment-overlay__payment-box {
+  background-color: #080812;
+  display: inline-block;
+  width: 100%;
+  height: auto;
+  max-width: 300px;
+  vertical-align: middle;
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 1rem;
+  border-radius: 10px;
+  z-index: 7;
+  opacity: 0;
+  animation: paymentModalIn 0.4s ease forwards;
+}
+.raffle-selected__raffle-selected-content__container__payment-overlay__payment-box__qrcode-box {
+  margin-bottom: 20px;
+  width: 100%;
+  height: auto;
+  border: 2px solid white;
+}
+.raffle-selected__raffle-selected-content__container__payment-overlay__payment-box__qrcode-box svg {
+  width: 100%;
+  height: auto;
+}
+.raffle-selected__raffle-selected-content__container__payment-overlay__payment-box__payment-link {
+  display: block;
+  width: 100%;
+  padding: 10px 20px;
+  margin-bottom: 10px;
+  background-color: #198754;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  color: #fff;
+  outline: none;
+  cursor: pointer;
+}
+@media screen and (min-width: 1024px) {
+  .raffle-selected__raffle-selected-content__container__payment-overlay__payment-box__payment-link {
+    transition: filter 0.4s ease;
+  }
+  .raffle-selected__raffle-selected-content__container__payment-overlay__payment-box__payment-link:hover {
+    filter: brightness(80%);
+  }
+}
+.raffle-selected__raffle-selected-content__container__payment-overlay__payment-box__close-btn {
+  display: block;
+  width: 100%;
+  padding: 10px 20px;
+  background-color: #0B5ED7;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  color: #fff;
+  outline: none;
+  cursor: pointer;
+}
+@media screen and (min-width: 1024px) {
+  .raffle-selected__raffle-selected-content__container__payment-overlay__payment-box__close-btn {
+    transition: filter 0.4s ease;
+  }
+  .raffle-selected__raffle-selected-content__container__payment-overlay__payment-box__close-btn:hover {
+    filter: brightness(80%);
+  }
+}
 
+@keyframes paymentFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes paymentModalIn {
+  from {
+    transform: translateY(-25%) translateX(-50%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0) translateX(-50%);
+    opacity: 1;
+  }
+}
+@keyframes paymentModalOut {
+  from {
+    transform: translateY(0) translateX(-50%);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(-50%) translateX(-50%);
+    opacity: 0;
+  }
+}
+@keyframes paymentFadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
 .prizes {
   display: flex;
   align-items: center;
@@ -2226,60 +2356,6 @@ html, body {
   .contact__contact-content__container__form__submit-btn:hover {
     filter: brightness(80%);
   }
-}
-
-.my-purchases {
-  width: 100%;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-.my-purchases__my-purchases-content {
-  flex: 1;
-  width: 100%;
-}
-.my-purchases__my-purchases-content__container {
-  width: 100%;
-  max-width: 600px;
-  margin: 25px auto;
-  background-color: #080812;
-  padding: 16px 12px;
-  border-radius: 10px;
-}
-.my-purchases__my-purchases-content__container__info-wrapper {
-  display: flex;
-  align-items: flex-end;
-  gap: 5px;
-  margin-bottom: 10px;
-}
-.my-purchases__my-purchases-content__container__info-wrapper__title {
-  color: #fff;
-  font-size: 1.35rem;
-  font-weight: 600;
-}
-.my-purchases__my-purchases-content__container__info-wrapper__desc {
-  color: #fff;
-  font-size: 0.9rem;
-  opacity: 0.7;
-}
-.my-purchases__my-purchases-content__container__result-box {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-.my-purchases__my-purchases-content__container__result-box__alert-box {
-  width: 100%;
-  background-color: #CFF4FC;
-  padding: 15px 20px;
-  border-radius: 6px;
-}
-.my-purchases__my-purchases-content__container__result-box__alert-box__desc {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 1rem;
-  color: #055160;
 }
 
 .change-password {

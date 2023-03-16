@@ -1,41 +1,31 @@
 const mercadopago = require("mercadopago");
-const path = require("path");
+require("dotenv").config();
 
 console.log(process.env.MERCADO_PAGO_ACCESS_TOKEN);
 
-mercadopago.configure({ access_token: process.env.MERCADO_PAGO_ACCESS_TOKEN });
+mercadopago.configurations.setAccessToken(process.env.MERCADO_PAGO_ACCESS_TOKEN);
 
 module.exports = {
   pay: async (req, res) => {
-    const preference = {
-      notification_url: "https://webhook.site/56747dd4-9027-4df6-bea2-32de92933dcd",
+    const paymentData = {
+      notification_url: "https://eoqhcniy7v8myie.m.pipedream.net",
       external_reference: req.body.id,
-      items: [
-        {
-          title: req.body.title,
-          quantity: req.body.quantity,
-          id: req.body.raffleId,
-          currency_id: "BRL",
-          unit_price: req.body.unit_price,
-        },
-      ],
+      transaction_amount: req.body.fullPrice,
+      description: req.body.title,
+      payment_method_id: "pix",
       payer: {
-        phone: {
-          area_code: req.body.ddd,
-          number: req.body.tel,
+        email: req.body.email,
+        first_name: req.body.firstName,
+        last_name: req.body.lastName,
+        identification: {
+          type: "CPF",
+          number: req.body.cpf,
         },
       },
-      back_urls: {
-        success: "https://jc-rifa.onrender.com",
-        failure: "",
-        pending: "",
-      },
-      auto_return: "approved",
-      // binary_mode: true,
     };
 
-    mercadopago.preferences
-      .create(preference)
+    mercadopago.payment
+      .create(paymentData)
       .then((response) => res.status(200).send({ response }))
       .catch((error) => res.status(400).send({ error: error.message }));
   },

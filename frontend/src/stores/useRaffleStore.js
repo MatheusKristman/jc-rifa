@@ -1,4 +1,4 @@
-import { create } from 'zustand';
+import { create } from "zustand";
 
 const useRaffleStore = create((set) => ({
   raffles: [],
@@ -9,12 +9,12 @@ const useRaffleStore = create((set) => ({
   setProgress: (value, full) => set(() => ({ progress: (100 * value) / full })),
   participants: [],
   setParticipants: (value) => set(() => ({ participants: value })),
-  finishNumber: '',
+  finishNumber: "",
   setFinishNumber: (e) => set(() => ({ finishNumber: e.target.value })),
   setFinishNumberFromFetch: (value) => set(() => ({ finishNumber: value })),
   winner: {},
   setWinner: (value) => set(() => ({ winner: value })),
-  finishNumberError: '',
+  finishNumberError: "",
   setFinishNumberError: (value) => set(() => ({ finishNumberError: value })),
   isActiveOn: true,
   setActiveOn: () => set(() => ({ isActiveOn: true })),

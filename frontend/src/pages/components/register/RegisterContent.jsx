@@ -670,3 +670,6 @@ const RegisterContent = () => {
 };
 
 export default RegisterContent;
+
+// TODO colocar para cadastrar somente cpf, nome, email, telefone, senha
+// TODO colocar loading no botão de salvar até aparecer a notificação de sucesso

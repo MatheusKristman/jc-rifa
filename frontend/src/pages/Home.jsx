@@ -40,36 +40,55 @@ const Home = () => {
   }, []);
 
   useEffect(() => {
-    if (location.search.includes("status=approved") && user.hasOwnProperty("_id")) {
-      api
-        .get("/get-payment-data" + location.search)
-        .then((res) => {
-          axios
-            .get(`https://api.mercadopago.com/v1/payments/${String(res.data)}`, {
-              headers: {
-                Authorization: `Bearer ${import.meta.env.VITE_MERCADO_PAGO_ACCESS_TOKEN}`,
-              },
-            })
-            .then((res) => {
+    if (user.hasOwnProperty("_id")) {
+      let paymentIds = [];
+
+      paymentIds = user.rafflesBuyed.map((raffle) => raffle.paymentId);
+
+      paymentIds.forEach((id, index) => {
+        axios
+          .get(`https://api.mercadopago.com/v1/payments/${id}`, {
+            headers: {
+              Authorization: `Bearer ${import.meta.env.VITE_MERCADO_PAGO_ACCESS_TOKEN}`,
+            },
+          })
+          .then((res) => {
+            const body = {
+              id: user._id,
+              paymentId: res.data.id,
+              status: res.data.status,
+            };
+
+            const raffleToBeDeleted = user.rafflesBuyed.filter(
+              (raffle) => raffle.paymentId == res.data.id
+            );
+
+            if (
+              body.status === "rejected" ||
+              body.status === "cancelled" ||
+              body.status === "refunded" ||
+              body.status === "charged_back"
+            ) {
+              // TODOdevolver os números para rifa
               api
-                .post("/raffles/buy", {
-                  paymentId: res.data.id,
-                  id: user._id,
-                  raffleId: res.data.additional_info.items[0].id,
-                  pricePaid: res.data.additional_info.items[0].unit_price,
-                  status: res.data.status,
-                  numberQuant: res.data.additional_info.items[0].quantity,
-                })
+                .delete(
+                  `/payment-cancel?id=${body.id}&paymentId=${body.paymentId}&raffleId=${raffleToBeDeleted[0].raffleId}`
+                )
                 .then((res) => {
-                  window.location.replace("https://jc-rifa.onrender.com");
+                  console.log(res.data);
                 })
-                .catch((error) => {
-                  console.log(error);
-                });
-            })
-            .catch((error) => console.error(error));
-        })
-        .catch((error) => console.error(error));
+                .catch((error) => console.error(error));
+            } else {
+              api
+                .post("/get-payment-data", body)
+                .then((res) => {
+                  console.log(res.data);
+                })
+                .catch((error) => console.error(error));
+            }
+          })
+          .catch((error) => console.error(error));
+      });
     }
   }, [user]);
 
@@ -111,3 +130,5 @@ const Home = () => {
 };
 
 export default Home;
+
+// TODO loading até dar fetch em todos os dados
