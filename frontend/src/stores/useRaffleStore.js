@@ -25,6 +25,7 @@ const useRaffleStore = create((set) => ({
   sliceBegin: 0,
   sliceEnd: 10,
   pageMultiplier: 1,
+  sliceEndBiggerThanRaffles: (value) => set(() => ({ sliceEnd: value })),
   setSliceBegin: () => set((state) => ({ sliceBegin: state.sliceEnd - 10 })),
   setSliceEnd: () => set((state) => ({ sliceEnd: 10 * state.pageMultiplier })),
   setNextPage: () => set((state) => ({ pageMultiplier: state.pageMultiplier + 1 })),
@@ -40,6 +41,15 @@ const useRaffleStore = create((set) => ({
   isNextPageBtnDisplayed: false,
   showNextPageBtn: () => set(() => ({ isNextPageBtnDisplayed: true })),
   hideNextPageBtn: () => set(() => ({ isNextPageBtnDisplayed: false })),
+  isUsersNumberBuyedLoading: true,
+  setToLoadUsersNumberBuyed: () => set(() => ({ isUsersNumberBuyedLoading: true })),
+  setNotToLoadUsersNumberBuyed: () => set(() => ({ isUsersNumberBuyedLoading: false })),
+  isChoosingWinner: false,
+  setToChooseWinner: () => set(() => ({ isChoosingWinner: true })),
+  setNotToChooseWinner: () => set(() => ({ isChoosingWinner: false })),
+  isFetchingWinner: false,
+  setToFetchWinner: () => set(() => ({ isFetchingWinner: true })),
+  setNotToFetchWinner: () => set(() => ({ isFetchingWinner: false })),
 }));
 
 export default useRaffleStore;

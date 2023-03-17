@@ -3,16 +3,17 @@ import { shallow } from "zustand/shallow";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
-import api from '../../../services/api';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from "../../../services/api";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import _arrayBufferToBase64 from "../../../hooks/useArrayBufferToBase64";
-
 
 import noUserPhoto from "../../../assets/no-user-photo.png";
 import useRegisterStore from "../../../stores/useRegisterStore";
 import useUserStore from "../../../stores/useUserStore";
 import useIsUserLogged from "../../../hooks/useIsUserLogged";
+import useGeneralStore from "../../../stores/useGeneralStore";
+import Loading from "../Loading";
 
 const UpdateRegistrationContent = () => {
   const {
@@ -76,11 +77,11 @@ const UpdateRegistrationContent = () => {
       cpf: state.cpf,
       setCpfFromFetch: state.setCpfFromFetch,
       email: state.email,
-      setEmail: state.setEmail,   
-      setEmailFromFetch: state.setEmailFromFetch,   
+      setEmail: state.setEmail,
+      setEmailFromFetch: state.setEmailFromFetch,
       tel: state.tel,
       setTel: state.setTel,
-      setTelFromFetch: state.setTelFromFetch,   
+      setTelFromFetch: state.setTelFromFetch,
       cep: state.cep,
       setCepFromFetch: state.setCepFromFetch,
       address: state.address,
@@ -128,133 +129,185 @@ const UpdateRegistrationContent = () => {
     setUser: state.setUser,
   }));
 
-  const navigate = useNavigate();  
+  const { isLoading, setToLoad, setNotToLoad, setToAnimateFadeIn, setToAnimateFadeOut } = useGeneralStore((state) => ({
+    isLoading: state.isLoading,
+    setToLoad: state.setToLoad,
+    setNotToLoad: state.setNotToLoad,
+    setToAnimateFadeIn: state.setToAnimateFadeIn,
+    setToAnimateFadeOut: state.setToAnimateFadeOut,
+  }));
+
+  const navigate = useNavigate();
 
   useLayoutEffect(() => {
     const fetchingUserData = () => {
-      if(isUserLogged) {
+      if (isUserLogged) {
         setProfileImage({
-          url: user.profileImage.data ? `data:${user.profileImage.contentType};base64,${_arrayBufferToBase64(user.profileImage.data.data)}` : null,
+          url: user.profileImage.data
+            ? `data:${user.profileImage.contentType};base64,${_arrayBufferToBase64(user.profileImage.data.data)}`
+            : null,
         });
 
         setNameFromFetch(user.name);
-        setValue('name', user.name);
+        setValue("name", user.name);
 
         setEmailFromFetch(user.email);
-        setValue('email', user.email);
+        setValue("email", user.email);
 
         setTelFromFetch(user.tel);
-        setValue('tel', user.tel);
+        setValue("tel", user.tel);
 
         setCpfFromFetch(user.cpf);
-        setValue('cpf', user.cpf);
+        setValue("cpf", user.cpf);
 
-        setCepFromFetch(user.cep);
-        setValue('cep', user.cep);
+        if (user.hasOwnProperty("cep")) {
+          setCepFromFetch(user.cep);
+          setValue("cep", user.cep);
+        }
 
-        setAddressFromFetch(user.address);
-        setValue('address', user.address);
+        if (user.hasOwnProperty("address")) {
+          setAddressFromFetch(user.address);
+          setValue("address", user.address);
+        }
 
-        setNumberFromFetch(user.number);
-        setValue('number', user.number);
+        if (user.hasOwnProperty("number")) {
+          setNumberFromFetch(user.number);
+          setValue("number", user.number);
+        }
 
-        setNeighborhoodFromFetch(user.neighborhood);
-        setValue('neighborhood', user.neighborhood);
+        if (user.hasOwnProperty("neighborhood")) {
+          setNeighborhoodFromFetch(user.neighborhood);
+          setValue("neighborhood", user.neighborhood);
+        }
 
-        setComplementFromFetch(user.complement);
-        setValue('complement', user.complement);
+        if (user.hasOwnProperty("complement")) {
+          setComplementFromFetch(user.complement);
+          setValue("complement", user.complement);
+        }
 
-        setUfFromFetch(user.uf);
-        setValue('uf', user.uf);
+        if (user.hasOwnProperty("uf")) {
+          setUfFromFetch(user.uf);
+          setValue("uf", user.uf);
+        }
 
-        setCityFromFetch(user.city);
-        setValue('city', user.city);
+        if (user.hasOwnProperty("city")) {
+          setCityFromFetch(user.city);
+          setValue("city", user.city);
+        }
 
-        setReferenceFromFetch(user.reference);
-        setValue('reference', user.reference);
+        if (user.hasOwnProperty("reference")) {
+          setReferenceFromFetch(user.reference);
+          setValue("reference", user.reference);
+        }
       }
-    }
-
+    };
 
     fetchingUserData();
   }, [user]);
 
   useEffect(() => {
-    axios.get('https://servicodados.ibge.gov.br/api/v1/localidades/estados/')
-    .then((res) => {
-      setUfOptions(res.data);
-    })
-    .catch((error) => console.error(error));
+    setToLoad();
+    setToAnimateFadeIn();
+    axios
+      .get("https://servicodados.ibge.gov.br/api/v1/localidades/estados/")
+      .then((res) => {
+        setUfOptions(res.data);
+
+        setToAnimateFadeOut();
+
+        setTimeout(() => {
+          setNotToLoad();
+        }, 400);
+      })
+      .catch((error) => console.error(error));
   }, []);
-  
+
   useEffect(() => {
     const ufSelected = ufOptions.filter((option) => option.sigla === uf);
 
     if (ufSelected.length > 0) {
-      axios.get(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${ufSelected[0].id}/municipios`)
-      .then((res) => setCityOptions(res.data))
-      .catch((error) => console.error(error));
+      axios
+        .get(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${ufSelected[0].id}/municipios`)
+        .then((res) => setCityOptions(res.data))
+        .catch((error) => console.error(error));
     } else {
       setCityOptions([]);
     }
   }, [uf]);
 
   useEffect(() => {
-    if (cep.replace('-', '').length === 8) {
-      axios.get(`https://viacep.com.br/ws/${cep.replace('-', '')}/json/`)
-      .then(res => {
-        setAddressFromFetch(res.data.logradouro);
-        setValue('address', res.data.logradouro);
+    console.log(cep.length);
+    if (user.hasOwnProperty("cep")) {
+      if (cep.replace("-", "").length === 8) {
+        axios.get(`https://viacep.com.br/ws/${cep.replace("-", "")}/json/`).then((res) => {
+          setAddressFromFetch(res.data.logradouro);
+          setValue("address", res.data.logradouro);
 
-        setNeighborhoodFromFetch(res.data.bairro);
-        setValue('neighborhood', res.data.bairro);
+          setNeighborhoodFromFetch(res.data.bairro);
+          setValue("neighborhood", res.data.bairro);
 
-        setUfFromFetch(res.data.uf);
-        setValue('uf', res.data.uf);
+          setUfFromFetch(res.data.uf);
+          setValue("uf", res.data.uf);
 
-        setCityFromFetch(res.data.localidade);
-        setValue('city', res.data.localidade);
-      });
+          setCityFromFetch(res.data.localidade);
+          setValue("city", res.data.localidade);
+        });
+      }
     }
   }, [cep]);
 
   useEffect(() => {
-    function submitData() {      
+    function submitData() {
       if (isSubmitting) {
         const sendToDB = () => {
+          setToLoad();
+          setToAnimateFadeIn();
+
           const formData = new FormData();
-          formData.append('id', user._id);
-          formData.append('profileImage', profileImage.file ? profileImage.file : noUserPhoto);
-          formData.append('name', name);
-          formData.append('email', email);
-          formData.append('tel', tel);
-          formData.append('cpf', cpf);
-          formData.append('cep', cep);
-          formData.append('address', address);
-          formData.append('number', number);
-          formData.append('neighborhood', neighborhood);
-          formData.append('complement', complement);
-          formData.append('uf', uf);
-          formData.append('city', city);
-          formData.append('reference', reference);
+          formData.append("id", user._id);
+          formData.append("profileImage", profileImage.file ? profileImage.file : noUserPhoto);
+          formData.append("name", name);
+          formData.append("email", email);
+          formData.append("tel", tel);
+          formData.append("cpf", cpf);
+          formData.append("cep", cep);
+          formData.append("address", address);
+          formData.append("number", number);
+          formData.append("neighborhood", neighborhood);
+          formData.append("complement", complement);
+          formData.append("uf", uf);
+          formData.append("city", city);
+          formData.append("reference", reference);
 
           api
             .put("/updateRegistration/updating", formData, {
               headers: {
-                'Content-Type': 'multipart/form-data',
-              }
+                "Content-Type": "multipart/form-data",
+              },
             })
             .then((res) => {
               registerComplete();
-              setRegisterMessage('Cadastro atualizado com sucesso');
-              setUser({...res.data});
+              setRegisterMessage("Cadastro atualizado com sucesso");
+              setUser({ ...res.data });
+
+              setToAnimateFadeOut();
+
+              setTimeout(() => {
+                setNotToLoad();
+              }, 400);
             })
             .catch((error) => {
               if (error) {
-                setRegisterMessage('Ocorreu um erro na atualização do cadastro');
+                setRegisterMessage("Ocorreu um erro na atualização do cadastro");
               }
               errorExist();
               console.log(error);
+
+              setToAnimateFadeOut();
+
+              setTimeout(() => {
+                setNotToLoad();
+              }, 400);
             });
         };
         sendToDB();
@@ -269,7 +322,7 @@ const UpdateRegistrationContent = () => {
       setTimeout(() => {
         registerNotComplete();
         notSubmitting();
-        navigate('/');
+        navigate("/");
       }, 3000);
     }
 
@@ -281,7 +334,7 @@ const UpdateRegistrationContent = () => {
     }
   }, [isRegisterCompleted, errorSubmitting]);
 
-  useIsUserLogged('/updateRegistration');
+  useIsUserLogged("/updateRegistration");
 
   const handleFileChange = async (e) => {
     const file = await e.target.files[0];
@@ -346,14 +399,14 @@ const UpdateRegistrationContent = () => {
     cpf: Yup.string()
       .min(6, "Insira acima de 6 caracteres")
       .max(50, "Insira abaixo de 50 caracteres")
-      .required("CPF é obrigatório"),    
-    cep: Yup.string().required("Cep é obrigatório"),
-    address: Yup.string().required("Endereço é obrigatório"),
-    number: Yup.string().required("Número é obrigatório"),
-    neighborhood: Yup.string().required("Bairro é obrigatório"),
+      .required("CPF é obrigatório"),
+    cep: Yup.string(),
+    address: Yup.string(),
+    number: Yup.string(),
+    neighborhood: Yup.string(),
     complement: Yup.string(),
-    uf: Yup.string().required("UF é obrigatório"),
-    city: Yup.string().required("Cidade é obrigatória"),
+    uf: Yup.string(),
+    city: Yup.string(),
     reference: Yup.string(),
   });
 
@@ -375,6 +428,7 @@ const UpdateRegistrationContent = () => {
 
   return (
     <div className="register__register-content">
+      {isLoading && <Loading>{ufOptions.length === 0 ? "Aguarde um momento" : "Enviando dados"}</Loading>}
       <form onSubmit={handleSubmit(onSubmit)} className="register__register-content__form">
         <label htmlFor="profileImage" className="register__register-content__form__image-label">
           <div className="register__register-content__form__image-label__image-box">
@@ -395,11 +449,8 @@ const UpdateRegistrationContent = () => {
           />
         </label>
 
-        <div style={user.length > 0 ? { display: 'none' } : {}} className="register__register-content__form__profile-data-box">
-          <label
-            htmlFor="name"
-            className="register__register-content__form__profile-data-box__label"
-          >
+        <div style={user.length > 0 ? { display: "none" } : {}} className="register__register-content__form__profile-data-box">
+          <label htmlFor="name" className="register__register-content__form__profile-data-box__label">
             Nome Completo
             <input
               {...register("name")}
@@ -414,12 +465,9 @@ const UpdateRegistrationContent = () => {
               className="register__register-content__form__profile-data-box__label__input"
             />
           </label>
-          {errors.name && <span>{errors.name.message}</span>}          
+          {errors.name && <span>{errors.name.message}</span>}
 
-          <label
-            htmlFor="email"
-            className="register__register-content__form__profile-data-box__label"
-          >
+          <label htmlFor="email" className="register__register-content__form__profile-data-box__label">
             E-mail
             <input
               {...register("email")}
@@ -436,10 +484,7 @@ const UpdateRegistrationContent = () => {
           </label>
           {errors.email && <span>{errors.email.message}</span>}
 
-          <label
-            htmlFor="tel"
-            className="register__register-content__form__profile-data-box__label"
-          >
+          <label htmlFor="tel" className="register__register-content__form__profile-data-box__label">
             Telefone
             <input
               {...register("tel")}
@@ -457,10 +502,7 @@ const UpdateRegistrationContent = () => {
           </label>
           {errors.tel && <span>{errors.tel.message}</span>}
 
-          <label
-            htmlFor="cpf"
-            className="register__register-content__form__profile-data-box__label"
-          >
+          <label htmlFor="cpf" className="register__register-content__form__profile-data-box__label">
             CPF
             <input
               {...register("cpf")}
@@ -475,14 +517,11 @@ const UpdateRegistrationContent = () => {
               className="register__register-content__form__profile-data-box__label__input"
             />
           </label>
-          {errors.cpf && <span>{errors.cpf.message}</span>}          
+          {errors.cpf && <span>{errors.cpf.message}</span>}
         </div>
 
         <div className="register__register-content__form__location-data-box">
-          <label
-            htmlFor="cep"
-            className="register__register-content__form__location-data-box__label"
-          >
+          <label htmlFor="cep" className="register__register-content__form__location-data-box__label">
             CEP
             <input
               {...register("cep")}
@@ -497,10 +536,7 @@ const UpdateRegistrationContent = () => {
           </label>
           {errors.cep && <span>{errors.cep.message}</span>}
 
-          <label
-            htmlFor="address"
-            className="register__register-content__form__location-data-box__label"
-          >
+          <label htmlFor="address" className="register__register-content__form__location-data-box__label">
             Endereço
             <input
               {...register("address")}
@@ -515,10 +551,7 @@ const UpdateRegistrationContent = () => {
           </label>
           {errors.address && <span>{errors.address.message}</span>}
 
-          <label
-            htmlFor="addressNumber"
-            className="register__register-content__form__location-data-box__label"
-          >
+          <label htmlFor="addressNumber" className="register__register-content__form__location-data-box__label">
             Número
             <input
               {...register("number")}
@@ -533,10 +566,7 @@ const UpdateRegistrationContent = () => {
           </label>
           {errors.number && <span>{errors.number.message}</span>}
 
-          <label
-            htmlFor="neighborhood"
-            className="register__register-content__form__location-data-box__label"
-          >
+          <label htmlFor="neighborhood" className="register__register-content__form__location-data-box__label">
             Bairro
             <input
               {...register("neighborhood")}
@@ -551,10 +581,7 @@ const UpdateRegistrationContent = () => {
           </label>
           {errors.neighborhood && <span>{errors.neighborhood.message}</span>}
 
-          <label
-            htmlFor="complement"
-            className="register__register-content__form__location-data-box__label"
-          >
+          <label htmlFor="complement" className="register__register-content__form__location-data-box__label">
             Complemento
             <input
               {...register("complement")}
@@ -569,10 +596,7 @@ const UpdateRegistrationContent = () => {
           </label>
           {errors.complement && <span>{errors.complement.message}</span>}
 
-          <label
-            htmlFor="uf"
-            className="register__register-content__form__location-data-box__label"
-          >
+          <label htmlFor="uf" className="register__register-content__form__location-data-box__label">
             UF
             <select
               {...register("uf")}
@@ -584,19 +608,16 @@ const UpdateRegistrationContent = () => {
               className="register__register-content__form__location-data-box__label__select"
             >
               <option>-- UF --</option>
-              {
-                ufOptions.map((data) => (
-                  <option key={data.id} value={data.sigla}>{data.nome}</option>
-                ))
-              }
+              {ufOptions.map((data) => (
+                <option key={data.id} value={data.sigla}>
+                  {data.nome}
+                </option>
+              ))}
             </select>
           </label>
           {errors.uf && <span>{errors.uf.message}</span>}
 
-          <label
-            htmlFor="city"
-            className="register__register-content__form__location-data-box__label"
-          >
+          <label htmlFor="city" className="register__register-content__form__location-data-box__label">
             Cidade
             <select
               {...register("city")}
@@ -608,21 +629,18 @@ const UpdateRegistrationContent = () => {
               className="register__register-content__form__location-data-box__label__select"
             >
               <option value="example">-- Cidade --</option>
-              {
-                cityOptions.map((data) => (
-                  <option key={data.id} value={data.nome}>{data.nome}</option>
-                ))
-              }
+              {cityOptions.map((data) => (
+                <option key={data.id} value={data.nome}>
+                  {data.nome}
+                </option>
+              ))}
               {/* <option value="example 2">Example 2</option>
               <option value="example 3">Example 3</option> */}
             </select>
           </label>
           {errors.city && <span>{errors.city.message}</span>}
 
-          <label
-            htmlFor="reference"
-            className="register__register-content__form__location-data-box__label"
-          >
+          <label htmlFor="reference" className="register__register-content__form__location-data-box__label">
             Ponto de referência
             <input
               {...register("reference")}
@@ -643,7 +661,7 @@ const UpdateRegistrationContent = () => {
         </button>
       </form>
     </div>
-  )
-}
+  );
+};
 
 export default UpdateRegistrationContent;

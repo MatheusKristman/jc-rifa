@@ -6,6 +6,8 @@ import Prizes from "../Prizes";
 import useRaffleStore from "../../../stores/useRaffleStore";
 import api from "../../../services/api";
 import _arrayBufferToBase64 from "../../../hooks/useArrayBufferToBase64";
+import useGeneralStore from "../../../stores/useGeneralStore";
+import Loading from "../Loading";
 
 const RafflePageContent = () => {
   const {
@@ -19,6 +21,7 @@ const RafflePageContent = () => {
     setConcludedOff,
     sliceBegin,
     sliceEnd,
+    sliceEndBiggerThanRaffles,
     pageMultiplier,
     setSliceBegin,
     setSliceEnd,
@@ -46,6 +49,7 @@ const RafflePageContent = () => {
     setConcludedOff: state.setConcludedOff,
     sliceBegin: state.sliceBegin,
     sliceEnd: state.sliceEnd,
+    sliceEndBiggerThanRaffles: state.sliceEndBiggerThanRaffles,
     pageMultiplier: state.pageMultiplier,
     setSliceBegin: state.setSliceBegin,
     setSliceEnd: state.setSliceEnd,
@@ -64,44 +68,85 @@ const RafflePageContent = () => {
     resetSliceEnd: state.resetSliceEnd,
   }));
 
-  // useEffect(() => {
-  //   setRaffles([]);
-  //   setRafflesDisplaying([]);
-  // }, []);
+  const { isLoading, setToLoad, setNotToLoad, setToAnimateFadeIn, setToAnimateFadeOut } = useGeneralStore((state) => ({
+    isLoading: state.isLoading,
+    setToLoad: state.setToLoad,
+    setNotToLoad: state.setNotToLoad,
+    setToAnimateFadeIn: state.setToAnimateFadeIn,
+    setToAnimateFadeOut: state.setToAnimateFadeOut,
+  }));
+
+  useEffect(() => {
+    setRaffles([]);
+    setRafflesDisplaying([]);
+  }, []);
 
   useEffect(() => {
     const fetchRaffles = () => {
+      setToLoad();
+      setToAnimateFadeIn();
       api
         .get("/raffles/get-all")
-        .then((res) => setRaffles(res.data))
-        .catch((error) => console.log(error));
+        .then((res) => {
+          setRaffles(res.data);
+
+          if (raffles.length <= sliceEnd) {
+            sliceEndBiggerThanRaffles(raffles.length);
+          }
+
+          setToAnimateFadeOut();
+
+          setTimeout(() => {
+            setNotToLoad();
+          }, 400);
+        })
+        .catch((error) => {
+          console.log(error);
+
+          setToAnimateFadeOut();
+
+          setTimeout(() => {
+            setNotToLoad();
+          }, 400);
+        });
     };
 
     fetchRaffles();
   }, [setRaffles]);
 
   useEffect(() => {
+    const verificationPageBtns = () => {
+      console.log(sliceEnd);
+      if (raffles.length > 10 && rafflesDisplaying.length <= 10) {
+        showPreviousPageBtn();
+        showNextPageBtn();
+      }
+
+      if (sliceBegin === 0 && rafflesDisplaying.length <= 10) {
+        hidePreviousPageBtn();
+        hideNextPageBtn();
+      }
+
+      if (sliceEnd >= raffles.length) {
+        showPreviousPageBtn();
+        hideNextPageBtn();
+      }
+
+      // roda somente em caso de não ter proximo e nem anterior
+      if (sliceEnd <= raffles.length + 1) {
+        hidePreviousPageBtn();
+        hideNextPageBtn();
+      }
+
+      if (sliceBegin === 0 && raffles.length > 10) {
+        hidePreviousPageBtn();
+        showNextPageBtn();
+      }
+    };
+
     const handlePage = () => {
       if (raffles.length !== 0) {
-        if (raffles.length > 10 && rafflesDisplaying.length <= 10) {
-          showPreviousPageBtn();
-          showNextPageBtn();
-        }
-
-        if (sliceBegin === 0 && rafflesDisplaying.length <= 10) {
-          hidePreviousPageBtn();
-          hideNextPageBtn();
-        }
-
-        if (sliceEnd >= raffles.length) {
-          showPreviousPageBtn();
-          hideNextPageBtn();
-        }
-
-        if (sliceBegin === 0 && raffles.length > 10) {
-          hidePreviousPageBtn();
-          showNextPageBtn();
-        }
+        verificationPageBtns();
 
         if (isConcludedOn) {
           hideNextPageBtn();
@@ -113,23 +158,20 @@ const RafflePageContent = () => {
             raffles
               .filter(
                 (raffle) =>
-                  convertProgress(
-                    raffle?.QuantNumbers - raffle?.NumbersAvailable.length,
-                    raffle?.QuantNumbers
-                  ) < 100 && !raffle?.isFinished
+                  convertProgress(raffle?.QuantNumbers - raffle?.NumbersAvailable.length, raffle?.QuantNumbers) < 100 &&
+                  !raffle?.isFinished
               )
               .slice(sliceBegin, sliceEnd)
           );
+          verificationPageBtns();
         }
 
         if (isConcludedOn) {
           setRafflesDisplaying(
             raffles.filter(
               (raffle) =>
-                convertProgress(
-                  raffle?.QuantNumbers - raffle?.NumbersAvailable.length,
-                  raffle?.QuantNumbers
-                ) === 100 || raffle?.isFinished
+                convertProgress(raffle?.QuantNumbers - raffle?.NumbersAvailable.length, raffle?.QuantNumbers) === 100 ||
+                raffle?.isFinished
             )
           );
         }
@@ -150,9 +192,13 @@ const RafflePageContent = () => {
   ]);
 
   const handleActiveBtn = () => {
+    if (raffles.length <= sliceEnd) {
+      sliceEndBiggerThanRaffles(raffles.length);
+    } else {
+      resetSliceEnd();
+    }
     resetPageMultiplier();
     resetSliceBegin();
-    resetSliceEnd();
     setActiveOn();
     setConcludedOff();
   };
@@ -185,13 +231,12 @@ const RafflePageContent = () => {
 
   return (
     <div className="raffle__raffle-content">
+      {isLoading && <Loading>Buscando Sorteios</Loading>}
       <div className="raffle__raffle-content__container">
         <div className="raffle__raffle-content__container__above-box">
           <h1 className="raffle__raffle-content__container__above-box__title">⚡ Prêmios</h1>
 
-          <span className="raffle__raffle-content__container__above-box__desc">
-            Escolha sua sorte
-          </span>
+          <span className="raffle__raffle-content__container__above-box__desc">Escolha sua sorte</span>
         </div>
 
         <div className="raffle__raffle-content__container__filter-box">
@@ -231,15 +276,10 @@ const RafflePageContent = () => {
                   subtitle={raffle.subtitle}
                   image={
                     raffle.raffleImage.data
-                      ? `data:${raffle.raffleImage.contentType};base64,${_arrayBufferToBase64(
-                          raffle.raffleImage.data.data
-                        )}`
+                      ? `data:${raffle.raffleImage.contentType};base64,${_arrayBufferToBase64(raffle.raffleImage.data.data)}`
                       : null
                   }
-                  progress={convertProgress(
-                    raffle?.QuantNumbers - raffle?.NumbersAvailable.length,
-                    raffle?.QuantNumbers
-                  )}
+                  progress={convertProgress(raffle?.QuantNumbers - raffle?.NumbersAvailable.length, raffle?.QuantNumbers)}
                   winner={raffle?.isFinished}
                 />
               </Link>
@@ -254,15 +294,10 @@ const RafflePageContent = () => {
                   subtitle={raffle.subtitle}
                   image={
                     raffle.raffleImage.data
-                      ? `data:${raffle.raffleImage.contentType};base64,${_arrayBufferToBase64(
-                          raffle.raffleImage.data.data
-                        )}`
+                      ? `data:${raffle.raffleImage.contentType};base64,${_arrayBufferToBase64(raffle.raffleImage.data.data)}`
                       : null
                   }
-                  progress={convertProgress(
-                    raffle?.QuantNumbers - raffle?.NumbersAvailable.length,
-                    raffle?.QuantNumbers
-                  )}
+                  progress={convertProgress(raffle?.QuantNumbers - raffle?.NumbersAvailable.length, raffle?.QuantNumbers)}
                   winner={raffle?.isFinished}
                 />
               </Link>
@@ -301,5 +336,3 @@ const RafflePageContent = () => {
 };
 
 export default RafflePageContent;
-
-// TODO loading quando carrega as rifas

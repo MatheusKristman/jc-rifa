@@ -20,16 +20,10 @@ const ChangePassword = () => {
       <Header />
       <ChangePasswordContent />
       <Footer />
-      {isChangeCompleted && (
-        <AlertBox success={isChangeCompleted} error={submitError} message={registerMessage} />
-      )}
-      {submitError && (
-        <AlertBox success={isChangeCompleted} error={submitError} message={registerMessage} />
-      )}
+      {isChangeCompleted && <AlertBox success={isChangeCompleted} error={submitError} message={registerMessage} />}
+      {submitError && <AlertBox success={isChangeCompleted} error={submitError} message={registerMessage} />}
     </div>
   );
 };
 
 export default ChangePassword;
-
-// TODO colocar loading no botão quando envia as informações

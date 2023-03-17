@@ -1,4 +1,4 @@
-const Joi = require('@hapi/joi');
+const Joi = require("@hapi/joi");
 
 const registerValidate = (data) => {
   const schema = Joi.object({
@@ -8,14 +8,6 @@ const registerValidate = (data) => {
     email: Joi.string().required().min(3).max(50),
     password: Joi.string().required().min(6).max(200),
     tel: Joi.string().required().min(10).max(15),
-    cep: Joi.string(),
-    address: Joi.string(),
-    number: Joi.string(),
-    neighborhood: Joi.string(),
-    complement: Joi.string().allow(null, ''),
-    uf: Joi.string(),
-    city: Joi.string(),
-    reference: Joi.string().allow(null, ''),
   });
 
   return schema.validate(data);
@@ -29,14 +21,14 @@ const updateValidate = (data) => {
     email: Joi.string().required().min(3).max(50),
     tel: Joi.string().required().min(10).max(15),
     cpf: Joi.string().required().min(11),
-    cep: Joi.string(),
-    address: Joi.string(),
-    number: Joi.string(),
-    neighborhood: Joi.string(),
-    complement: Joi.string().allow(null, ''),
-    uf: Joi.string(),
-    city: Joi.string(),
-    reference: Joi.string().allow(null, ''),
+    cep: Joi.string().allow(null, ""),
+    address: Joi.string().allow(null, ""),
+    number: Joi.string().allow(null, ""),
+    neighborhood: Joi.string().allow(null, ""),
+    complement: Joi.string().allow(null, ""),
+    uf: Joi.string().allow(null, ""),
+    city: Joi.string().allow(null, ""),
+    reference: Joi.string().allow(null, ""),
   });
 
   return schema.validate(data);
@@ -50,7 +42,7 @@ const updatePasswordValidate = (data) => {
   });
 
   return schema.validate(data);
-}
+};
 
 const loginValidate = (data) => {
   const schema = Joi.object({
@@ -59,20 +51,20 @@ const loginValidate = (data) => {
   });
 
   return schema.validate(data);
-}
+};
 
 const createNewRaffleValidate = (data) => {
   const schema = Joi.object({
     raffleImage: Joi.binary(),
     title: Joi.string().required(),
     subtitle: Joi.string().required(),
-    description: Joi.string().allow(null, ''),
+    description: Joi.string().allow(null, ""),
     price: Joi.string(),
     QuantNumbers: Joi.number(),
   });
 
   return schema.validate(data);
-}
+};
 
 const updateRaffleValidate = (data) => {
   const schema = Joi.object({
@@ -80,12 +72,12 @@ const updateRaffleValidate = (data) => {
     raffleImage: Joi.binary(),
     title: Joi.string().required(),
     subtitle: Joi.string().required(),
-    description: Joi.string().allow(null, ''),
+    description: Joi.string().allow(null, ""),
     price: Joi.string(),
   });
 
   return schema.validate(data);
-}
+};
 
 module.exports.registerValidate = registerValidate;
 module.exports.loginValidate = loginValidate;

@@ -11,19 +11,12 @@ router.get("/", auth, AccountController.read);
 router.get("/get-raffles", RaffleController.read);
 router.post("/get-payment-data", AccountController.readPayment);
 router.delete("/payment-cancel", AccountController.paymentCanceled);
+router.post("/delete-canceled-numbers", AccountController.deleteCanceledNumbers);
 
 // Rota Register
-router.post(
-  "/register/registerAccount",
-  AccountController.upload.single("profileImage"),
-  AccountController.create
-);
+router.post("/register/registerAccount", AccountController.upload.single("profileImage"), AccountController.create);
 router.get("/register", auth, AccountController.read);
-router.put(
-  "/updateRegistration/updating",
-  AccountController.upload.single("profileImage"),
-  AccountController.update
-);
+router.put("/updateRegistration/updating", AccountController.upload.single("profileImage"), AccountController.update);
 
 // Rota Update
 router.get("/updateRegistration", auth, AccountController.read);
@@ -47,11 +40,7 @@ router.post("/query-numbers/winner", WinnerController.read);
 router.get("/query-numbers", auth, AccountController.read);
 
 //Rota Criar Rifa
-router.post(
-  "/create-new-raffle/creating",
-  RaffleController.upload.single("raffleImage"),
-  RaffleController.create
-);
+router.post("/create-new-raffle/creating", RaffleController.upload.single("raffleImage"), RaffleController.create);
 router.get("/create-new-raffle", auth, AccountController.read);
 router.get("/create-new-raffle/get-raffles", RaffleController.read);
 
@@ -61,11 +50,7 @@ router.get("/raffle-management/get-raffles", RaffleController.read);
 
 //Rota Editar Rifa
 router.get("/edit-raffle/:id", RaffleController.readOne);
-router.put(
-  "/edit-raffle/updating",
-  RaffleController.upload.single("raffleImage"),
-  RaffleController.update
-);
+router.put("/edit-raffle/updating", RaffleController.upload.single("raffleImage"), RaffleController.update);
 router.post("/edit-raffle/finish", RaffleController.finishRaffle);
 
 // Rota Usuários que compraram os números

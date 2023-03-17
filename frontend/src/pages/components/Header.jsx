@@ -63,11 +63,7 @@ const HeaderMenu = () => {
         <div className="header__menu__above__container">
           <div className="header__menu__above__container__logo-box">LOGO</div>
 
-          <button
-            type="button"
-            onClick={handleCloseMenu}
-            className="header__menu__above__container__close-btn"
-          >
+          <button type="button" onClick={handleCloseMenu} className="header__menu__above__container__close-btn">
             <IoIosCloseCircleOutline />
           </button>
         </div>
@@ -125,11 +121,7 @@ const HeaderMenu = () => {
             </li>
           </ul>
 
-          <button
-            type="button"
-            onClick={handleLoginOpen}
-            className="header__menu__middle__container__login-btn"
-          >
+          <button type="button" onClick={handleLoginOpen} className="header__menu__middle__container__login-btn">
             <IoEnterOutline /> Entrar
           </button>
         </nav>
@@ -141,28 +133,19 @@ const HeaderMenu = () => {
 
           <ul className="header__menu__bottom__container__socials-list">
             <li className="header__menu__bottom__container__socials-list__socials-items">
-              <a
-                href="#"
-                className="header__menu__bottom__container__socials-list__socials-items__facebook"
-              >
+              <a href="#" className="header__menu__bottom__container__socials-list__socials-items__facebook">
                 <BsFacebook />
               </a>
             </li>
 
             <li className="header__menu__bottom__container__socials-list__socials-items">
-              <a
-                href="#"
-                className="header__menu__bottom__container__socials-list__socials-items__instagram"
-              >
+              <a href="#" className="header__menu__bottom__container__socials-list__socials-items__instagram">
                 <BsInstagram />
               </a>
             </li>
 
             <li className="header__menu__bottom__container__socials-list__socials-items">
-              <a
-                href="#"
-                className="header__menu__bottom__container__socials-list__socials-items__whatsapp"
-              >
+              <a href="#" className="header__menu__bottom__container__socials-list__socials-items__whatsapp">
                 <BsWhatsapp />
               </a>
             </li>
@@ -174,13 +157,12 @@ const HeaderMenu = () => {
 };
 
 const LogoutConfirmationBox = () => {
-  const { logoutBoxAppears, setToLogoutBoxDontAppear, setToNotConfirmLogout, closeMenu } =
-    useHeaderStore((state) => ({
-      logoutBoxAppears: state.logoutBoxAppears,
-      setToLogoutBoxDontAppear: state.setToLogoutBoxDontAppear,
-      setToNotConfirmLogout: state.setToNotConfirmLogout,
-      closeMenu: state.closeMenu,
-    }));
+  const { logoutBoxAppears, setToLogoutBoxDontAppear, setToNotConfirmLogout, closeMenu } = useHeaderStore((state) => ({
+    logoutBoxAppears: state.logoutBoxAppears,
+    setToLogoutBoxDontAppear: state.setToLogoutBoxDontAppear,
+    setToNotConfirmLogout: state.setToNotConfirmLogout,
+    closeMenu: state.closeMenu,
+  }));
 
   const { userNotLogged, setUser } = useUserStore((state) => ({
     userNotLogged: state.userNotLogged,
@@ -212,23 +194,15 @@ const LogoutConfirmationBox = () => {
   };
 
   return (
-    <div
-      className={logoutBoxAppears ? "logout-confirmation active" : "logout-confirmation desactive"}
-    >
+    <div className={logoutBoxAppears ? "logout-confirmation active" : "logout-confirmation desactive"}>
       <div className="logout-confirmation__container">
         <h6 className="logout-confirmation__container__title">Deseja sair da sua conta?</h6>
 
         <div className="logout-confirmation__container__btn-wrapper">
-          <button
-            onClick={handleLogout}
-            className="logout-confirmation__container__btn-wrapper__confirm-btn"
-          >
+          <button onClick={handleLogout} className="logout-confirmation__container__btn-wrapper__confirm-btn">
             Sair
           </button>
-          <button
-            onClick={handleCancel}
-            className="logout-confirmation__container__btn-wrapper__cancel-btn"
-          >
+          <button onClick={handleCancel} className="logout-confirmation__container__btn-wrapper__cancel-btn">
             Cancelar
           </button>
         </div>
@@ -238,16 +212,15 @@ const LogoutConfirmationBox = () => {
 };
 
 const HeaderMenuLogged = () => {
-  const { closeMenu, logoutConfirmation, setToConfirmLogout, setToLogoutBoxAppear } =
-    useHeaderStore(
-      (state) => ({
-        closeMenu: state.closeMenu,
-        logoutConfirmation: state.logoutConfirmation,
-        setToConfirmLogout: state.setToConfirmLogout,
-        setToLogoutBoxAppear: state.setToLogoutBoxAppear,
-      }),
-      shallow
-    );
+  const { closeMenu, logoutConfirmation, setToConfirmLogout, setToLogoutBoxAppear } = useHeaderStore(
+    (state) => ({
+      closeMenu: state.closeMenu,
+      logoutConfirmation: state.logoutConfirmation,
+      setToConfirmLogout: state.setToConfirmLogout,
+      setToLogoutBoxAppear: state.setToLogoutBoxAppear,
+    }),
+    shallow
+  );
 
   const { user } = useUserStore((state) => ({ user: state.user }));
 
@@ -273,11 +246,7 @@ const HeaderMenuLogged = () => {
         <div className="header__menu__above__container">
           <div className="header__menu__above__container__logo-box">LOGO</div>
 
-          <button
-            type="button"
-            onClick={handleCloseMenu}
-            className="header__menu__above__container__close-btn"
-          >
+          <button type="button" onClick={handleCloseMenu} className="header__menu__above__container__close-btn">
             <IoIosCloseCircleOutline />
           </button>
         </div>
@@ -291,9 +260,7 @@ const HeaderMenuLogged = () => {
                 <img
                   src={
                     user.profileImage.data
-                      ? `data:${user.profileImage.contentType};base64,${_arrayBufferToBase64(
-                          user.profileImage.data.data
-                        )}`
+                      ? `data:${user.profileImage.contentType};base64,${_arrayBufferToBase64(user.profileImage.data.data)}`
                       : noUserPhoto
                   }
                   alt="Imagem do Perfil"
@@ -377,28 +344,19 @@ const HeaderMenuLogged = () => {
 
           <ul className="header__menu__bottom__container__socials-list">
             <li className="header__menu__bottom__container__socials-list__socials-items">
-              <a
-                href="#"
-                className="header__menu__bottom__container__socials-list__socials-items__facebook"
-              >
+              <a href="#" className="header__menu__bottom__container__socials-list__socials-items__facebook">
                 <BsFacebook />
               </a>
             </li>
 
             <li className="header__menu__bottom__container__socials-list__socials-items">
-              <a
-                href="#"
-                className="header__menu__bottom__container__socials-list__socials-items__instagram"
-              >
+              <a href="#" className="header__menu__bottom__container__socials-list__socials-items__instagram">
                 <BsInstagram />
               </a>
             </li>
 
             <li className="header__menu__bottom__container__socials-list__socials-items">
-              <a
-                href="#"
-                className="header__menu__bottom__container__socials-list__socials-items__whatsapp"
-              >
+              <a href="#" className="header__menu__bottom__container__socials-list__socials-items__whatsapp">
                 <BsWhatsapp />
               </a>
             </li>
@@ -419,9 +377,7 @@ const LoginMessageBox = () => {
   return (
     <div
       style={submitError ? { backgroundColor: "rgb(209, 52, 52)" } : {}}
-      className={
-        doesLoginHappened || submitError ? "register-message-box" : "register-message-box desactive"
-      }
+      className={doesLoginHappened || submitError ? "register-message-box" : "register-message-box desactive"}
     >
       <div className="register-message-box__container">
         <span className={"register-message-box__container__message"}>{loginMessage}</span>
@@ -486,16 +442,18 @@ const LogInModal = () => {
   const loginModalBoxRef = useRef(null);
 
   const handleCloseLogin = () => {
-    loginModalOverlayRef.current.style.animation = "loginFadeOut 0.2s ease forwards";
-    loginModalBoxRef.current.style.animation = "loginBoxOut 0.4s ease forwards";
+    if (!isSubmitting) {
+      loginModalOverlayRef.current.style.animation = "loginFadeOut 0.2s ease forwards";
+      loginModalBoxRef.current.style.animation = "loginBoxOut 0.4s ease forwards";
 
-    setTimeout(() => {
-      closeLogin();
-    }, 400);
+      setTimeout(() => {
+        closeLogin();
+      }, 400);
+    }
   };
 
   const handleCloseLoginOverlay = (e) => {
-    if (e.target.classList.contains("header__login-modal-overlay")) {
+    if (e.target.classList.contains("header__login-modal-overlay") && !isSubmitting) {
       handleCloseLogin();
     }
   };
@@ -515,9 +473,7 @@ const LogInModal = () => {
   const navigate = useNavigate();
 
   const schema = Yup.object().shape({
-    username: Yup.string()
-      .min(15, "Insira acima de 15 caracteres")
-      .required("Usuário é obrigatório"),
+    username: Yup.string().min(15, "Insira acima de 15 caracteres").required("Usuário é obrigatório"),
     password: Yup.string().required("Senha é obrigatória"),
   });
 
@@ -583,17 +539,9 @@ const LogInModal = () => {
   };
 
   return (
-    <div
-      ref={loginModalOverlayRef}
-      onClick={handleCloseLoginOverlay}
-      className="header__login-modal-overlay"
-    >
-      {doesLoginHappened && (
-        <AlertBox success={doesLoginHappened} error={submitError} message={loginMessage} />
-      )}
-      {submitError && (
-        <AlertBox success={doesLoginHappened} error={submitError} message={loginMessage} />
-      )}
+    <div ref={loginModalOverlayRef} onClick={handleCloseLoginOverlay} className="header__login-modal-overlay">
+      {doesLoginHappened && <AlertBox success={doesLoginHappened} error={submitError} message={loginMessage} />}
+      {submitError && <AlertBox success={doesLoginHappened} error={submitError} message={loginMessage} />}
       <div ref={loginModalBoxRef} className="header__login-modal-overlay__box">
         <div className="header__login-modal-overlay__box__content">
           <div className="header__login-modal-overlay__box__content__head">
@@ -608,14 +556,9 @@ const LogInModal = () => {
             </button>
           </div>
 
-          <p className="header__login-modal-overlay__box__content__desc">
-            Por favor, entre com seus dados ou faça um cadastro.
-          </p>
+          <p className="header__login-modal-overlay__box__content__desc">Por favor, entre com seus dados ou faça um cadastro.</p>
 
-          <form
-            onSubmit={handleSubmit(onSubmit)}
-            className="header__login-modal-overlay__box__content__form"
-          >
+          <form onSubmit={handleSubmit(onSubmit)} className="header__login-modal-overlay__box__content__form">
             <div className="header__login-modal-overlay__box__content__form__username-box">
               <label
                 htmlFor="username"
@@ -679,24 +622,22 @@ const LogInModal = () => {
             </div>
             {errors.password && <span>{errors.password.message}</span>}
 
-            <Link
-              to="/new-password"
-              className="header__login-modal-overlay__box__content__form__forget-password"
-            >
+            <Link to="/new-password" className="header__login-modal-overlay__box__content__form__forget-password">
               Esqueci minha senha
             </Link>
 
             <button
               type="submit"
-              className="header__login-modal-overlay__box__content__form__submit-btn"
+              className={
+                isSubmitting
+                  ? "header__login-modal-overlay__box__content__form__submit-btn-sending"
+                  : "header__login-modal-overlay__box__content__form__submit-btn"
+              }
             >
-              Continuar
+              {isSubmitting ? "Enviando..." : "Continuar"}
             </button>
 
-            <Link
-              to="/register"
-              className="header__login-modal-overlay__box__content__form__register-btn"
-            >
+            <Link to="/register" className="header__login-modal-overlay__box__content__form__register-btn">
               Criar conta
             </Link>
           </form>
@@ -704,8 +645,6 @@ const LogInModal = () => {
       </div>
     </div>
   );
-
-  // TODO loading no botão de login até aparecer a informação de logado
 };
 
 const Header = () => {
@@ -744,18 +683,10 @@ const Header = () => {
         </div>
 
         <div className="header__container__menu-box">
-          <button
-            type="button"
-            onClick={navigateToQueryNumbersPage}
-            className="header__container__menu-box__cart-btn"
-          >
+          <button type="button" onClick={navigateToQueryNumbersPage} className="header__container__menu-box__cart-btn">
             <BsCartCheck />
           </button>
-          <button
-            onClick={openMenu}
-            type="button"
-            className="header__container__menu-box__menu-btn"
-          >
+          <button onClick={openMenu} type="button" className="header__container__menu-box__menu-btn">
             <HiOutlineBars3BottomRight />
           </button>
         </div>

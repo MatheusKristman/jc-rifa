@@ -11,6 +11,8 @@ import noUserPhoto from "../../../assets/no-user-photo.png";
 import useRegisterStore from "../../../stores/useRegisterStore";
 import useUserStore from "../../../stores/useUserStore";
 import useIsUserLogged from "../../../hooks/useIsUserLogged";
+import useGeneralStore from "../../../stores/useGeneralStore";
+import Loading from "../Loading";
 
 const RegisterContent = () => {
   const {
@@ -30,26 +32,6 @@ const RegisterContent = () => {
     setTelFromFetch,
     confirmTel,
     setConfirmTelFromFetch,
-    cep,
-    setCepFromFetch,
-    address,
-    setAddress,
-    setAddressFromFetch,
-    number,
-    setNumber,
-    neighborhood,
-    setNeighborhood,
-    setNeighborhoodFromFetch,
-    complement,
-    setComplement,
-    uf,
-    setUf,
-    setUfFromFetch,
-    city,
-    setCity,
-    setCityFromFetch,
-    reference,
-    setReference,
     isSubmitting,
     submitting,
     notSubmitting,
@@ -60,10 +42,6 @@ const RegisterContent = () => {
     errorExist,
     errorDontExist,
     setRegisterMessage,
-    ufOptions,
-    setUfOptions,
-    cityOptions,
-    setCityOptions,
   } = useRegisterStore(
     (state) => ({
       profileImage: state.profileImage,
@@ -82,26 +60,6 @@ const RegisterContent = () => {
       setTelFromFetch: state.setTelFromFetch,
       confirmTel: state.confirmTel,
       setConfirmTelFromFetch: state.setConfirmTelFromFetch,
-      cep: state.cep,
-      setCepFromFetch: state.setCepFromFetch,
-      address: state.address,
-      setAddress: state.setAddress,
-      setAddressFromFetch: state.setAddressFromFetch,
-      number: state.number,
-      setNumber: state.setNumber,
-      neighborhood: state.neighborhood,
-      setNeighborhood: state.setNeighborhood,
-      setNeighborhoodFromFetch: state.setNeighborhoodFromFetch,
-      complement: state.complement,
-      setComplement: state.setComplement,
-      uf: state.uf,
-      setUf: state.setUf,
-      setUfFromFetch: state.setUfFromFetch,
-      city: state.city,
-      setCity: state.setCity,
-      setCityFromFetch: state.setCityFromFetch,
-      reference: state.reference,
-      setReference: state.setReference,
       isSubmitting: state.isSubmitting,
       submitting: state.submitting,
       notSubmitting: state.notSubmitting,
@@ -112,13 +70,17 @@ const RegisterContent = () => {
       errorExist: state.errorExist,
       errorDontExist: state.errorDontExist,
       setRegisterMessage: state.setRegisterMessage,
-      ufOptions: state.ufOptions,
-      setUfOptions: state.setUfOptions,
-      cityOptions: state.cityOptions,
-      setCityOptions: state.setCityOptions,
     }),
     shallow
   );
+
+  const { isLoading, setToLoad, setNotToLoad, setToAnimateFadeIn, setToAnimateFadeOut } = useGeneralStore((state) => ({
+    isLoading: state.isLoading,
+    setToLoad: state.setToLoad,
+    setNotToLoad: state.setNotToLoad,
+    setToAnimateFadeIn: state.setToAnimateFadeIn,
+    setToAnimateFadeOut: state.setToAnimateFadeOut,
+  }));
 
   const { user } = useUserStore((state) => ({
     user: state.user,
@@ -127,51 +89,12 @@ const RegisterContent = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    axios
-      .get("https://servicodados.ibge.gov.br/api/v1/localidades/estados/")
-      .then((res) => {
-        setUfOptions(res.data);
-      })
-      .catch((error) => console.error(error));
-  }, []);
-
-  useEffect(() => {
-    const ufSelected = ufOptions.filter((option) => option.sigla === uf);
-
-    if (ufSelected.length > 0) {
-      axios
-        .get(
-          `https://servicodados.ibge.gov.br/api/v1/localidades/estados/${ufSelected[0].id}/municipios`
-        )
-        .then((res) => setCityOptions(res.data))
-        .catch((error) => console.error(error));
-    } else {
-      setCityOptions([]);
-    }
-  }, [uf]);
-
-  useEffect(() => {
-    if (cep.replace("-", "").length === 8) {
-      axios.get(`https://viacep.com.br/ws/${cep.replace("-", "")}/json/`).then((res) => {
-        setAddressFromFetch(res.data.logradouro);
-        setValue("address", res.data.logradouro);
-
-        setNeighborhoodFromFetch(res.data.bairro);
-        setValue("neighborhood", res.data.bairro);
-
-        setUfFromFetch(res.data.uf);
-        setValue("uf", res.data.uf);
-
-        setCityFromFetch(res.data.localidade);
-        setValue("city", res.data.localidade);
-      });
-    }
-  }, [cep]);
-
-  useEffect(() => {
     function submitData() {
       if (isSubmitting) {
         const sendToDB = () => {
+          setToLoad();
+          setToAnimateFadeIn();
+
           const formData = new FormData();
           formData.append("profileImage", profileImage.file ? profileImage.file : noUserPhoto);
           formData.append("name", name);
@@ -179,14 +102,6 @@ const RegisterContent = () => {
           formData.append("email", email);
           formData.append("password", password);
           formData.append("tel", tel);
-          formData.append("cep", cep);
-          formData.append("address", address);
-          formData.append("number", number);
-          formData.append("neighborhood", neighborhood);
-          formData.append("complement", complement);
-          formData.append("uf", uf);
-          formData.append("city", city);
-          formData.append("reference", reference);
 
           api
             .post("/register/registerAccount", formData, {
@@ -198,6 +113,12 @@ const RegisterContent = () => {
               registerComplete();
               setRegisterMessage("Cadastro realizado com sucesso");
               localStorage.setItem("userToken", res.data);
+
+              setToAnimateFadeOut();
+
+              setTimeout(() => {
+                setNotToLoad();
+              }, 400);
             })
             .catch((error) => {
               window.scrollTo(0, 0);
@@ -208,6 +129,12 @@ const RegisterContent = () => {
               }
               errorExist();
               console.log(error);
+
+              setToAnimateFadeOut();
+
+              setTimeout(() => {
+                setNotToLoad();
+              }, 400);
             });
         };
         sendToDB();
@@ -277,17 +204,6 @@ const RegisterContent = () => {
     return cpf;
   };
 
-  const handleCepChange = (e) => {
-    const { value } = e.target;
-
-    const cep = value
-      .replace(/\D/g, "")
-      .replace(/(\d{5})(\d)/, "$1-$2")
-      .replace(/(-\d{3})\d+?$/, "$1");
-
-    return cep;
-  };
-
   const schema = Yup.object().shape({
     profileImage: Yup.mixed(),
     name: Yup.string()
@@ -307,17 +223,9 @@ const RegisterContent = () => {
     confirmTel: Yup.string()
       .oneOf([Yup.ref("tel"), null], "Os telefones devem ser iguais")
       .required("Confirme seu telefone"),
-    cep: Yup.string().required("Cep é obrigatório"),
-    address: Yup.string().required("Endereço é obrigatório"),
-    number: Yup.string().required("Número é obrigatório"),
-    neighborhood: Yup.string().required("Bairro é obrigatório"),
-    complement: Yup.string(),
-    uf: Yup.string().required("UF é obrigatório"),
-    city: Yup.string().required("Cidade é obrigatória"),
-    reference: Yup.string(),
   });
 
-  const { register, handleSubmit, formState, setValue } = useForm({
+  const { register, handleSubmit, formState } = useForm({
     resolver: yupResolver(schema),
   });
   const { errors } = formState;
@@ -336,6 +244,7 @@ const RegisterContent = () => {
 
   return (
     <div className="register__register-content">
+      {isLoading && <Loading>Enviando dados</Loading>}
       <form onSubmit={handleSubmit(onSubmit)} className="register__register-content__form">
         <label htmlFor="profileImage" className="register__register-content__form__image-label">
           <div className="register__register-content__form__image-label__image-box">
@@ -356,14 +265,8 @@ const RegisterContent = () => {
           />
         </label>
 
-        <div
-          style={user.length > 0 ? { display: "none" } : {}}
-          className="register__register-content__form__profile-data-box"
-        >
-          <label
-            htmlFor="name"
-            className="register__register-content__form__profile-data-box__label"
-          >
+        <div style={user.length > 0 ? { display: "none" } : {}} className="register__register-content__form__profile-data-box">
+          <label htmlFor="name" className="register__register-content__form__profile-data-box__label">
             Nome Completo
             <input
               {...register("name")}
@@ -380,10 +283,7 @@ const RegisterContent = () => {
           </label>
           {errors.name && <span>{errors.name.message}</span>}
 
-          <label
-            htmlFor="cpf"
-            className="register__register-content__form__profile-data-box__label"
-          >
+          <label htmlFor="cpf" className="register__register-content__form__profile-data-box__label">
             CPF
             <input
               {...register("cpf")}
@@ -400,10 +300,7 @@ const RegisterContent = () => {
           </label>
           {errors.cpf && <span>{errors.cpf.message}</span>}
 
-          <label
-            htmlFor="email"
-            className="register__register-content__form__profile-data-box__label"
-          >
+          <label htmlFor="email" className="register__register-content__form__profile-data-box__label">
             E-mail
             <input
               {...register("email")}
@@ -420,10 +317,7 @@ const RegisterContent = () => {
           </label>
           {errors.email && <span>{errors.email.message}</span>}
 
-          <label
-            htmlFor="password"
-            className="register__register-content__form__profile-data-box__label"
-          >
+          <label htmlFor="password" className="register__register-content__form__profile-data-box__label">
             Senha
             <input
               {...register("password")}
@@ -440,10 +334,7 @@ const RegisterContent = () => {
           </label>
           {errors.password && <span>{errors.password.message}</span>}
 
-          <label
-            htmlFor="passwordConfirm"
-            className="register__register-content__form__profile-data-box__label"
-          >
+          <label htmlFor="passwordConfirm" className="register__register-content__form__profile-data-box__label">
             Repita a senha
             <input
               {...register("confirmPassword")}
@@ -460,10 +351,7 @@ const RegisterContent = () => {
           </label>
           {errors.confirmPassword && <span>{errors.confirmPassword.message}</span>}
 
-          <label
-            htmlFor="tel"
-            className="register__register-content__form__profile-data-box__label"
-          >
+          <label htmlFor="tel" className="register__register-content__form__profile-data-box__label">
             Telefone
             <input
               {...register("tel")}
@@ -481,10 +369,7 @@ const RegisterContent = () => {
           </label>
           {errors.tel && <span>{errors.tel.message}</span>}
 
-          <label
-            htmlFor="telConfirm"
-            className="register__register-content__form__profile-data-box__label"
-          >
+          <label htmlFor="telConfirm" className="register__register-content__form__profile-data-box__label">
             Confirmar telefone
             <input
               {...register("confirmTel")}
@@ -503,164 +388,6 @@ const RegisterContent = () => {
           {errors.confirmTel && <span>{errors.confirmTel.message}</span>}
         </div>
 
-        <div className="register__register-content__form__location-data-box">
-          <label
-            htmlFor="cep"
-            className="register__register-content__form__location-data-box__label"
-          >
-            CEP
-            <input
-              {...register("cep")}
-              type="text"
-              name="cep"
-              id="cep"
-              value={cep}
-              onChange={(e) => setCepFromFetch(handleCepChange(e))}
-              style={errors.cep ? { border: "2px solid rgb(209, 52, 52)" } : {}}
-              className="register__register-content__form__location-data-box__label__input"
-            />
-          </label>
-          {errors.cep && <span>{errors.cep.message}</span>}
-
-          <label
-            htmlFor="address"
-            className="register__register-content__form__location-data-box__label"
-          >
-            Endereço
-            <input
-              {...register("address")}
-              type="text"
-              name="address"
-              id="address"
-              value={address}
-              onChange={setAddress}
-              style={errors.address ? { border: "2px solid rgb(209, 52, 52)" } : {}}
-              className="register__register-content__form__location-data-box__label__input"
-            />
-          </label>
-          {errors.address && <span>{errors.address.message}</span>}
-
-          <label
-            htmlFor="addressNumber"
-            className="register__register-content__form__location-data-box__label"
-          >
-            Número
-            <input
-              {...register("number")}
-              type="text"
-              name="number"
-              id="number"
-              value={number}
-              onChange={setNumber}
-              style={errors.number ? { border: "2px solid rgb(209, 52, 52)" } : {}}
-              className="register__register-content__form__location-data-box__label__input"
-            />
-          </label>
-          {errors.number && <span>{errors.number.message}</span>}
-
-          <label
-            htmlFor="neighborhood"
-            className="register__register-content__form__location-data-box__label"
-          >
-            Bairro
-            <input
-              {...register("neighborhood")}
-              type="text"
-              name="neighborhood"
-              id="neighborhood"
-              value={neighborhood}
-              onChange={setNeighborhood}
-              style={errors.neighborhood ? { border: "2px solid rgb(209, 52, 52)" } : {}}
-              className="register__register-content__form__location-data-box__label__input"
-            />
-          </label>
-          {errors.neighborhood && <span>{errors.neighborhood.message}</span>}
-
-          <label
-            htmlFor="complement"
-            className="register__register-content__form__location-data-box__label"
-          >
-            Complemento
-            <input
-              {...register("complement")}
-              type="text"
-              name="complement"
-              id="complement"
-              value={complement}
-              onChange={setComplement}
-              style={errors.complement ? { border: "2px solid rgb(209, 52, 52)" } : {}}
-              className="register__register-content__form__location-data-box__label__input"
-            />
-          </label>
-          {errors.complement && <span>{errors.complement.message}</span>}
-
-          <label
-            htmlFor="uf"
-            className="register__register-content__form__location-data-box__label"
-          >
-            UF
-            <select
-              {...register("uf")}
-              name="uf"
-              id="uf"
-              value={uf}
-              onChange={setUf}
-              style={errors.uf ? { border: "2px solid rgb(209, 52, 52)" } : {}}
-              className="register__register-content__form__location-data-box__label__select"
-            >
-              <option>-- UF --</option>
-              {ufOptions.map((data) => (
-                <option key={data.id} value={data.sigla}>
-                  {data.nome}
-                </option>
-              ))}
-            </select>
-          </label>
-          {errors.uf && <span>{errors.uf.message}</span>}
-
-          <label
-            htmlFor="city"
-            className="register__register-content__form__location-data-box__label"
-          >
-            Cidade
-            <select
-              {...register("city")}
-              name="city"
-              id="city"
-              value={city}
-              onChange={setCity}
-              style={errors.city ? { border: "2px solid rgb(209, 52, 52)" } : {}}
-              className="register__register-content__form__location-data-box__label__select"
-            >
-              <option value="example">-- Cidade --</option>
-              {cityOptions.map((data) => (
-                <option key={data.id} value={data.nome}>
-                  {data.nome}
-                </option>
-              ))}
-            </select>
-          </label>
-          {errors.city && <span>{errors.city.message}</span>}
-
-          <label
-            htmlFor="reference"
-            className="register__register-content__form__location-data-box__label"
-          >
-            Ponto de referência
-            <input
-              {...register("reference")}
-              type="text"
-              name="reference"
-              id="reference"
-              value={reference}
-              onChange={setReference}
-              style={errors.reference ? { border: "2px solid rgb(209, 52, 52)" } : {}}
-              className="register__register-content__form__location-data-box__label__input"
-            />
-          </label>
-          {errors.reference && <span>{errors.reference.message}</span>}
-        </div>
-
         <button type="submit" className="register__register-content__form__save-btn">
           Salvar
         </button>
@@ -670,6 +397,3 @@ const RegisterContent = () => {
 };
 
 export default RegisterContent;
-
-// TODO colocar para cadastrar somente cpf, nome, email, telefone, senha
-// TODO colocar loading no botão de salvar até aparecer a notificação de sucesso

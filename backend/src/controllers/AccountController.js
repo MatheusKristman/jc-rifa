@@ -3,12 +3,7 @@ const Raffle = require("../models/Raffle");
 
 const fs = require("fs");
 const multer = require("multer");
-const {
-  registerValidate,
-  loginValidate,
-  updateValidate,
-  updatePasswordValidate,
-} = require("./validate");
+const { registerValidate, loginValidate, updateValidate, updatePasswordValidate } = require("./validate");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
@@ -49,14 +44,6 @@ module.exports = {
       email: req.body.email,
       password: bcrypt.hashSync(req.body.password, 10),
       tel: req.body.tel,
-      cep: req.body.cep,
-      address: req.body.address,
-      number: req.body.number,
-      neighborhood: req.body.neighborhood,
-      complement: req.body.complement,
-      uf: req.body.uf,
-      city: req.body.city,
-      reference: req.body.reference,
     };
 
     try {
@@ -69,14 +56,10 @@ module.exports = {
 
       const selectedUser = await Account.findOne({ tel: req.body.tel });
 
-      // console.log('selectedUser' + selectedUser);
-
       const daysToExpire = "15d";
-      const token = jwt.sign(
-        { _id: selectedUser._id, admin: selectedUser.admin },
-        process.env.TOKEN_SECRET,
-        { expiresIn: daysToExpire }
-      );
+      const token = jwt.sign({ _id: selectedUser._id, admin: selectedUser.admin }, process.env.TOKEN_SECRET, {
+        expiresIn: daysToExpire,
+      });
 
       console.log(token);
 
@@ -108,9 +91,7 @@ module.exports = {
 
     const userData = {
       profileImage: {
-        data: req.file
-          ? fs.readFileSync("public/data/uploads/" + req.file.filename)
-          : user.profileImage.data,
+        data: req.file ? fs.readFileSync("public/data/uploads/" + req.file.filename) : user.profileImage.data,
         contentType: req.file ? req.file.mimetype : user.profileImage.contentType,
       },
       name: req.body.name,
@@ -196,25 +177,14 @@ module.exports = {
 
     const daysToExpire = "15d";
 
-    const token = jwt.sign(
-      { _id: selectedUser._id, admin: selectedUser.admin },
-      process.env.TOKEN_SECRET,
-      { expiresIn: daysToExpire }
-    );
+    const token = jwt.sign({ _id: selectedUser._id, admin: selectedUser.admin }, process.env.TOKEN_SECRET, {
+      expiresIn: daysToExpire,
+    });
 
     res.json(token);
   },
   buyRaffle: async (req, res) => {
-    const {
-      id,
-      raffleId,
-      paymentId,
-      numbersAvailableToBuy,
-      numbersBuyed,
-      pricePaid,
-      status,
-      numberQuant,
-    } = req.body;
+    const { id, raffleId, paymentId, numbersAvailableToBuy, numbersBuyed, pricePaid, status, numberQuant } = req.body;
 
     const selectedUser = await Account.findOne({ _id: id });
 
@@ -254,10 +224,7 @@ module.exports = {
     let actualNumbersBuyed = [];
 
     if (alreadyBuyedNumbers.length !== 0) {
-      actualNumbersBuyed = [
-        ...selectedUser.rafflesBuyed.filter((raffle) => raffle.raffleId === raffleId)[0]
-          .numbersBuyed,
-      ];
+      actualNumbersBuyed = [...selectedUser.rafflesBuyed.filter((raffle) => raffle.raffleId === raffleId)[0].numbersBuyed];
     }
 
     const newRaffleBuyed = {
@@ -268,8 +235,7 @@ module.exports = {
       paymentId: paymentId,
       status: status,
       numberQuant: Number(numberQuant),
-      numbersBuyed:
-        actualNumbersBuyed.length !== 0 ? [...actualNumbersBuyed, ...numbersBuyed] : numbersBuyed,
+      numbersBuyed: actualNumbersBuyed.length !== 0 ? [...actualNumbersBuyed, ...numbersBuyed] : numbersBuyed,
     };
 
     if (alreadyBuyedNumbers.length !== 0) {
@@ -376,11 +342,13 @@ module.exports = {
 
     let userToModify = await Account.findOne({ _id: id });
 
+    let newNumbersAvailable = userToModify.rafflesBuyed.filter((raffle) => raffle.raffleId == raffleId)[0]?.numbersBuyed;
+
     userToModify = userToModify.rafflesBuyed.filter((raffle) => {
       return raffle.raffleId !== raffleId;
     });
 
-    if (paymentId && id) {
+    if (paymentId && id && newNumbersAvailable) {
       try {
         const userSelected = await Account.findOneAndUpdate(
           { _id: id },
@@ -394,10 +362,27 @@ module.exports = {
           }
         );
 
-        return res.send(userSelected);
+        return res.send({ user: userSelected, rafflesBuyed: newNumbersAvailable });
       } catch (error) {
         return res.status(400).send(error.message);
       }
+    }
+  },
+  deleteCanceledNumbers: async (req, res) => {
+    try {
+      await Raffle.findOneAndUpdate(
+        { _id: req.body.raffleId },
+        {
+          $set: {
+            NumbersAvailable: req.body.numbersAvailableFromRaffle,
+            BuyedNumbers: req.body.numbersBuyedFromRaffle,
+          },
+        }
+      );
+
+      return res.send();
+    } catch (error) {
+      return res.status(400).send(error.message);
     }
   },
 };

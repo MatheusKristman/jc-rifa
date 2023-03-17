@@ -7,6 +7,8 @@ import DefaultPrize from "../../../assets/default-prize.jpg";
 import useQueryNumbersStore from "../../../stores/useQueryNumbersStore";
 import _arrayBufferToBase64 from "../../../hooks/useArrayBufferToBase64";
 import useRaffleStore from "../../../stores/useRaffleStore";
+import Loading from "../Loading";
+import useGeneralStore from "../../../stores/useGeneralStore";
 
 const QueryNumbersContent = () => {
   const { openModal, userRafflesBuyed, rafflesConcluded } = useQueryNumbersStore(
@@ -18,37 +20,32 @@ const QueryNumbersContent = () => {
     shallow
   );
 
+  const { isLoading } = useGeneralStore((state) => ({
+    isLoading: state.isLoading,
+  }));
+
   const { raffles } = useRaffleStore((state) => ({ raffles: state.raffles }));
 
   return (
     <div className="query-numbers__query-numbers-content">
+      {isLoading && <Loading>Buscando números</Loading>}
       <div className="query-numbers__query-numbers-content__container">
         <div className="query-numbers__query-numbers-content__container__above">
-          <h1 className="query-numbers__query-numbers-content__container__above__title">
-            🛒 Meus números
-          </h1>
+          <h1 className="query-numbers__query-numbers-content__container__above__title">🛒 Meus números</h1>
 
-          <button
-            onClick={openModal}
-            className="query-numbers__query-numbers-content__container__above__search-btn"
-          >
+          <button onClick={openModal} className="query-numbers__query-numbers-content__container__above__search-btn">
             <HiOutlineSearch /> Buscar
           </button>
         </div>
 
         {userRafflesBuyed.length !== 0 ? (
           userRafflesBuyed.map((raffle, index) => (
-            <div
-              key={raffle._id}
-              className="query-numbers__query-numbers-content__container__raffle-box"
-            >
+            <div key={raffle._id} className="query-numbers__query-numbers-content__container__raffle-box">
               <div className="query-numbers__query-numbers-content__container__raffle-box__image-box">
                 <img
                   src={
                     raffle.raffleImage.data
-                      ? `data:${raffle.raffleImage.contentType};base64,${_arrayBufferToBase64(
-                          raffle.raffleImage.data.data
-                        )}`
+                      ? `data:${raffle.raffleImage.contentType};base64,${_arrayBufferToBase64(raffle.raffleImage.data.data)}`
                       : DefaultPrize
                   }
                   alt="Rifa"
@@ -57,20 +54,16 @@ const QueryNumbersContent = () => {
               </div>
 
               <div className="query-numbers__query-numbers-content__container__raffle-box__info-box">
-                <h3 className="query-numbers__query-numbers-content__container__raffle-box__info-box__title">
-                  {raffle.title}
-                </h3>
+                <h3 className="query-numbers__query-numbers-content__container__raffle-box__info-box__title">{raffle.title}</h3>
 
                 <span
                   className={
-                    raffle.numbersBuyed.includes(rafflesConcluded[index]?.raffleNumber) ||
-                    raffles[index]?.isFinished
+                    raffle.numbersBuyed.includes(rafflesConcluded[index]?.raffleNumber) || raffles[index]?.isFinished
                       ? "query-numbers__query-numbers-content__container__raffle-box__info-box__status-finished"
                       : "query-numbers__query-numbers-content__container__raffle-box__info-box__status"
                   }
                 >
-                  {raffle.numbersBuyed.includes(rafflesConcluded[index]?.raffleNumber) ||
-                  raffles[index]?.isFinished
+                  {raffle.numbersBuyed.includes(rafflesConcluded[index]?.raffleNumber) || raffles[index]?.isFinished
                     ? "Concluído"
                     : raffle.status === "approved"
                     ? "Aguarde sorteio"
@@ -100,5 +93,3 @@ const QueryNumbersContent = () => {
 };
 
 export default QueryNumbersContent;
-
-// TODO loading quando está carregando os números

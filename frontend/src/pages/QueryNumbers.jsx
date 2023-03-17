@@ -9,15 +9,10 @@ import useUserStore from "../stores/useUserStore";
 import api from "../services/api";
 import useRaffleStore from "../stores/useRaffleStore";
 import useIsUserLogged from "../hooks/useIsUserLogged";
+import useGeneralStore from "../stores/useGeneralStore";
 
 const QueryNumbers = () => {
-  const {
-    isQueryNumbersModalOpen,
-    openModal,
-    setUserRafflesBuyed,
-    userRafflesBuyed,
-    setRafflesConcluded,
-  } = useQueryNumbersStore(
+  const { isQueryNumbersModalOpen, openModal, setUserRafflesBuyed, userRafflesBuyed, setRafflesConcluded } = useQueryNumbersStore(
     (state) => ({
       isQueryNumbersModalOpen: state.isQueryNumbersModalOpen,
       openModal: state.openModal,
@@ -28,6 +23,13 @@ const QueryNumbers = () => {
     }),
     shallow
   );
+
+  const { setToLoad, setNotToLoad, setToAnimateFadeIn, setToAnimateFadeOut } = useGeneralStore((state) => ({
+    setToLoad: state.setToLoad,
+    setNotToLoad: state.setNotToLoad,
+    setToAnimateFadeIn: state.setToAnimateFadeIn,
+    setToAnimateFadeOut: state.setToAnimateFadeOut,
+  }));
 
   useIsUserLogged("/query-numbers");
 
@@ -47,6 +49,9 @@ const QueryNumbers = () => {
     setRaffles([]);
     setUserRafflesBuyed([]);
     if (isUserLogged) {
+      setToLoad();
+      setToAnimateFadeIn();
+
       api
         .get(`/query-numbers/${user.cpf}`)
         .then((res) => {
@@ -54,11 +59,23 @@ const QueryNumbers = () => {
           api
             .get("/get-raffles")
             .then((res) => {
-              setRaffles(
-                res.data.filter((raffle, index) => raffle._id === userRafflesBuyed[index]?.raffleId)
-              );
+              setRaffles(res.data.filter((raffle, index) => raffle._id === userRafflesBuyed[index]?.raffleId));
+
+              setToAnimateFadeOut();
+
+              setTimeout(() => {
+                setNotToLoad();
+              }, 400);
             })
-            .catch((error) => console.error(error));
+            .catch((error) => {
+              console.error(error);
+
+              setToAnimateFadeOut();
+
+              setTimeout(() => {
+                setNotToLoad();
+              }, 400);
+            });
         })
         .catch((error) => console.log(error));
 

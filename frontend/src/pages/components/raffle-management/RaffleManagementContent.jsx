@@ -6,6 +6,8 @@ import api from "../../../services/api";
 import Prizes from "../Prizes";
 import useRaffleStore from "../../../stores/useRaffleStore";
 import _arrayBufferToBase64 from "../../../hooks/useArrayBufferToBase64";
+import Loading from "../Loading";
+import useGeneralStore from "../../../stores/useGeneralStore";
 
 const RaffleManagementContent = () => {
   const navigate = useNavigate();
@@ -15,15 +17,38 @@ const RaffleManagementContent = () => {
     setRaffles: state.setRaffles,
   }));
 
+  const { isLoading, setToLoad, setNotToLoad, setToAnimateFadeIn, setToAnimateFadeOut } = useGeneralStore((state) => ({
+    isLoading: state.isLoading,
+    setToLoad: state.setToLoad,
+    setNotToLoad: state.setNotToLoad,
+    setToAnimateFadeIn: state.setToAnimateFadeIn,
+    setToAnimateFadeOut: state.setToAnimateFadeOut,
+  }));
+
   useEffect(() => {
     const fetchRaffles = () => {
+      setToLoad();
+      setToAnimateFadeIn();
+
       api
         .get("/raffle-management/get-raffles")
         .then((res) => {
           setRaffles(res.data);
+
+          setToAnimateFadeOut();
+
+          setTimeout(() => {
+            setNotToLoad();
+          }, 400);
         })
         .catch((error) => {
           console.log(error);
+
+          setToAnimateFadeOut();
+
+          setTimeout(() => {
+            setNotToLoad();
+          });
         });
     };
 
@@ -36,11 +61,10 @@ const RaffleManagementContent = () => {
 
   return (
     <div className="raffle-management__content">
+      {isLoading && <Loading>Carregando rifas</Loading>}
       <div className="raffle-management__content__container">
         <div className="raffle-management__content__container__info-wrapper">
-          <h1 className="raffle-management__content__container__info-wrapper__title">
-            ⚙️ Gerenciador de Rifas
-          </h1>
+          <h1 className="raffle-management__content__container__info-wrapper__title">⚙️ Gerenciador de Rifas</h1>
 
           <button
             onClick={() => navigate("/create-new-raffle")}
@@ -54,10 +78,7 @@ const RaffleManagementContent = () => {
         <div className="raffle-management__content__container__raffle-wrapper">
           <ul className="raffle-management__content__container__raffle-wrapper__list">
             {raffles.map((raffle) => (
-              <li
-                key={raffle._id}
-                className="raffle-management__content__container__raffle-wrapper__list__list-item"
-              >
+              <li key={raffle._id} className="raffle-management__content__container__raffle-wrapper__list__list-item">
                 <Link
                   to={`/edit-raffle/${raffle._id}`}
                   className="raffle-management__content__container__raffle-wrapper__list__list-item__link"
@@ -67,15 +88,10 @@ const RaffleManagementContent = () => {
                     subtitle={raffle.subtitle}
                     image={
                       raffle.raffleImage.data
-                        ? `data:${raffle.raffleImage.contentType};base64,${_arrayBufferToBase64(
-                            raffle.raffleImage.data.data
-                          )}`
+                        ? `data:${raffle.raffleImage.contentType};base64,${_arrayBufferToBase64(raffle.raffleImage.data.data)}`
                         : null
                     }
-                    progress={convertProgress(
-                      raffle?.QuantNumbers - raffle?.NumbersAvailable.length,
-                      raffle?.QuantNumbers
-                    )}
+                    progress={convertProgress(raffle?.QuantNumbers - raffle?.NumbersAvailable.length, raffle?.QuantNumbers)}
                     winner={raffle?.isFinished}
                   />
                 </Link>
@@ -89,5 +105,3 @@ const RaffleManagementContent = () => {
 };
 
 export default RaffleManagementContent;
-
-// TODO loading quando carrega as rifas

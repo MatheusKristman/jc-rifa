@@ -439,6 +439,3 @@ const RaffleSelectedContent = () => {
 };
 
 export default RaffleSelectedContent;
-
-// TODO pix do mercado pago
-// TODO colocar loading no botão de compra até ser redirecionado

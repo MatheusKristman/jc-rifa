@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
 import api from "../../../services/api";
+import { useNavigate } from "react-router-dom";
 
 import NumberBuyedBox from "./NumberBuyedBox";
 import DefaultPrize from "../../../assets/default-prize.jpg";
@@ -11,6 +12,10 @@ import NoUserPhoto from "../../../assets/no-user-photo.png";
 import useRaffleStore from "../../../stores/useRaffleStore";
 import useNewRaffleStore from "../../../stores/useNewRaffleStore";
 import _arrayBufferToBase64 from "../../../hooks/useArrayBufferToBase64";
+import useGeneralStore from "../../../stores/useGeneralStore";
+import NumberBuyedLoading from "./NumberBuyedLoading";
+import WinnerLoading from "./WinnerLoading";
+import Loading from "../Loading";
 
 const EditRaffleContent = () => {
   const {
@@ -27,6 +32,15 @@ const EditRaffleContent = () => {
     setWinner,
     finishNumberError,
     setFinishNumberError,
+    isUsersNumberBuyedLoading,
+    setToLoadUsersNumberBuyed,
+    setNotToLoadUsersNumberBuyed,
+    isChoosingWinner,
+    setToChooseWinner,
+    setNotToChooseWinner,
+    isFetchingWinner,
+    setToFetchWinner,
+    setNotToFetchWinner,
   } = useRaffleStore(
     (state) => ({
       raffleSelected: state.raffleSelected,
@@ -42,6 +56,15 @@ const EditRaffleContent = () => {
       setWinner: state.setWinner,
       finishNumberError: state.finishNumberError,
       setFinishNumberError: state.setFinishNumberError,
+      isUsersNumberBuyedLoading: state.isUsersNumberBuyedLoading,
+      setToLoadUsersNumberBuyed: state.setToLoadUsersNumberBuyed,
+      setNotToLoadUsersNumberBuyed: state.setNotToLoadUsersNumberBuyed,
+      isChoosingWinner: state.isChoosingWinner,
+      setToChooseWinner: state.setToChooseWinner,
+      setNotToChooseWinner: state.setNotToChooseWinner,
+      isFetchingWinner: state.isFetchingWinner,
+      setToFetchWinner: state.setToFetchWinner,
+      setNotToFetchWinner: state.setNotToFetchWinner,
     }),
     shallow
   );
@@ -101,6 +124,16 @@ const EditRaffleContent = () => {
     shallow
   );
 
+  const { setToLoad, setNotToLoad, setToAnimateFadeIn, setToAnimateFadeOut, isLoading } = useGeneralStore((state) => ({
+    isLoading: state.isLoading,
+    setToLoad: state.setToLoad,
+    setNotToLoad: state.setNotToLoad,
+    setToAnimateFadeIn: state.setToAnimateFadeIn,
+    setToAnimateFadeOut: state.setToAnimateFadeOut,
+  }));
+
+  const navigate = useNavigate();
+
   const schema = Yup.object().shape({
     editRaffleImage: Yup.mixed(),
     editTitle: Yup.string().required("Título é obrigatório"),
@@ -119,9 +152,7 @@ const EditRaffleContent = () => {
     if (raffleSelected.hasOwnProperty("_id")) {
       setRaffleImage({
         url: raffleSelected.raffleImage.data
-          ? `data:${raffleSelected.raffleImage.contentType};base64,${_arrayBufferToBase64(
-              raffleSelected.raffleImage.data.data
-            )}`
+          ? `data:${raffleSelected.raffleImage.contentType};base64,${_arrayBufferToBase64(raffleSelected.raffleImage.data.data)}`
           : null,
       });
 
@@ -167,16 +198,19 @@ const EditRaffleContent = () => {
   useEffect(() => {
     const fetchRaffleParticipants = () => {
       if (raffleSelected.hasOwnProperty("_id") && participants.length === 0) {
+        setToLoadUsersNumberBuyed();
         api
           .post("/edit-raffle/get-users", {
             id: raffleSelected._id,
           })
           .then((res) => {
+            setNotToLoadUsersNumberBuyed();
             setParticipants(res.data);
           })
           .catch((error) => {
             console.log(error);
             setParticipants([]);
+            setNotToLoadUsersNumberBuyed();
           });
       }
     };
@@ -187,9 +221,16 @@ const EditRaffleContent = () => {
   useEffect(() => {
     function fetchWinner() {
       if (!winner.hasOwnProperty("_id") && raffleSelected.hasOwnProperty("_id")) {
-        api.post("/edit-raffle/winner", { title: raffleSelected.title }).then((res) => {
-          setWinner(res.data);
-        });
+        setToFetchWinner();
+        api
+          .post("/edit-raffle/winner", { title: raffleSelected.title })
+          .then((res) => {
+            setWinner(res.data);
+            setNotToFetchWinner();
+          })
+          .catch((error) => {
+            setNotToFetchWinner();
+          });
       }
     }
 
@@ -200,6 +241,9 @@ const EditRaffleContent = () => {
     const submitData = () => {
       if (isSubmitting) {
         const sendDataToDB = () => {
+          setToLoad();
+          setToAnimateFadeIn();
+
           const formData = new FormData();
 
           formData.append("id", raffleSelected._id);
@@ -219,6 +263,12 @@ const EditRaffleContent = () => {
               raffleCreatedSuccess();
               setRaffleCreatedMessage("Rifa atualizada com sucesso");
               setRaffleSelected(res.data);
+
+              setToAnimateFadeOut();
+
+              setTimeout(() => {
+                setNotToLoad();
+              }, 400);
             })
             .catch((error) => {
               if (error) {
@@ -227,6 +277,12 @@ const EditRaffleContent = () => {
 
               errorExist();
               console.log(error);
+
+              setToAnimateFadeOut();
+
+              setTimeout(() => {
+                setNotToLoad();
+              }, 400);
             });
         };
 
@@ -303,6 +359,7 @@ const EditRaffleContent = () => {
 
   const finishRaffle = () => {
     if (finishNumber) {
+      setToChooseWinner();
       api
         .post("/edit-raffle/finish", {
           id: raffleSelected._id,
@@ -311,9 +368,11 @@ const EditRaffleContent = () => {
         .then((res) => {
           setWinner(res.data);
           setFinishNumberError("");
+          setNotToChooseWinner();
         })
         .catch((error) => {
           console.log(error);
+          setNotToChooseWinner();
           if (error?.response.data === "Número não foi comprado, insira outro número") {
             setFinishNumberError(error.response.data);
             setWinner({});
@@ -347,7 +406,11 @@ const EditRaffleContent = () => {
   return (
     <div className="edit-raffle__content">
       <div className="edit-raffle__content__container">
-        <h1 className="edit-raffle__content__container__title">Estatisticas</h1>
+        <button onClick={() => navigate("/raffle-management")} className="edit-raffle__content__back-btn">
+          Voltar
+        </button>
+
+        <h1 className="edit-raffle__content__container__title">Estatísticas</h1>
 
         <div className="edit-raffle__content__container__statistics-wrapper">
           <div className="edit-raffle__content__container__statistics-wrapper__progress-bar">
@@ -360,20 +423,16 @@ const EditRaffleContent = () => {
           </div>
 
           <div className="edit-raffle__content__container__statistics-wrapper__numbers-buyed">
-            {participants?.length !== 0 ? (
+            {isUsersNumberBuyedLoading ? (
+              <NumberBuyedLoading />
+            ) : participants?.length !== 0 ? (
               participants.map((user) => (
                 <NumberBuyedBox
                   key={user._id}
                   image={user.profileImage}
                   name={user.name}
-                  numbers={
-                    user.rafflesBuyed.filter((raffle) => raffle.raffleId === raffleSelected._id)[0]
-                      ?.numbersBuyed
-                  }
-                  raffleImage={
-                    user.rafflesBuyed.filter((raffle) => raffle.raffleId === raffleSelected._id)[0]
-                      ?.raffleImage
-                  }
+                  numbers={user.rafflesBuyed.filter((raffle) => raffle.raffleId === raffleSelected._id)[0]?.numbersBuyed}
+                  raffleImage={user.rafflesBuyed.filter((raffle) => raffle.raffleId === raffleSelected._id)[0]?.raffleImage}
                 />
               ))
             ) : (
@@ -391,10 +450,7 @@ const EditRaffleContent = () => {
         <h1 className="edit-raffle__content__container__title">Editar Rifa</h1>
 
         <form onSubmit={handleSubmit(onSubmit)} className="edit-raffle__content__container__form">
-          <label
-            htmlFor="editRaffleImage"
-            className="edit-raffle__content__container__form__image-label"
-          >
+          <label htmlFor="editRaffleImage" className="edit-raffle__content__container__form__image-label">
             <div className="edit-raffle__content__container__form__image-label__image-box">
               <img
                 src={raffleImage.url ? raffleImage.url : DefaultPrize}
@@ -414,10 +470,7 @@ const EditRaffleContent = () => {
           </label>
 
           <div className="edit-raffle__content__container__form__inputs-box">
-            <label
-              htmlFor="editTitle"
-              className="edit-raffle__content__container__form__inputs-box__label"
-            >
+            <label htmlFor="editTitle" className="edit-raffle__content__container__form__inputs-box__label">
               Título
               <input
                 {...register("editTitle")}
@@ -430,10 +483,7 @@ const EditRaffleContent = () => {
               />
             </label>
 
-            <label
-              htmlFor="editSubtitle"
-              className="edit-raffle__content__container__form__inputs-box__label"
-            >
+            <label htmlFor="editSubtitle" className="edit-raffle__content__container__form__inputs-box__label">
               Subtítulo
               <input
                 {...register("editSubtitle")}
@@ -446,10 +496,7 @@ const EditRaffleContent = () => {
               />
             </label>
 
-            <label
-              htmlFor="editDescription"
-              className="edit-raffle__content__container__form__inputs-box__label"
-            >
+            <label htmlFor="editDescription" className="edit-raffle__content__container__form__inputs-box__label">
               Descrição
               <textarea
                 {...register("editDescription")}
@@ -461,10 +508,7 @@ const EditRaffleContent = () => {
               />
             </label>
 
-            <label
-              htmlFor="editPrice"
-              className="edit-raffle__content__container__form__inputs-box__label"
-            >
+            <label htmlFor="editPrice" className="edit-raffle__content__container__form__inputs-box__label">
               Preço por números
               <input
                 {...register("editPrice")}
@@ -486,6 +530,7 @@ const EditRaffleContent = () => {
         <h1 className="edit-raffle__content__container__title">Finalizar rifa</h1>
 
         <div className="edit-raffle__content__container__finish-raffle-container">
+          {isFetchingWinner ? <WinnerLoading /> : null}
           {winner.hasOwnProperty("_id") ? null : (
             <input
               type="text"
@@ -498,7 +543,11 @@ const EditRaffleContent = () => {
           )}
           {finishNumberError && <span className="finish-number-error">{finishNumberError}</span>}
 
-          {winner.hasOwnProperty("_id") ? (
+          {isChoosingWinner ? (
+            <button type="button" className="edit-raffle__content__container__finish-raffle-container__finishing-btn">
+              Finalizando
+            </button>
+          ) : winner.hasOwnProperty("_id") ? (
             <button
               type="button"
               onClick={resetWinner}
@@ -527,9 +576,7 @@ const EditRaffleContent = () => {
                     className="edit-raffle__content__container__finish-raffle-container__winner-display-box__winner-box__image-box__image"
                     src={
                       winner.profileImage.data
-                        ? `data:${winner.profileImage.contentType};base64,${_arrayBufferToBase64(
-                            winner.profileImage.data.data
-                          )}`
+                        ? `data:${winner.profileImage.contentType};base64,${_arrayBufferToBase64(winner.profileImage.data.data)}`
                         : NoUserPhoto
                     }
                     alt="Ganhador"
@@ -555,11 +602,9 @@ const EditRaffleContent = () => {
           </div>
         </div>
       </div>
+      {isLoading && <Loading>Enviando dados...</Loading>}
     </div>
   );
 };
 
 export default EditRaffleContent;
-
-// TODO loading nos números comprados
-// TODO loading no botão quando faz a atualização

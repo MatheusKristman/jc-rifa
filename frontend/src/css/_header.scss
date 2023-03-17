@@ -1,7 +1,7 @@
 .header {
   background-color: $darkBlue;
   padding: 15px 25px;
-  
+
   &__container {
     display: flex;
     align-items: center;
@@ -17,7 +17,7 @@
       align-items: center;
       font-size: 2rem;
       font-weight: 600;
-      
+
       a {
         text-decoration: none;
         color: $white;
@@ -68,7 +68,7 @@
     &__above {
       background-color: #141842;
       padding: 15px 25px;
-      
+
       &__container {
         max-width: 600px;
         margin: auto;
@@ -92,7 +92,7 @@
           color: $white;
           font-size: 2.5rem;
           cursor: pointer;
-          outline: none;  
+          outline: none;
         }
       }
     }
@@ -100,7 +100,7 @@
     &__middle {
       padding: 20px 25px 0;
       flex: 1;
-      
+
       &__container {
         width: 100%;
         max-width: 600px;
@@ -110,10 +110,9 @@
         align-items: center;
         gap: 10px;
 
-        
         &__user-box {
           width: 100%;
-          background-color: #13163D;
+          background-color: #13163d;
           border-radius: 10px;
           padding: 20px;
           display: flex;
@@ -195,7 +194,7 @@
                 transition: filter 0.2s ease;
 
                 &:hover {
-                  filter: brightness(70%);  
+                  filter: brightness(70%);
                 }
               }
 
@@ -361,7 +360,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background-color:  rgba(32, 33, 36, .5);
+    background-color: rgba(32, 33, 36, 0.5);
     backdrop-filter: blur(10px);
     overflow: auto;
     padding: 40px;
@@ -370,7 +369,7 @@
     animation: loginFadeIn 0.2s ease forwards;
 
     &::before {
-      content: '';
+      content: "";
       height: 100%;
       display: inline-block;
       vertical-align: middle;
@@ -511,6 +510,21 @@
             }
           }
 
+          &__submit-btn-sending {
+            width: fit-content;
+            margin: auto;
+            padding: 15px 50px;
+            background-color: $darkBlueHover;
+            border: none;
+            border-radius: 30px;
+            color: $white;
+            font-size: 1rem;
+            font-weight: 600;
+            outline: none;
+            pointer-events: none;
+            margin-bottom: 10px;
+          }
+
           &__register-btn {
             margin: auto;
             text-decoration: none;
@@ -559,7 +573,7 @@
 @keyframes loginFadeOut {
   from {
     opacity: 1;
-  } 
+  }
 
   to {
     opacity: 0;

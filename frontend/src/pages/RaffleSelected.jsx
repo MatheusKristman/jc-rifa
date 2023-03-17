@@ -7,21 +7,22 @@ import RaffleSelectedContent from "./components/raffle/RaffleSelectedContent";
 import useIsUserLogged from "../hooks/useIsUserLogged";
 import AlertBox from "./components/AlertBox";
 import PaymentModal from "./components/raffle/PaymentModal";
-import useRaffleStore from "../stores/useRaffleStore";
+import useGeneralStore from "../stores/useGeneralStore";
 
 const RaffleSelected = () => {
   useIsUserLogged("/raffles");
 
-  const { isMessageBoxDisplaying, isErrorBoxDisplaying, messageText, isPaymentModalOpen } =
-    useBuyNumbersStore(
-      (state) => ({
-        isMessageBoxDisplaying: state.isMessageBoxDisplaying,
-        isErrorBoxDisplaying: state.isErrorBoxDisplaying,
-        messageText: state.messageText,
-        isPaymentModalOpen: state.isPaymentModalOpen,
-      }),
-      shallow
-    );
+  const { isMessageBoxDisplaying, isErrorBoxDisplaying, messageText, isPaymentModalOpen } = useBuyNumbersStore(
+    (state) => ({
+      isMessageBoxDisplaying: state.isMessageBoxDisplaying,
+      isErrorBoxDisplaying: state.isErrorBoxDisplaying,
+      messageText: state.messageText,
+      isPaymentModalOpen: state.isPaymentModalOpen,
+    }),
+    shallow
+  );
+
+  const { isLoading } = useGeneralStore((state) => ({ isLoading: state.isLoading }));
 
   useEffect(() => {
     if (isPaymentModalOpen) {
@@ -35,20 +36,8 @@ const RaffleSelected = () => {
     <div className="raffle-selected">
       <Header />
       <RaffleSelectedContent />
-      {isMessageBoxDisplaying && (
-        <AlertBox
-          success={isMessageBoxDisplaying}
-          error={isErrorBoxDisplaying}
-          message={messageText}
-        />
-      )}
-      {isErrorBoxDisplaying && (
-        <AlertBox
-          success={isMessageBoxDisplaying}
-          error={isErrorBoxDisplaying}
-          message={messageText}
-        />
-      )}
+      {isMessageBoxDisplaying && <AlertBox success={isMessageBoxDisplaying} error={isErrorBoxDisplaying} message={messageText} />}
+      {isErrorBoxDisplaying && <AlertBox success={isMessageBoxDisplaying} error={isErrorBoxDisplaying} message={messageText} />}
       {isPaymentModalOpen && <PaymentModal />}
       <Footer />
     </div>

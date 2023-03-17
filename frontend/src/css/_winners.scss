@@ -6,7 +6,7 @@
   &__winners-content {
     width: 100%;
     flex: 1;
-    
+
     &__container {
       background-color: $dark;
       width: 100%;
@@ -14,32 +14,40 @@
       margin: 25px auto;
       border-radius: 10px;
       padding: 16px 12px;
-      
+
       &__infos {
         display: flex;
         align-items: flex-end;
         gap: 5px;
         margin-bottom: 10px;
-  
+
         &__title {
           font-size: 1.35rem;
           font-weight: 600;
           color: $white;
         }
-  
+
         &__desc {
           font-size: 0.9rem;
           color: $white;
           opacity: 0.7;
         }
       }
-  
+
       &__wrapper {
         display: flex;
         flex-direction: column;
         gap: 10px;
+
+        &__alert-box {
+          background-color: #fff3cd;
+          border-radius: 4px;
+          padding: 16px;
+          display: flex;
+          align-items: center;
+          gap: 5px;
+        }
       }
     }
   }
-
 }

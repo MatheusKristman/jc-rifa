@@ -8,6 +8,8 @@ import { useNavigate } from "react-router-dom";
 
 import useChangePasswordStore from "../../../stores/useChangePasswordStore";
 import useUserStore from "../../../stores/useUserStore";
+import useGeneralStore from "../../../stores/useGeneralStore";
+import Loading from "../Loading";
 
 const ChangePasswordContent = () => {
   const {
@@ -51,6 +53,14 @@ const ChangePasswordContent = () => {
     setUser: state.setUser,
   }));
 
+  const { isLoading, setToLoad, setNotToLoad, setToAnimateFadeIn, setToAnimateFadeOut } = useGeneralStore((state) => ({
+    isLoading: state.isLoading,
+    setToLoad: state.setToLoad,
+    setNotToLoad: state.setNotToLoad,
+    setToAnimateFadeIn: state.setToAnimateFadeIn,
+    setToAnimateFadeOut: state.setToAnimateFadeOut,
+  }));
+
   const navigate = useNavigate();
 
   const schema = Yup.object().shape({
@@ -73,6 +83,9 @@ const ChangePasswordContent = () => {
     function submitData() {
       if (isSubmitting) {
         const sendToDB = () => {
+          setToLoad();
+          setToAnimateFadeIn();
+
           const formData = new FormData();
 
           formData.append("id", user._id);
@@ -89,6 +102,12 @@ const ChangePasswordContent = () => {
               changeComplete();
               setRegisterMessage("Senha alterada com sucesso");
               setUser({ ...res.data });
+
+              setToAnimateFadeOut();
+
+              setTimeout(() => {
+                setNotToLoad();
+              }, 400);
             })
             .catch((error) => {
               window.scrollTo(0, 0);
@@ -100,6 +119,12 @@ const ChangePasswordContent = () => {
               }
               errorExist();
               console.log(error.response);
+
+              setToAnimateFadeOut();
+
+              setTimeout(() => {
+                setNotToLoad();
+              }, 400);
             });
         };
 
@@ -133,18 +158,13 @@ const ChangePasswordContent = () => {
 
   return (
     <div className="change-password__content">
+      {isLoading && <Loading>Enviando dados</Loading>}
       <div className="change-password__content__container">
         <h1 className="change-password__content__container__title">🔒 Mudar senha</h1>
 
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className="change-password__content__container__form"
-        >
+        <form onSubmit={handleSubmit(onSubmit)} className="change-password__content__container__form">
           <div className="change-password__content__container__form__wrapper">
-            <label
-              htmlFor="password"
-              className="change-password__content__container__form__wrapper__label"
-            >
+            <label htmlFor="password" className="change-password__content__container__form__wrapper__label">
               Senha
               <input
                 {...register("password")}
@@ -160,10 +180,7 @@ const ChangePasswordContent = () => {
             </label>
             {errors.password && <span>{errors.password.message}</span>}
 
-            <label
-              htmlFor="newPassword"
-              className="change-password__content__container__form__wrapper__label"
-            >
+            <label htmlFor="newPassword" className="change-password__content__container__form__wrapper__label">
               Nova senha
               <input
                 {...register("newPassword")}
@@ -179,10 +196,7 @@ const ChangePasswordContent = () => {
             </label>
             {errors.newPassword && <span>{errors.newPassword.message}</span>}
 
-            <label
-              htmlFor="confirmNewPassword"
-              className="change-password__content__container__form__wrapper__label"
-            >
+            <label htmlFor="confirmNewPassword" className="change-password__content__container__form__wrapper__label">
               Confirmar nova senha
               <input
                 {...register("confirmNewPassword")}

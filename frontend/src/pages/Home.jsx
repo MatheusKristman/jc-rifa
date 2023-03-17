@@ -9,6 +9,7 @@ import useRaffleStore from "../stores/useRaffleStore";
 import useWinnerStore from "../stores/useWinnerStore";
 import api from "../services/api";
 import useGeneralStore from "../stores/useGeneralStore";
+import Loading from "./components/Loading";
 
 const Home = () => {
   const { user, setUser } = useUserStore((state) => ({
@@ -26,10 +27,16 @@ const Home = () => {
     setWinners: state.setWinners,
   }));
 
-  const { setToRaffleLoad, setToRaffleNotLoad } = useGeneralStore((state) => ({
-    setToRaffleLoad: state.setToRaffleLoad,
-    setToRaffleNotLoad: state.setToRaffleNotLoad,
-  }));
+  const { setToRaffleLoad, setToRaffleNotLoad, isLoading, setToLoad, setNotToLoad, setToAnimateFadeIn, setToAnimateFadeOut } =
+    useGeneralStore((state) => ({
+      setToRaffleLoad: state.setToRaffleLoad,
+      setToRaffleNotLoad: state.setToRaffleNotLoad,
+      isLoading: state.isLoading,
+      setToLoad: state.setToLoad,
+      setNotToLoad: state.setNotToLoad,
+      setToAnimateFadeIn: state.setToAnimateFadeIn,
+      setToAnimateFadeOut: state.setToAnimateFadeOut,
+    }));
 
   const [searchParams] = useSearchParams();
 
@@ -40,57 +47,95 @@ const Home = () => {
   }, []);
 
   useEffect(() => {
-    if (user.hasOwnProperty("_id")) {
-      let paymentIds = [];
+    function fetchUserBuyedNumbers() {
+      if (user.hasOwnProperty("_id")) {
+        setToAnimateFadeIn();
+        setToLoad();
 
-      paymentIds = user.rafflesBuyed.map((raffle) => raffle.paymentId);
+        let paymentIds = [];
 
-      paymentIds.forEach((id, index) => {
-        axios
-          .get(`https://api.mercadopago.com/v1/payments/${id}`, {
-            headers: {
-              Authorization: `Bearer ${import.meta.env.VITE_MERCADO_PAGO_ACCESS_TOKEN}`,
-            },
-          })
-          .then((res) => {
-            const body = {
-              id: user._id,
-              paymentId: res.data.id,
-              status: res.data.status,
-            };
+        paymentIds = user.rafflesBuyed.map((raffle) => raffle.paymentId);
 
-            const raffleToBeDeleted = user.rafflesBuyed.filter(
-              (raffle) => raffle.paymentId == res.data.id
-            );
+        if (paymentIds.length !== 0) {
+          paymentIds.forEach((id, index) => {
+            axios
+              .get(`https://api.mercadopago.com/v1/payments/${id}`, {
+                headers: {
+                  Authorization: `Bearer ${import.meta.env.VITE_MERCADO_PAGO_ACCESS_TOKEN}`,
+                },
+              })
+              .then((res) => {
+                const body = {
+                  id: user._id,
+                  paymentId: res.data.id,
+                  status: res.data.status,
+                };
 
-            if (
-              body.status === "rejected" ||
-              body.status === "cancelled" ||
-              body.status === "refunded" ||
-              body.status === "charged_back"
-            ) {
-              // TODOdevolver os números para rifa
-              api
-                .delete(
-                  `/payment-cancel?id=${body.id}&paymentId=${body.paymentId}&raffleId=${raffleToBeDeleted[0].raffleId}`
-                )
-                .then((res) => {
-                  console.log(res.data);
-                })
-                .catch((error) => console.error(error));
-            } else {
-              api
-                .post("/get-payment-data", body)
-                .then((res) => {
-                  console.log(res.data);
-                })
-                .catch((error) => console.error(error));
-            }
-          })
-          .catch((error) => console.error(error));
-      });
+                const raffleToBeDeleted = user.rafflesBuyed.filter((raffle) => raffle.paymentId == res.data.id);
+
+                if (
+                  body.status === "rejected" ||
+                  body.status === "cancelled" ||
+                  body.status === "refunded" ||
+                  body.status === "charged_back"
+                ) {
+                  api
+                    .delete(`/payment-cancel?id=${body.id}&paymentId=${body.paymentId}&raffleId=${raffleToBeDeleted[0].raffleId}`)
+                    .then((res) => {
+                      console.log(res.data);
+
+                      const raffleSelected = raffles.filter((raffle) => raffle._id == raffleToBeDeleted[0].raffleId);
+                      let numbersAvailableFromRaffle = [...raffleSelected[0].NumbersAvailable, ...res.data.rafflesBuyed];
+                      let numbersBuyedFromRaffle = [
+                        ...raffleSelected[0].BuyedNumbers.filter((number) => !numbersAvailableFromRaffle.includes(number)),
+                      ];
+
+                      const body = {
+                        raffleId: raffleToBeDeleted[0].raffleId,
+                        numbersAvailableFromRaffle: numbersAvailableFromRaffle,
+                        numbersBuyedFromRaffle: numbersBuyedFromRaffle,
+                      };
+
+                      api
+                        .post("/delete-canceled-numbers", body)
+                        .then(() => {
+                          setToAnimateFadeOut();
+
+                          setTimeout(() => {
+                            setNotToLoad();
+                          }, 400);
+                        })
+                        .catch((error) => console.error(error));
+                    })
+                    .catch((error) => console.error(error));
+                } else {
+                  api
+                    .post("/get-payment-data", body)
+                    .then((res) => {
+                      console.log(res.data);
+                      setToAnimateFadeOut();
+
+                      setTimeout(() => {
+                        setNotToLoad();
+                      }, 400);
+                    })
+                    .catch((error) => console.error(error));
+                }
+              })
+              .catch((error) => console.error(error));
+          });
+        } else {
+          setToAnimateFadeOut();
+
+          setTimeout(() => {
+            setNotToLoad();
+          }, 400);
+        }
+      }
     }
-  }, [user]);
+
+    fetchUserBuyedNumbers();
+  }, [user, setToLoad, setNotToLoad]);
 
   useEffect(() => {
     const fetchRaffles = () => {
@@ -111,9 +156,19 @@ const Home = () => {
 
   useEffect(() => {
     const fetchWinners = () => {
+      setToAnimateFadeIn();
+      setToLoad();
       api
         .get("/all-winners")
-        .then((res) => setWinners(res.data))
+        .then((res) => {
+          setWinners(res.data);
+
+          setToAnimateFadeOut();
+
+          setTimeout(() => {
+            setNotToLoad();
+          }, 400);
+        })
         .catch((error) => console.log(error));
     };
 
@@ -124,11 +179,10 @@ const Home = () => {
     <div className="home">
       <Header />
       <HomeContent />
+      {isLoading && <Loading>Aguarde um momento</Loading>}
       <Footer />
     </div>
   );
 };
 
 export default Home;
-
-// TODO loading até dar fetch em todos os dados
