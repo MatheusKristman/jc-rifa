@@ -13,6 +13,7 @@ import useUserStore from "../../../stores/useUserStore";
 import useIsUserLogged from "../../../hooks/useIsUserLogged";
 import useGeneralStore from "../../../stores/useGeneralStore";
 import Loading from "../Loading";
+import useHeaderStore from "../../../stores/useHeaderStore";
 
 const RegisterContent = () => {
   const {
@@ -82,11 +83,17 @@ const RegisterContent = () => {
     setToAnimateFadeOut: state.setToAnimateFadeOut,
   }));
 
+  const { closeLogin } = useHeaderStore((state) => ({ closeLogin: state.closeLogin }), shallow);
+
   const { user } = useUserStore((state) => ({
     user: state.user,
   }));
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    closeLogin();
+  }, []);
 
   useEffect(() => {
     function submitData() {
