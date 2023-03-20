@@ -129,13 +129,13 @@ module.exports = {
       await Account.updateMany(
         { "rafflesBuyed.raffleId": id },
         {
-          "$set": {
+          $set: {
             "rafflesBuyed.$.title": selectedRaffle.title,
             "rafflesBuyed.$.raffleImage": selectedRaffle.raffleImage,
           },
         }
       );
-      const users = await Account.find({ "rafflesBuyed.raffleId": id });
+      const users = await Account.find({ "rafflesBuyed.raffleId": id, "rafflesBuyed.status": "approved" });
 
       res.send(users);
     } catch (error) {
@@ -156,9 +156,7 @@ module.exports = {
 
     const newRaffle = {
       raffleImage: {
-        data: req.file
-          ? fs.readFileSync("public/data/uploads/" + req.file.filename)
-          : raffle.raffleImage.data,
+        data: req.file ? fs.readFileSync("public/data/uploads/" + req.file.filename) : raffle.raffleImage.data,
         contentType: req.file ? req.file.mimetype : null,
       },
       title: req.body.title,
@@ -194,14 +192,14 @@ module.exports = {
     }
 
     try {
-      const winner = await Account.findOne({ "rafflesBuyed.numbersBuyed": number });
+      const winner = await Account.findOne({ "rafflesBuyed.numbersBuyed": number, "rafflesBuyed.status": "approved" });
 
       console.log(winner);
 
       if (!winner) {
         return res.status(404).send("Usuário não encontrado, insira um novo número");
       }
-      
+
       const winnerCreated = await Winner.create({
         name: winner.name,
         tel: winner.tel,
@@ -213,11 +211,14 @@ module.exports = {
         raffleImage: raffleSelected.raffleImage,
       });
 
-      await Raffle.updateOne({ _id: id }, {
-        '$set': {
-          isFinished: true,
-        },
-      });
+      await Raffle.updateOne(
+        { _id: id },
+        {
+          $set: {
+            isFinished: true,
+          },
+        }
+      );
 
       res.json(winnerCreated);
     } catch (error) {

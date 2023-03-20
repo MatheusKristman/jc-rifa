@@ -236,23 +236,21 @@ const UpdateRegistrationContent = () => {
   }, [uf]);
 
   useEffect(() => {
-    console.log(cep.length);
-    if (user.hasOwnProperty("cep")) {
-      if (cep.replace("-", "").length === 8) {
-        axios.get(`https://viacep.com.br/ws/${cep.replace("-", "")}/json/`).then((res) => {
-          setAddressFromFetch(res.data.logradouro);
-          setValue("address", res.data.logradouro);
+    if (cep.replace("-", "").length === 8) {
+      console.log(cep.length);
+      axios.get(`https://viacep.com.br/ws/${cep.replace("-", "")}/json/`).then((res) => {
+        setAddressFromFetch(res.data.logradouro);
+        setValue("address", res.data.logradouro);
 
-          setNeighborhoodFromFetch(res.data.bairro);
-          setValue("neighborhood", res.data.bairro);
+        setNeighborhoodFromFetch(res.data.bairro);
+        setValue("neighborhood", res.data.bairro);
 
-          setUfFromFetch(res.data.uf);
-          setValue("uf", res.data.uf);
+        setUfFromFetch(res.data.uf);
+        setValue("uf", res.data.uf);
 
-          setCityFromFetch(res.data.localidade);
-          setValue("city", res.data.localidade);
-        });
-      }
+        setCityFromFetch(res.data.localidade);
+        setValue("city", res.data.localidade);
+      });
     }
   }, [cep]);
 

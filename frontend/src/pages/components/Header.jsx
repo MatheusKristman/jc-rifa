@@ -91,12 +91,6 @@ const HeaderMenu = () => {
             </li>
 
             <li className="header__menu__middle__container__menu-list__menu-item">
-              <Link onClick={closeMenu} to="/add-credits">
-                <BsLightningCharge /> Adicionar créditos
-              </Link>
-            </li>
-
-            <li className="header__menu__middle__container__menu-list__menu-item">
               <Link onClick={closeMenu} to="/register">
                 <IoEnterOutline /> Cadastro
               </Link>

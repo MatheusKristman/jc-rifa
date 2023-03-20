@@ -1,12 +1,5 @@
 import React, { useEffect } from "react";
-import {
-  BsFacebook,
-  BsTelegram,
-  BsTwitter,
-  BsWhatsapp,
-  BsCart,
-  BsCheck2Circle,
-} from "react-icons/bs";
+import { BsFacebook, BsTelegram, BsTwitter, BsWhatsapp, BsCart, BsCheck2Circle } from "react-icons/bs";
 import { CiCircleMinus, CiCirclePlus } from "react-icons/ci";
 import { Link } from "react-router-dom";
 import { shallow } from "zustand/shallow";
@@ -18,8 +11,7 @@ import api from "../../../services/api";
 import useBuyNumbersStore from "../../../stores/useBuyNumbersStore";
 import useUserStore from "../../../stores/useUserStore";
 import useHeaderStore from "../../../stores/useHeaderStore";
-import axios from "axios";
-import $ from "jquery";
+import useGeneralStore from "../../../stores/useGeneralStore";
 
 const RaffleSelectedContent = () => {
   const { raffleSelected, setRaffleSelected } = useRaffleStore((state) => ({
@@ -78,6 +70,12 @@ const RaffleSelectedContent = () => {
     setUser: state.setUser,
   }));
 
+  const { isRaffleLoading, setToRaffleLoad, setToRaffleNotLoad } = useGeneralStore((state) => ({
+    isRaffleLoading: state.isRaffleLoading,
+    setToRaffleLoad: state.setToRaffleLoad,
+    setToRaffleNotLoad: state.setToRaffleNotLoad,
+  }));
+
   useEffect(() => {
     setRaffleSelected({});
     setQrCodePayment("");
@@ -88,10 +86,12 @@ const RaffleSelectedContent = () => {
   useEffect(() => {
     const fetchRaffleSelected = () => {
       if (!raffleSelected.hasOwnProperty("_id")) {
+        setToRaffleLoad();
         api
           .get(window.location.pathname)
           .then((res) => {
             setRaffleSelected(res.data);
+            setToRaffleNotLoad();
           })
           .catch((error) => console.log(error));
       }
@@ -163,14 +163,8 @@ const RaffleSelectedContent = () => {
         numbersBuyed.push(chosenNumber);
       }
 
-      console.log(
-        "🚀 ~ file: RaffleSelectedContent.jsx:147 ~ handleBuy ~ numbersBuyed:",
-        numbersBuyed
-      );
-      console.log(
-        "🚀 ~ file: RaffleSelectedContent.jsx:146 ~ handleBuy ~ numbersAvailableToBuy:",
-        numbersAvailableToBuy
-      );
+      console.log("🚀 ~ file: RaffleSelectedContent.jsx:147 ~ handleBuy ~ numbersBuyed:", numbersBuyed);
+      console.log("🚀 ~ file: RaffleSelectedContent.jsx:146 ~ handleBuy ~ numbersAvailableToBuy:", numbersAvailableToBuy);
       api
         .post(`/payment`, {
           id: user._id,
@@ -183,13 +177,9 @@ const RaffleSelectedContent = () => {
         })
         .then((res) => {
           console.log(res.data.response.response);
-          setQrCodePayment(
-            res.data.response.response.point_of_interaction.transaction_data.qr_code
-          );
+          setQrCodePayment(res.data.response.response.point_of_interaction.transaction_data.qr_code);
 
-          setPaymentLink(
-            res.data.response.response.point_of_interaction.transaction_data.ticket_url
-          );
+          setPaymentLink(res.data.response.response.point_of_interaction.transaction_data.ticket_url);
 
           api
             .post("/raffles/buy", {
@@ -241,52 +231,31 @@ const RaffleSelectedContent = () => {
         </span>
 
         <div className="raffle-selected__raffle-selected-content__container__desc-card">
-          <p className="raffle-selected__raffle-selected-content__container__desc-card__desc">
-            {raffleSelected.description}
-          </p>
+          <p className="raffle-selected__raffle-selected-content__container__desc-card__desc">{raffleSelected.description}</p>
         </div>
 
         <div className="raffle-selected__raffle-selected-content__container__social-wrapper">
-          <a
-            href="#"
-            className="raffle-selected__raffle-selected-content__container__social-wrapper__social"
-          >
+          <a href="#" className="raffle-selected__raffle-selected-content__container__social-wrapper__social">
             <BsFacebook />
           </a>
-          <a
-            href="#"
-            className="raffle-selected__raffle-selected-content__container__social-wrapper__social"
-          >
+          <a href="#" className="raffle-selected__raffle-selected-content__container__social-wrapper__social">
             <BsTelegram />
           </a>
-          <a
-            href="#"
-            className="raffle-selected__raffle-selected-content__container__social-wrapper__social"
-          >
+          <a href="#" className="raffle-selected__raffle-selected-content__container__social-wrapper__social">
             <BsTwitter />
           </a>
-          <a
-            href="#"
-            className="raffle-selected__raffle-selected-content__container__social-wrapper__social"
-          >
+          <a href="#" className="raffle-selected__raffle-selected-content__container__social-wrapper__social">
             <BsWhatsapp />
           </a>
         </div>
 
         <div className="raffle-selected__raffle-selected-content__container__title-wrapper">
-          <h1 className="raffle-selected__raffle-selected-content__container__title-wrapper__title">
-            ⚡ Cotas
-          </h1>
+          <h1 className="raffle-selected__raffle-selected-content__container__title-wrapper__title">⚡ Cotas</h1>
 
-          <span className="raffle-selected__raffle-selected-content__container__title-wrapper__desc">
-            Escolha sua sorte
-          </span>
+          <span className="raffle-selected__raffle-selected-content__container__title-wrapper__desc">Escolha sua sorte</span>
         </div>
 
-        <Link
-          to="/query-numbers"
-          className="raffle-selected__raffle-selected-content__container__link-query-numbers"
-        >
+        <Link to="/query-numbers" className="raffle-selected__raffle-selected-content__container__link-query-numbers">
           <BsCart /> Ver meus números
         </Link>
 
@@ -416,7 +385,9 @@ const RaffleSelectedContent = () => {
         <button
           onClick={handleBuy}
           type="button"
-          style={isBuying ? { filter: "brightness(80%)", pointerEvents: "none" } : {}}
+          style={
+            isBuying ? { filter: "brightness(80%)", pointerEvents: "none" } : isRaffleLoading ? { pointerEvents: "none" } : {}
+          }
           className="raffle-selected__raffle-selected-content__container__buy-btn"
         >
           {isBuying ? (

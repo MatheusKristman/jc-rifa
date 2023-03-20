@@ -2175,7 +2175,6 @@ html, body {
   -o-object-position: center;
      object-position: center;
   position: relative;
-  transform: translateY(-25%);
 }
 .register__register-content__form__image-label__input {
   display: none;
