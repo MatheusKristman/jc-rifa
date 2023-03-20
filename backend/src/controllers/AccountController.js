@@ -6,6 +6,8 @@ const multer = require("multer");
 const { registerValidate, loginValidate, updateValidate, updatePasswordValidate } = require("./validate");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const crypto = require("crypto");
+const mailer = require("../modules/mailer");
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -383,6 +385,87 @@ module.exports = {
       return res.send();
     } catch (error) {
       return res.status(400).send(error.message);
+    }
+  },
+  forgotPassword: async (req, res) => {
+    const { email } = req.body;
+
+    try {
+      const user = await Account.findOne({ email });
+
+      if (!user) {
+        return res.status(404).send({ error: "Usuário não encontrado" });
+      }
+
+      const token = crypto.randomBytes(20).toString("hex");
+
+      const now = new Date();
+      now.setHours(now.getHours() + 1);
+
+      await Account.findByIdAndUpdate(user._id, {
+        $set: {
+          passwordResetToken: token,
+          passwordResetExpires: now,
+        },
+      });
+
+      mailer.sendMail(
+        {
+          to: email,
+          from: "diego@rocketseat.com.br",
+          template: "/forgotPassword",
+          context: {
+            link: process.env.NODE_ENV === "development" ? process.env.LOCAL_KEY_DEV : process.env.LOCAL_KEY,
+            token,
+            email,
+          },
+        },
+        (err) => {
+          if (err) {
+            console.log(err);
+            return res.status(400).send({ error: "Erro ao enviar email" });
+          }
+
+          console.log(process.env.LOCAL_KEY);
+          return res.send();
+        }
+      );
+    } catch (error) {
+      console.log(error);
+      return res.status(400).send({ error: "Ocorreu um erro, tente novamente" });
+    }
+  },
+  resetPassword: async (req, res) => {
+    const { email, token, password } = req.body;
+
+    console.log(email);
+    console.log(token);
+    console.log(password);
+
+    try {
+      const user = await Account.findOne({ email }).select("+passwordResetToken passwordResetExpires");
+
+      if (!user) {
+        return res.status(404).send({ error: "Usuário não encontrado" });
+      }
+
+      if (token !== user.passwordResetToken) {
+        return res.status(400).send({ error: "Token invalido" });
+      }
+
+      const now = new Date();
+
+      if (now > user.passwordResetExpires) {
+        return res.status(400).send({ error: "Token expirado, gere um novo" });
+      }
+
+      user.password = bcrypt.hashSync(password, 10);
+
+      await user.save();
+
+      res.send();
+    } catch (error) {
+      return res.status(400).send({ error: "Ocorreu um erro ao atualizar a senha, tente novamente" });
     }
   },
 };

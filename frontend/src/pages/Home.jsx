@@ -44,6 +44,9 @@ const Home = () => {
 
   useEffect(() => {
     setRaffles([]);
+
+    setToAnimateFadeIn();
+    setToLoad();
   }, []);
 
   useEffect(() => {

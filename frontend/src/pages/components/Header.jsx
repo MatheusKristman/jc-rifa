@@ -517,6 +517,10 @@ const LogInModal = () => {
         notSubmitting();
         closeLogin();
         navigate("/");
+
+        if (window.location.pathname === "/") {
+          window.location.reload(false);
+        }
       }, 3000);
     }
 
@@ -616,7 +620,11 @@ const LogInModal = () => {
             </div>
             {errors.password && <span>{errors.password.message}</span>}
 
-            <Link to="/new-password" className="header__login-modal-overlay__box__content__form__forget-password">
+            <Link
+              to="/request-new-password"
+              onClick={closeLogin}
+              className="header__login-modal-overlay__box__content__form__forget-password"
+            >
               Esqueci minha senha
             </Link>
 

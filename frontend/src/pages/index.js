@@ -12,6 +12,7 @@ import ChangePassword from "./ChangePassword";
 import RaffleManagement from "./RaffleManagement";
 import NewRaffle from "./NewRaffle";
 import EditRaffle from "./EditRaffle";
+import RequestNewPassword from "./RequestNewPassword";
 
 export {
   Home,
@@ -28,4 +29,5 @@ export {
   RaffleManagement,
   NewRaffle,
   EditRaffle,
+  RequestNewPassword,
 };

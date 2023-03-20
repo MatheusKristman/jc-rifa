@@ -16,6 +16,7 @@ import {
   RaffleManagement,
   NewRaffle,
   EditRaffle,
+  RequestNewPassword,
 } from "./pages";
 import ProtectedRoute from "./ProtectedRoute";
 import ProtectedRouteAdmin from "./ProtectedRouteAdmin";
@@ -48,6 +49,7 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route path="/request-new-password" element={<RequestNewPassword />} />
           <Route path="/new-password" element={<NewPassword />} />
           <Route path="/winners" element={<Winners />} />
           <Route path="/terms" element={<Terms />} />

@@ -2531,6 +2531,76 @@ html, body {
   outline: none;
 }
 
+.new-password {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+.new-password__content {
+  width: 100%;
+  flex: 1;
+}
+.new-password__content__container {
+  width: 100%;
+  max-width: 600px;
+  margin: 25px auto;
+  background-color: #080812;
+  border-radius: 10px;
+  padding: 16px 12px;
+}
+.new-password__content__container__title {
+  color: #fff;
+  font-size: 1.35rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+.new-password__content__container__form {
+  width: 100%;
+}
+.new-password__content__container__form__wrapper {
+  display: flex;
+  flex-direction: column;
+  background-color: #15152A;
+  border-radius: 10px;
+  padding: 10px;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.new-password__content__container__form__wrapper span {
+  color: rgb(209, 52, 52);
+  font-size: 0.9rem;
+}
+.new-password__content__container__form__wrapper__label {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #fff;
+}
+.new-password__content__container__form__wrapper__label__input {
+  padding: 8px 12px;
+  font-size: 1rem;
+  color: #5a5a5a;
+  border-radius: 10px;
+  border: none;
+  outline: none;
+  transition: border 0.4s ease;
+}
+.new-password__content__container__form__submit-btn {
+  width: 100%;
+  border-radius: 4px;
+  border: none;
+  background-color: #5c636a;
+  padding: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fff;
+  cursor: pointer;
+  outline: none;
+}
+
 .raffle-management {
   width: 100%;
   min-height: 100vh;
@@ -3189,4 +3259,68 @@ html, body {
      object-fit: cover;
   -o-object-position: center;
      object-position: center;
+}
+
+.request-new-password {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-height: 100vh;
+}
+.request-new-password__content {
+  width: 100%;
+  flex: 1;
+}
+.request-new-password__content__container {
+  width: 100%;
+  max-width: 600px;
+  margin: 25px auto;
+  background-color: #080812;
+  border-radius: 10px;
+  padding: 16px 12px;
+}
+.request-new-password__content__container__title {
+  color: #fff;
+  font-size: 1.35rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+.request-new-password__content__container__form {
+  width: 100%;
+}
+.request-new-password__content__container__form label {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 20px;
+}
+.request-new-password__content__container__form label input {
+  padding: 8px 12px;
+  font-size: 1rem;
+  color: #5a5a5a;
+  border-radius: 10px;
+  border: none;
+  outline: none;
+  transition: border 0.4s ease;
+}
+.request-new-password__content__container__form span {
+  color: rgb(209, 52, 52);
+  font-size: 0.9rem;
+  transform: translateY(-15px);
+  display: block;
+}
+.request-new-password__content__container__form button {
+  width: 100%;
+  border-radius: 4px;
+  border: none;
+  background-color: #5c636a;
+  padding: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fff;
+  cursor: pointer;
+  outline: none;
 }/*# sourceMappingURL=styles.css.map */

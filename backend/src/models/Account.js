@@ -28,6 +28,14 @@ const AccountSchema = new mongoose.Schema({
     },
   ],
   admin: { type: Boolean, default: false },
+  passwordResetToken: {
+    type: String,
+    select: false,
+  },
+  passwordResetExpires: {
+    type: Date,
+    select: false,
+  },
 });
 
 module.exports = mongoose.model("Accounts", AccountSchema);

@@ -74,4 +74,8 @@ router.get("/raffles/:id", RaffleController.readOne);
 // Rota pagamento
 router.post("/payment", paymentsController.pay);
 
+// Rota forget password
+router.post("/forgot-password", AccountController.forgotPassword);
+router.post("/reset-password", AccountController.resetPassword);
+
 module.exports = router;
