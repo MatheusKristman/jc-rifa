@@ -517,6 +517,7 @@ const LogInModal = () => {
         notSubmitting();
         closeLogin();
         window.location.reload(false);
+        navigate("/");
       }, 3000);
     }
 
