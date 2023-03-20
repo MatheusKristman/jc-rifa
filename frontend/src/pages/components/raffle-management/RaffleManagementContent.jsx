@@ -10,98 +10,105 @@ import Loading from "../Loading";
 import useGeneralStore from "../../../stores/useGeneralStore";
 
 const RaffleManagementContent = () => {
-  const navigate = useNavigate();
+    const navigate = useNavigate();
 
-  const { raffles, setRaffles } = useRaffleStore((state) => ({
-    raffles: state.raffles,
-    setRaffles: state.setRaffles,
-  }));
+    const { raffles, setRaffles } = useRaffleStore((state) => ({
+        raffles: state.raffles,
+        setRaffles: state.setRaffles,
+    }));
 
-  const { isLoading, setToLoad, setNotToLoad, setToAnimateFadeIn, setToAnimateFadeOut } = useGeneralStore((state) => ({
-    isLoading: state.isLoading,
-    setToLoad: state.setToLoad,
-    setNotToLoad: state.setNotToLoad,
-    setToAnimateFadeIn: state.setToAnimateFadeIn,
-    setToAnimateFadeOut: state.setToAnimateFadeOut,
-  }));
+    const { isLoading, setToLoad, setNotToLoad, setToAnimateFadeIn, setToAnimateFadeOut } = useGeneralStore((state) => ({
+        isLoading: state.isLoading,
+        setToLoad: state.setToLoad,
+        setNotToLoad: state.setNotToLoad,
+        setToAnimateFadeIn: state.setToAnimateFadeIn,
+        setToAnimateFadeOut: state.setToAnimateFadeOut,
+    }));
 
-  useEffect(() => {
-    const fetchRaffles = () => {
-      setToLoad();
-      setToAnimateFadeIn();
+    useEffect(() => {
+        const fetchRaffles = () => {
+            setToLoad();
+            setToAnimateFadeIn();
 
-      api
-        .get("/raffle-management/get-raffles")
-        .then((res) => {
-          setRaffles(res.data);
+            api.get("/raffle-management/get-raffles")
+                .then((res) => {
+                    setRaffles(res.data);
 
-          setToAnimateFadeOut();
+                    setToAnimateFadeOut();
 
-          setTimeout(() => {
-            setNotToLoad();
-          }, 400);
-        })
-        .catch((error) => {
-          console.log(error);
+                    setTimeout(() => {
+                        setNotToLoad();
+                    }, 400);
+                })
+                .catch((error) => {
+                    console.log(error);
 
-          setToAnimateFadeOut();
+                    setToAnimateFadeOut();
 
-          setTimeout(() => {
-            setNotToLoad();
-          });
-        });
+                    setTimeout(() => {
+                        setNotToLoad();
+                    });
+                });
+        };
+
+        fetchRaffles();
+    }, [setRaffles]);
+
+    const convertProgress = (current, total) => {
+        return (100 * current) / total;
     };
 
-    fetchRaffles();
-  }, [setRaffles]);
+    return (
+        <div className="raffle-management__content">
+            {isLoading && <Loading>Carregando rifas</Loading>}
+            <div className="raffle-management__content__container">
+                <div className="raffle-management__content__container__info-wrapper">
+                    <h1 className="raffle-management__content__container__info-wrapper__title">⚙️ Gerenciador de Rifas</h1>
 
-  const convertProgress = (current, total) => {
-    return (100 * current) / total;
-  };
+                    <button
+                        onClick={() => navigate("/create-new-raffle")}
+                        type="button"
+                        className="raffle-management__content__container__info-wrapper__add-btn"
+                    >
+                        <AiOutlinePlus color="white" /> Criar
+                    </button>
+                </div>
 
-  return (
-    <div className="raffle-management__content">
-      {isLoading && <Loading>Carregando rifas</Loading>}
-      <div className="raffle-management__content__container">
-        <div className="raffle-management__content__container__info-wrapper">
-          <h1 className="raffle-management__content__container__info-wrapper__title">⚙️ Gerenciador de Rifas</h1>
-
-          <button
-            onClick={() => navigate("/create-new-raffle")}
-            type="button"
-            className="raffle-management__content__container__info-wrapper__add-btn"
-          >
-            <AiOutlinePlus color="white" /> Criar
-          </button>
+                <div className="raffle-management__content__container__raffle-wrapper">
+                    <ul className="raffle-management__content__container__raffle-wrapper__list">
+                        {raffles.map((raffle) => (
+                            <li
+                                key={raffle._id}
+                                className="raffle-management__content__container__raffle-wrapper__list__list-item"
+                            >
+                                <Link
+                                    to={`/edit-raffle/${raffle._id}`}
+                                    className="raffle-management__content__container__raffle-wrapper__list__list-item__link"
+                                >
+                                    <Prizes
+                                        title={raffle.title}
+                                        subtitle={raffle.subtitle}
+                                        image={
+                                            raffle.raffleImage.data
+                                                ? `data:${raffle.raffleImage.contentType};base64,${_arrayBufferToBase64(
+                                                      raffle.raffleImage.data.data
+                                                  )}`
+                                                : null
+                                        }
+                                        progress={convertProgress(
+                                            raffle?.QuantNumbers - raffle?.NumbersAvailable.length,
+                                            raffle?.QuantNumbers
+                                        )}
+                                        winner={raffle?.isFinished}
+                                    />
+                                </Link>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            </div>
         </div>
-
-        <div className="raffle-management__content__container__raffle-wrapper">
-          <ul className="raffle-management__content__container__raffle-wrapper__list">
-            {raffles.map((raffle) => (
-              <li key={raffle._id} className="raffle-management__content__container__raffle-wrapper__list__list-item">
-                <Link
-                  to={`/edit-raffle/${raffle._id}`}
-                  className="raffle-management__content__container__raffle-wrapper__list__list-item__link"
-                >
-                  <Prizes
-                    title={raffle.title}
-                    subtitle={raffle.subtitle}
-                    image={
-                      raffle.raffleImage.data
-                        ? `data:${raffle.raffleImage.contentType};base64,${_arrayBufferToBase64(raffle.raffleImage.data.data)}`
-                        : null
-                    }
-                    progress={convertProgress(raffle?.QuantNumbers - raffle?.NumbersAvailable.length, raffle?.QuantNumbers)}
-                    winner={raffle?.isFinished}
-                  />
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
-    </div>
-  );
+    );
 };
 
 export default RaffleManagementContent;

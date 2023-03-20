@@ -1,38 +1,38 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap");
 
 // fonts
 
-$montserrat: 'Montserrat', sans-serif;
+$montserrat: "Montserrat", sans-serif;
 
 // colors
 
 $veryDarkBlue: #090a18;
 $darkBlue: #151944;
 $dark: #080812;
-$darkPurple: #15152A;
+$darkPurple: #15152a;
 $white: #fff;
-$gray: #5C636A;
+$gray: #5c636a;
 $lightGray: #d3d3d3;
-$darkGray: #7F8299;
+$darkGray: #7f8299;
 $veryDarkGray: #212529;
 $green: #198754;
 $orange: #e15426;
-$blue: #0B5ED7;
+$blue: #0b5ed7;
 $darkBlueHover: #094bad;
 
-// breakpoints 
+// breakpoints
 
 $breakpoints: (
-  tablet: 500px,
-  smallScreen: 768px,
-  largeScreen: 1024px,
-  xLargeScreen: 1200px,
+    tablet: 500px,
+    smallScreen: 768px,
+    largeScreen: 1024px,
+    xLargeScreen: 1200px,
 );
 
 @mixin breakpoint($size) {
-  $breakpoint-value: map-get($breakpoints, $size);
+    $breakpoint-value: map-get($breakpoints, $size);
 
-  @media screen and (min-width: $breakpoint-value) {
-    @content;
-  }
+    @media screen and (min-width: $breakpoint-value) {
+        @content;
+    }
 }

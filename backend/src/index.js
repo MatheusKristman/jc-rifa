@@ -13,14 +13,14 @@ app.use(cors());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use((err, req, res, next) => {
-  if (err instanceof multer.MulterError) {
-    return res.status(400).json({ message: "File too large" });
-  }
-  next();
+    if (err instanceof multer.MulterError) {
+        return res.status(400).json({ message: "File too large" });
+    }
+    next();
 });
 app.use("/uploads", express.static(path.join(__dirname, "public/data/uploads")));
 app.use(router);
 
 app.listen(process.env.PORT, () => {
-  console.log(`Running on port ${process.env.PORT}`);
+    console.log(`Running on port ${process.env.PORT}`);
 });

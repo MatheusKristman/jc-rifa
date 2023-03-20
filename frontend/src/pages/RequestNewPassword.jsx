@@ -6,19 +6,19 @@ import RequestNewPasswordContent from "./components/request-new-password/Request
 import AlertBox from "./components/AlertBox";
 
 export default function RequestNewPassword() {
-  const { isEmailSended, submitError, alertMessage } = useRequestNewPasswordStore((state) => ({
-    isEmailSended: state.isEmailSended,
-    submitError: state.submitError,
-    alertMessage: state.alertMessage,
-  }));
+    const { isEmailSended, submitError, alertMessage } = useRequestNewPasswordStore((state) => ({
+        isEmailSended: state.isEmailSended,
+        submitError: state.submitError,
+        alertMessage: state.alertMessage,
+    }));
 
-  return (
-    <div className="request-new-password">
-      <Header />
-      <RequestNewPasswordContent />
-      <Footer />
-      {isEmailSended && <AlertBox success={isEmailSended} error={submitError} message={alertMessage} />}
-      {submitError && <AlertBox success={isEmailSended} error={submitError} message={alertMessage} />}
-    </div>
-  );
+    return (
+        <div className="request-new-password">
+            <Header />
+            <RequestNewPasswordContent />
+            <Footer />
+            {isEmailSended && <AlertBox success={isEmailSended} error={submitError} message={alertMessage} />}
+            {submitError && <AlertBox success={isEmailSended} error={submitError} message={alertMessage} />}
+        </div>
+    );
 }

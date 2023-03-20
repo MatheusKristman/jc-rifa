@@ -7,23 +7,23 @@ import ChangePasswordContent from "./components/change-password/ChangePasswordCo
 import AlertBox from "./components/AlertBox";
 
 const ChangePassword = () => {
-  const { isChangeCompleted, submitError, registerMessage } = useChangePasswordStore((state) => ({
-    isChangeCompleted: state.isChangeCompleted,
-    submitError: state.submitError,
-    registerMessage: state.registerMessage,
-  }));
+    const { isChangeCompleted, submitError, registerMessage } = useChangePasswordStore((state) => ({
+        isChangeCompleted: state.isChangeCompleted,
+        submitError: state.submitError,
+        registerMessage: state.registerMessage,
+    }));
 
-  useIsUserLogged("/changePassword");
+    useIsUserLogged("/changePassword");
 
-  return (
-    <div className="change-password">
-      <Header />
-      <ChangePasswordContent />
-      <Footer />
-      {isChangeCompleted && <AlertBox success={isChangeCompleted} error={submitError} message={registerMessage} />}
-      {submitError && <AlertBox success={isChangeCompleted} error={submitError} message={registerMessage} />}
-    </div>
-  );
+    return (
+        <div className="change-password">
+            <Header />
+            <ChangePasswordContent />
+            <Footer />
+            {isChangeCompleted && <AlertBox success={isChangeCompleted} error={submitError} message={registerMessage} />}
+            {submitError && <AlertBox success={isChangeCompleted} error={submitError} message={registerMessage} />}
+        </div>
+    );
 };
 
 export default ChangePassword;

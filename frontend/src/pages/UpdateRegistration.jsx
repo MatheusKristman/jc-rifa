@@ -1,27 +1,25 @@
-import React from 'react'
-import useRegisterStore from '../stores/useRegisterStore';
-import { Header, Footer } from './components';
-import UpdateRegistrationContent from './components/updateRegistration/UpdateRegistrationContent';
-import AlertBox from './components/AlertBox';
+import React from "react";
+import useRegisterStore from "../stores/useRegisterStore";
+import { Header, Footer } from "./components";
+import UpdateRegistrationContent from "./components/updateRegistration/UpdateRegistrationContent";
+import AlertBox from "./components/AlertBox";
 
 const UpdateRegistration = () => {
-  const { isRegisterCompleted, errorSubmitting, registerMessage } = useRegisterStore(
-    (state) => ({
-      isRegisterCompleted: state.isRegisterCompleted,
-      errorSubmitting: state.errorSubmitting,
-      registerMessage: state.registerMessage,
-    })
-  )
+    const { isRegisterCompleted, errorSubmitting, registerMessage } = useRegisterStore((state) => ({
+        isRegisterCompleted: state.isRegisterCompleted,
+        errorSubmitting: state.errorSubmitting,
+        registerMessage: state.registerMessage,
+    }));
 
-  return (
-    <div className="register">
-      <Header />
-      <UpdateRegistrationContent />
-      <Footer />
-      {isRegisterCompleted && <AlertBox success={isRegisterCompleted} error={errorSubmitting} message={registerMessage} />}
-      {errorSubmitting && <AlertBox success={isRegisterCompleted} error={errorSubmitting} message={registerMessage} />}
-    </div>
-  )
-}
+    return (
+        <div className="register">
+            <Header />
+            <UpdateRegistrationContent />
+            <Footer />
+            {isRegisterCompleted && <AlertBox success={isRegisterCompleted} error={errorSubmitting} message={registerMessage} />}
+            {errorSubmitting && <AlertBox success={isRegisterCompleted} error={errorSubmitting} message={registerMessage} />}
+        </div>
+    );
+};
 
-export default UpdateRegistration
+export default UpdateRegistration;

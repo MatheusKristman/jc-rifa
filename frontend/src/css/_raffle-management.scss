@@ -1,76 +1,76 @@
 .raffle-management {
-  width: 100%;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-
-  &__content {
     width: 100%;
-    flex: 1;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 
-    &__container {
-      width: 100%;
-      max-width: 600px;
-      margin: 25px auto;
-      padding: 16px 12px;
-      background-color: $dark;
-      border-radius: 10px;
-
-      &__info-wrapper {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 10px;
-
-        &__title {
-          font-size: 1.5rem;
-          font-weight: 600;
-          color: $white;
-        }
-
-        &__add-btn {
-          background-color: $blue;
-          border: none;
-          padding: 10px;
-          font-size: 1rem;
-          font-weight: 600;
-          color: $white;
-          display: flex;
-          align-items: center;
-          gap: 5px;
-          border-radius: 6px;
-          outline: none;
-          cursor: pointer;
-
-          @include breakpoint(largeScreen) {
-            transition: filter 0.4s ease;
-
-            &:hover {
-              filter: brightness(80%);
-            }
-          }
-        }
-      }
-
-      &__raffle-wrapper {
+    &__content {
         width: 100%;
+        flex: 1;
 
-        &__list {
-          list-style: none;
-          width: 100%;
-          display: flex;
-          flex-direction: column;
-          gap: 10px;
-
-          &__list-item {
+        &__container {
             width: 100%;
+            max-width: 600px;
+            margin: 25px auto;
+            padding: 16px 12px;
+            background-color: $dark;
+            border-radius: 10px;
 
-            &__link {
-              text-decoration: none;
+            &__info-wrapper {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: 10px;
+
+                &__title {
+                    font-size: 1.5rem;
+                    font-weight: 600;
+                    color: $white;
+                }
+
+                &__add-btn {
+                    background-color: $blue;
+                    border: none;
+                    padding: 10px;
+                    font-size: 1rem;
+                    font-weight: 600;
+                    color: $white;
+                    display: flex;
+                    align-items: center;
+                    gap: 5px;
+                    border-radius: 6px;
+                    outline: none;
+                    cursor: pointer;
+
+                    @include breakpoint(largeScreen) {
+                        transition: filter 0.4s ease;
+
+                        &:hover {
+                            filter: brightness(80%);
+                        }
+                    }
+                }
             }
-          }
+
+            &__raffle-wrapper {
+                width: 100%;
+
+                &__list {
+                    list-style: none;
+                    width: 100%;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 10px;
+
+                    &__list-item {
+                        width: 100%;
+
+                        &__link {
+                            text-decoration: none;
+                        }
+                    }
+                }
+            }
         }
-      }
     }
-  }
 }
