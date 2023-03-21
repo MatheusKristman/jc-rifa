@@ -2,19 +2,14 @@
     "version": 2,
     "builds": [
         {
-            "src": "src/index.js",
+            "src": "./index.js",
             "use": "@vercel/node"
         }
     ],
     "routes": [
         {
-            "src": "(.*)",
-            "dest": "src/index.js"
+            "src": "/(.*)",
+            "dest": "/"
         }
-    ],
-    "functions": {
-        "src/controllers/AccountController.js": {
-            "includeFiles": "src/resources/mail/forgotPassword.html"
-        }
-    }
+    ]
 }
