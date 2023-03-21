@@ -13,8 +13,8 @@
         }
     ],
     "functions": {
-        "src/index.js": {
-            "includeFiles": "resources/**"
+        "src/modules/mailer.js": {
+            "includeFiles": "src/resources/mail/forgotPassword.html"
         }
     }
 }
