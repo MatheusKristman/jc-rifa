@@ -22,13 +22,13 @@ transport.use(
             partialsDir:
                 JSON.stringify(process.env.NODE_ENV) === JSON.stringify("development")
                     ? "src/resources/mail"
-                    : path.join(process.cwd(), "src/resources/mail"),
+                    : path.resolve("src/resources/mail"),
             defaultLayout: false,
         },
         viewPath:
             JSON.stringify(process.env.NODE_ENV) === JSON.stringify("development")
                 ? "src/resources/mail"
-                : path.join(process.cwd(), "src/resources/mail"),
+                : path.resolve("src/resources/mail"),
         extName: ".html",
     })
 );
