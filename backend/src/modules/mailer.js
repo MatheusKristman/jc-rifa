@@ -12,15 +12,17 @@ const transport = nodemailer.createTransport({
     },
 });
 
+console.log(path.resolve("./src/resources/mail"));
+
 transport.use(
     "compile",
     hbs({
         viewEngine: {
             extName: ".hbs",
-            partialsDir: path.resolve("../backend/src/resources/mail"),
+            partialsDir: path.resolve("./src/resources/mail"),
             defaultLayout: false,
         },
-        viewPath: path.resolve("../backend/src/resources/mail"),
+        viewPath: path.resolve("./src/resources/mail"),
         extName: ".html",
     })
 );
