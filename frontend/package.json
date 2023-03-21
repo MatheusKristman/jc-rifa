@@ -7,8 +7,8 @@
         "node": "18"
     },
     "scripts": {
-        "dev": "cross-env && set NODE_ENV=development && vite",
-        "build": "cross-env && set NODE_ENV=production && vite build",
+        "dev": "cross-env && set NODE_ENV=development& vite",
+        "build": "cross-env && set NODE_ENV=production& vite build",
         "preview": "vite preview"
     },
     "dependencies": {

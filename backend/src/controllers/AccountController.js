@@ -409,13 +409,15 @@ module.exports = {
                 },
             });
 
+            const link = process.env.NODE_ENV === "development" ? process.env.LOCAL_KEY_DEV : process.env.LOCAL_KEY;
+            console.log(JSON.stringify(process.env.NODE_ENV) === JSON.stringify("development"));
             mailer.sendMail(
                 {
                     to: email,
                     from: "jcrifa@suporte.com.br",
                     template: "/forgotPassword",
                     context: {
-                        link: process.env.NODE_ENV === "development" ? process.env.LOCAL_KEY_DEV : process.env.LOCAL_KEY,
+                        link,
                         token,
                         email,
                     },
@@ -426,7 +428,7 @@ module.exports = {
                         return res.status(400).send({ error: "Erro ao enviar email" });
                     }
 
-                    console.log(process.env.LOCAL_KEY);
+                    console.log(process.env.NODE_ENV);
                     return res.send();
                 }
             );
