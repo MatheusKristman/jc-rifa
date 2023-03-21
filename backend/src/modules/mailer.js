@@ -19,10 +19,16 @@ transport.use(
     hbs({
         viewEngine: {
             extName: ".hbs",
-            partialsDir: "src/resources/mail",
+            partialsDir:
+                JSON.stringify(process.env.NODE_ENV) === JSON.stringify("development")
+                    ? "src/resources/mail"
+                    : path.join(process.cwd(), "src/resources/mail"),
             defaultLayout: false,
         },
-        viewPath: "src/resources/mail",
+        viewPath:
+            JSON.stringify(process.env.NODE_ENV) === JSON.stringify("development")
+                ? "src/resources/mail"
+                : path.join(process.cwd(), "src/resources/mail"),
         extName: ".html",
     })
 );
