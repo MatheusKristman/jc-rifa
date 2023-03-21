@@ -13,7 +13,7 @@
         }
     ],
     "functions": {
-        "src/modules/mailer.js": {
+        "src/controllers/AccountController.js": {
             "includeFiles": "src/resources/mail/forgotPassword.html"
         }
     }
