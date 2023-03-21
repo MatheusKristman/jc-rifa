@@ -46,11 +46,6 @@ export default function NewPasswordContent() {
         setRegisterMessage: state.setRegisterMessage,
     }));
 
-    const { user, setUser } = useUserStore((state) => ({
-        user: state.user,
-        setUser: state.setUser,
-    }));
-
     const { isLoading, setToLoad, setNotToLoad, setToAnimateFadeIn, setToAnimateFadeOut } = useGeneralStore((state) => ({
         isLoading: state.isLoading,
         setToLoad: state.setToLoad,
