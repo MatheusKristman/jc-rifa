@@ -1,5 +1,5 @@
-import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 import {
     Home,
@@ -8,54 +8,44 @@ import {
     QueryNumbers,
     Register,
     UpdateRegistration,
-    NewPassword,
     Winners,
     Terms,
     Contact,
-    ChangePassword,
     RaffleManagement,
     NewRaffle,
     EditRaffle,
-    RequestNewPassword,
-} from "./pages";
-import ProtectedRoute from "./ProtectedRoute";
-import ProtectedRouteAdmin from "./ProtectedRouteAdmin";
+} from './pages';
+import ProtectedRoute from './ProtectedRoute';
+import ProtectedRouteAdmin from './ProtectedRouteAdmin';
 
-import "./css/styles.css";
+import './css/styles.css';
 
 function App() {
     return (
         <>
             <Router>
                 <Routes>
-                    <Route path="/" element={<Home />} />
-                    <Route path="/raffles" element={<Raffle />} />
-                    <Route path="/raffles/:selected" element={<RaffleSelected />} />
-                    <Route path="/query-numbers" element={<QueryNumbers />} />
-                    <Route path="/register" element={<Register />} />
+                    <Route path='/' element={<Home />} />
+                    <Route path='/raffles' element={<Raffle />} />
                     <Route
-                        path="/updateRegistration"
+                        path='/raffles/:selected'
+                        element={<RaffleSelected />}
+                    />
+                    <Route path='/query-numbers' element={<QueryNumbers />} />
+                    <Route path='/register' element={<Register />} />
+                    <Route
+                        path='/updateRegistration'
                         element={
                             <ProtectedRoute>
                                 <UpdateRegistration />
                             </ProtectedRoute>
                         }
                     />
+                    <Route path='/winners' element={<Winners />} />
+                    <Route path='/terms' element={<Terms />} />
+                    <Route path='/contact' element={<Contact />} />
                     <Route
-                        path="/changePassword"
-                        element={
-                            <ProtectedRoute>
-                                <ChangePassword />
-                            </ProtectedRoute>
-                        }
-                    />
-                    <Route path="/request-new-password" element={<RequestNewPassword />} />
-                    <Route path="/new-password" element={<NewPassword />} />
-                    <Route path="/winners" element={<Winners />} />
-                    <Route path="/terms" element={<Terms />} />
-                    <Route path="/contact" element={<Contact />} />
-                    <Route
-                        path="/raffle-management"
+                        path='/raffle-management'
                         element={
                             <ProtectedRouteAdmin>
                                 <RaffleManagement />
@@ -63,7 +53,7 @@ function App() {
                         }
                     />
                     <Route
-                        path="/create-new-raffle"
+                        path='/create-new-raffle'
                         element={
                             <ProtectedRouteAdmin>
                                 <NewRaffle />
@@ -71,7 +61,7 @@ function App() {
                         }
                     />
                     <Route
-                        path="/edit-raffle/:id"
+                        path='/edit-raffle/:id'
                         element={
                             <ProtectedRouteAdmin>
                                 <EditRaffle />

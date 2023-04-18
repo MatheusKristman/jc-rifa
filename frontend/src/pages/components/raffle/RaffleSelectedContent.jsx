@@ -485,5 +485,3 @@ const RaffleSelectedContent = () => {
 };
 
 export default RaffleSelectedContent;
-
-//TODO não disponibilizar para compra quando não tiver numero disponivel

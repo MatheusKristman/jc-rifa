@@ -1,25 +1,29 @@
-const Account = require("../models/Account");
-const Raffle = require("../models/Raffle");
+const Account = require('../models/Account');
+const Raffle = require('../models/Raffle');
 
-const fs = require("fs");
-const multer = require("multer");
-const { registerValidate, loginValidate, updateValidate, updatePasswordValidate } = require("./validate");
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
-const crypto = require("crypto");
-const mailer = require("../modules/mailer");
+const fs = require('fs');
+const multer = require('multer');
+const {
+    registerValidate,
+    loginValidate,
+    updateValidate,
+} = require('./validate');
+const jwt = require('jsonwebtoken');
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, "./public/data/uploads/");
+        cb(null, './public/data/uploads/');
     },
     filename: function (req, file, cb) {
-        let fileExtension = file.originalname.split(".")[1];
-        cb(null, file.fieldname + "-" + Date.now() + "." + fileExtension);
+        let fileExtension = file.originalname.split('.')[1];
+        cb(null, file.fieldname + '-' + Date.now() + '.' + fileExtension);
     },
 });
 
-const upload = multer({ storage: storage, limits: { fileSize: 2 * 1024 * 1024 } });
+const upload = multer({
+    storage: storage,
+    limits: { fileSize: 2 * 1024 * 1024 },
+});
 
 module.exports = {
     upload,
@@ -33,18 +37,21 @@ module.exports = {
         const selectedUser = await Account.findOne({ tel: req.body.tel });
 
         if (selectedUser) {
-            return res.status(400).send("Telefone Já cadastrado");
+            return res.status(400).send('Telefone Já cadastrado');
         }
 
         const user = {
             profileImage: {
-                data: req.file ? fs.readFileSync("public/data/uploads/" + req.file.filename) : null,
+                data: req.file
+                    ? fs.readFileSync(
+                          'public/data/uploads/' + req.file.filename
+                      )
+                    : null,
                 contentType: req.file ? req.file.mimetype : null,
             },
             name: req.body.name,
             cpf: req.body.cpf,
             email: req.body.email,
-            password: bcrypt.hashSync(req.body.password, 10),
             tel: req.body.tel,
         };
 
@@ -53,15 +60,19 @@ module.exports = {
 
             if (userCreated && req.file) {
                 fs.unlinkSync(`public/data/uploads/${req.file.filename}`);
-                console.log("imagem removida com sucesso");
+                console.log('imagem removida com sucesso');
             }
 
             const selectedUser = await Account.findOne({ tel: req.body.tel });
 
-            const daysToExpire = "15d";
-            const token = jwt.sign({ _id: selectedUser._id, admin: selectedUser.admin }, process.env.TOKEN_SECRET, {
-                expiresIn: daysToExpire,
-            });
+            const daysToExpire = '15d';
+            const token = jwt.sign(
+                { _id: selectedUser._id, admin: selectedUser.admin },
+                process.env.TOKEN_SECRET,
+                {
+                    expiresIn: daysToExpire,
+                }
+            );
 
             console.log(token);
 
@@ -77,7 +88,7 @@ module.exports = {
             const user = await Account.findOne({ _id: id });
             return res.json(user);
         } else {
-            return res.status(400).send("Acesso negado on controlador");
+            return res.status(400).send('Acesso negado on controlador');
         }
     },
     update: async (req, res) => {
@@ -93,8 +104,14 @@ module.exports = {
 
         const userData = {
             profileImage: {
-                data: req.file ? fs.readFileSync("public/data/uploads/" + req.file.filename) : user.profileImage.data,
-                contentType: req.file ? req.file.mimetype : user.profileImage.contentType,
+                data: req.file
+                    ? fs.readFileSync(
+                          'public/data/uploads/' + req.file.filename
+                      )
+                    : user.profileImage.data,
+                contentType: req.file
+                    ? req.file.mimetype
+                    : user.profileImage.contentType,
             },
             name: req.body.name,
             email: req.body.email,
@@ -112,11 +129,14 @@ module.exports = {
         console.log(userData);
 
         try {
-            const selectedUser = await Account.findOneAndUpdate({ _id: req.body.id }, userData);
+            const selectedUser = await Account.findOneAndUpdate(
+                { _id: req.body.id },
+                userData
+            );
 
             if (selectedUser && req.file) {
                 fs.unlinkSync(`public/data/uploads/${req.file.filename}`);
-                console.log("imagem removida com sucesso");
+                console.log('imagem removida com sucesso');
             }
 
             const selectedUserUpdated = await Account.findById(req.body.id);
@@ -124,35 +144,6 @@ module.exports = {
             return res.json(selectedUserUpdated);
         } catch (error) {
             return res.status(400).send(error.message);
-        }
-    },
-    updatePassword: async (req, res) => {
-        const { error } = updatePasswordValidate(req.body);
-
-        if (error) {
-            return res.status(400).send(error.message);
-        }
-
-        const id = req.body.id;
-
-        const selectedUser = await Account.findOne({ _id: id });
-
-        const passwordMatch = bcrypt.compareSync(req.body.password, selectedUser.password);
-
-        console.log(passwordMatch);
-
-        if (!passwordMatch) {
-            return res.status(401).send("Senha incorreta");
-        }
-
-        try {
-            await Account.updateOne({ _id: id }, { password: bcrypt.hashSync(req.body.newPassword, 10) });
-
-            const userUpdated = await Account.findOne({ _id: id });
-
-            return res.json(userUpdated);
-        } catch (error) {
-            res.status(409).send(error.message);
         }
     },
     login: async (req, res) => {
@@ -164,45 +155,53 @@ module.exports = {
 
         const selectedUser = await Account.findOne({ tel: req.body.tel });
         if (!selectedUser) {
-            return res.status(400).send("Telefone ou senha incorretos");
+            return res.status(400).send('Telefone ou senha incorretos');
         }
 
-        const passwordAndUserMatch = bcrypt.compareSync(req.body.password, selectedUser.password);
-        console.log(passwordAndUserMatch);
+        console.log('passou validação');
 
-        if (!passwordAndUserMatch) {
-            console.log(selectedUser.password);
-            return res.status(400).send("Telefone ou senha incorretos");
-        }
+        const daysToExpire = '15d';
 
-        console.log("passou validação");
-
-        const daysToExpire = "15d";
-
-        const token = jwt.sign({ _id: selectedUser._id, admin: selectedUser.admin }, process.env.TOKEN_SECRET, {
-            expiresIn: daysToExpire,
-        });
+        const token = jwt.sign(
+            { _id: selectedUser._id, admin: selectedUser.admin },
+            process.env.TOKEN_SECRET,
+            {
+                expiresIn: daysToExpire,
+            }
+        );
 
         res.json(token);
     },
     buyRaffle: async (req, res) => {
-        const { id, raffleId, paymentId, numbersAvailableToBuy, numbersBuyed, pricePaid, status, numberQuant } = req.body;
+        const {
+            id,
+            raffleId,
+            paymentId,
+            numbersAvailableToBuy,
+            numbersBuyed,
+            pricePaid,
+            status,
+            numberQuant,
+        } = req.body;
 
         const selectedUser = await Account.findOne({ _id: id });
 
         if (!selectedUser) {
-            return res.status(404).send("Usuário não encontrado");
+            return res.status(404).send('Usuário não encontrado');
         }
 
         const raffleSelected = await Raffle.findOne({ _id: raffleId });
 
         if (!raffleSelected) {
-            return res.status(404).send("Rifa não encontrada");
+            return res.status(404).send('Rifa não encontrada');
         }
 
         let numbersAlreadyBuyed = [...raffleSelected.BuyedNumbers];
 
-        numbersAlreadyBuyed = [...numbersAlreadyBuyed, ...req.body.numbersBuyed];
+        numbersAlreadyBuyed = [
+            ...numbersAlreadyBuyed,
+            ...req.body.numbersBuyed,
+        ];
 
         try {
             await Raffle.findOneAndUpdate(
@@ -219,14 +218,18 @@ module.exports = {
         }
 
         const alreadyBuyedNumbers = await Account.find({
-            "rafflesBuyed.raffleId": { $eq: raffleId },
+            'rafflesBuyed.raffleId': { $eq: raffleId },
             _id: id,
         });
 
         let actualNumbersBuyed = [];
 
         if (alreadyBuyedNumbers.length !== 0) {
-            actualNumbersBuyed = [...selectedUser.rafflesBuyed.filter((raffle) => raffle.raffleId === raffleId)[0].numbersBuyed];
+            actualNumbersBuyed = [
+                ...selectedUser.rafflesBuyed.filter(
+                    (raffle) => raffle.raffleId === raffleId
+                )[0].numbersBuyed,
+            ];
         }
 
         const newRaffleBuyed = {
@@ -237,7 +240,10 @@ module.exports = {
             paymentId: paymentId,
             status: status,
             numberQuant: Number(numberQuant),
-            numbersBuyed: actualNumbersBuyed.length !== 0 ? [...actualNumbersBuyed, ...numbersBuyed] : numbersBuyed,
+            numbersBuyed:
+                actualNumbersBuyed.length !== 0
+                    ? [...actualNumbersBuyed, ...numbersBuyed]
+                    : numbersBuyed,
         };
 
         if (alreadyBuyedNumbers.length !== 0) {
@@ -246,19 +252,25 @@ module.exports = {
                     { _id: id },
                     {
                         $set: {
-                            "rafflesBuyed.$[elem].numbersBuyed": newRaffleBuyed.numbersBuyed,
-                            "rafflesBuyed.$[elem].paymentId": newRaffleBuyed.paymentId,
-                            "rafflesBuyed.$[elem].status": newRaffleBuyed.status,
+                            'rafflesBuyed.$[elem].numbersBuyed':
+                                newRaffleBuyed.numbersBuyed,
+                            'rafflesBuyed.$[elem].paymentId':
+                                newRaffleBuyed.paymentId,
+                            'rafflesBuyed.$[elem].status':
+                                newRaffleBuyed.status,
                         },
                         $inc: {
-                            "rafflesBuyed.$[elem].numberQuant": newRaffleBuyed.numberQuant,
-                            "rafflesBuyed.$[elem].pricePaid": Number(newRaffleBuyed.pricePaid),
+                            'rafflesBuyed.$[elem].numberQuant':
+                                newRaffleBuyed.numberQuant,
+                            'rafflesBuyed.$[elem].pricePaid': Number(
+                                newRaffleBuyed.pricePaid
+                            ),
                         },
                     },
                     {
                         arrayFilters: [
                             {
-                                "elem.raffleId": newRaffleBuyed.raffleId,
+                                'elem.raffleId': newRaffleBuyed.raffleId,
                             },
                         ],
                     }
@@ -301,7 +313,9 @@ module.exports = {
 
         const userSelected = await Account.findOne({ cpf });
 
-        const userRafflesBuyed = userSelected.rafflesBuyed.map((raffle) => raffle);
+        const userRafflesBuyed = userSelected.rafflesBuyed.map(
+            (raffle) => raffle
+        );
 
         console.log(userSelected);
 
@@ -318,13 +332,13 @@ module.exports = {
                     { _id: id },
                     {
                         $set: {
-                            "rafflesBuyed.$[elem].status": status,
+                            'rafflesBuyed.$[elem].status': status,
                         },
                     },
                     {
                         arrayFilters: [
                             {
-                                "elem.paymentId": paymentId,
+                                'elem.paymentId': paymentId,
                             },
                         ],
                         new: true,
@@ -336,7 +350,7 @@ module.exports = {
                 return res.status(404).send(error.message);
             }
         } else {
-            return res.status(400).send("Sem referencia");
+            return res.status(400).send('Sem referencia');
         }
     },
     paymentCanceled: async (req, res) => {
@@ -344,7 +358,9 @@ module.exports = {
 
         let userToModify = await Account.findOne({ _id: id });
 
-        let newNumbersAvailable = userToModify.rafflesBuyed.filter((raffle) => raffle.raffleId == raffleId)[0]?.numbersBuyed;
+        let newNumbersAvailable = userToModify.rafflesBuyed.filter(
+            (raffle) => raffle.raffleId == raffleId
+        )[0]?.numbersBuyed;
 
         userToModify = userToModify.rafflesBuyed.filter((raffle) => {
             return raffle.raffleId !== raffleId;
@@ -364,7 +380,10 @@ module.exports = {
                     }
                 );
 
-                return res.send({ user: userSelected, rafflesBuyed: newNumbersAvailable });
+                return res.send({
+                    user: userSelected,
+                    rafflesBuyed: newNumbersAvailable,
+                });
             } catch (error) {
                 return res.status(400).send(error.message);
             }
@@ -385,89 +404,6 @@ module.exports = {
             return res.send();
         } catch (error) {
             return res.status(400).send(error.message);
-        }
-    },
-    forgotPassword: async (req, res) => {
-        const { email } = req.body;
-
-        try {
-            const user = await Account.findOne({ email });
-
-            if (!user) {
-                return res.status(404).send({ error: "Usuário não encontrado" });
-            }
-
-            const token = crypto.randomBytes(20).toString("hex");
-
-            const now = new Date();
-            now.setHours(now.getHours() + 1);
-
-            await Account.findByIdAndUpdate(user._id, {
-                $set: {
-                    passwordResetToken: token,
-                    passwordResetExpires: now,
-                },
-            });
-
-            const link = process.env.NODE_ENV === "development" ? process.env.LOCAL_KEY_DEV : process.env.LOCAL_KEY;
-            console.log(JSON.stringify(process.env.NODE_ENV) === JSON.stringify("development"));
-            mailer.sendMail(
-                {
-                    to: email,
-                    from: "jcrifa@suporte.com.br",
-                    template: "/forgotPassword",
-                    context: {
-                        link,
-                        token,
-                        email,
-                    },
-                },
-                (err) => {
-                    if (err) {
-                        console.log(err);
-                        return res.status(400).send({ error: "Erro ao enviar email" });
-                    }
-
-                    console.log(process.env.NODE_ENV);
-                    return res.send();
-                }
-            );
-        } catch (error) {
-            console.log(error);
-            return res.status(400).send({ error: "Ocorreu um erro, tente novamente" });
-        }
-    },
-    resetPassword: async (req, res) => {
-        const { email, token, password } = req.body;
-
-        console.log(email);
-        console.log(token);
-        console.log(password);
-
-        try {
-            const user = await Account.findOne({ email }).select("+passwordResetToken passwordResetExpires");
-
-            if (!user) {
-                return res.status(404).send({ error: "Usuário não encontrado" });
-            }
-
-            if (token !== user.passwordResetToken) {
-                return res.status(400).send({ error: "Token invalido" });
-            }
-
-            const now = new Date();
-
-            if (now > user.passwordResetExpires) {
-                return res.status(400).send({ error: "Token expirado, gere um novo" });
-            }
-
-            user.password = bcrypt.hashSync(password, 10);
-
-            await user.save();
-
-            res.send();
-        } catch (error) {
-            return res.status(400).send({ error: "Ocorreu um erro ao atualizar a senha, tente novamente" });
         }
     },
 };

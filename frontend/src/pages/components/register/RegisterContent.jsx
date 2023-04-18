@@ -1,19 +1,19 @@
-import React, { useEffect } from "react";
-import { shallow } from "zustand/shallow";
-import { useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import * as Yup from "yup";
-import api from "../../../services/api";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import React, { useEffect } from 'react';
+import { shallow } from 'zustand/shallow';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as Yup from 'yup';
+import api from '../../../services/api';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
-import noUserPhoto from "../../../assets/no-user-photo.png";
-import useRegisterStore from "../../../stores/useRegisterStore";
-import useUserStore from "../../../stores/useUserStore";
-import useIsUserLogged from "../../../hooks/useIsUserLogged";
-import useGeneralStore from "../../../stores/useGeneralStore";
-import Loading from "../Loading";
-import useHeaderStore from "../../../stores/useHeaderStore";
+import noUserPhoto from '../../../assets/no-user-photo.png';
+import useRegisterStore from '../../../stores/useRegisterStore';
+import useUserStore from '../../../stores/useUserStore';
+import useIsUserLogged from '../../../hooks/useIsUserLogged';
+import useGeneralStore from '../../../stores/useGeneralStore';
+import Loading from '../Loading';
+import useHeaderStore from '../../../stores/useHeaderStore';
 
 const RegisterContent = () => {
     const {
@@ -25,10 +25,6 @@ const RegisterContent = () => {
         setCpfFromFetch,
         email,
         setEmail,
-        password,
-        setPassword,
-        confirmPassword,
-        setConfirmPassword,
         tel,
         setTelFromFetch,
         confirmTel,
@@ -53,10 +49,6 @@ const RegisterContent = () => {
             setCpfFromFetch: state.setCpfFromFetch,
             email: state.email,
             setEmail: state.setEmail,
-            password: state.password,
-            setPassword: state.setPassword,
-            confirmPassword: state.confirmPassword,
-            setConfirmPassword: state.setConfirmPassword,
             tel: state.tel,
             setTelFromFetch: state.setTelFromFetch,
             confirmTel: state.confirmTel,
@@ -75,7 +67,13 @@ const RegisterContent = () => {
         shallow
     );
 
-    const { isLoading, setToLoad, setNotToLoad, setToAnimateFadeIn, setToAnimateFadeOut } = useGeneralStore((state) => ({
+    const {
+        isLoading,
+        setToLoad,
+        setNotToLoad,
+        setToAnimateFadeIn,
+        setToAnimateFadeOut,
+    } = useGeneralStore((state) => ({
         isLoading: state.isLoading,
         setToLoad: state.setToLoad,
         setNotToLoad: state.setNotToLoad,
@@ -83,7 +81,10 @@ const RegisterContent = () => {
         setToAnimateFadeOut: state.setToAnimateFadeOut,
     }));
 
-    const { closeLogin } = useHeaderStore((state) => ({ closeLogin: state.closeLogin }), shallow);
+    const { closeLogin } = useHeaderStore(
+        (state) => ({ closeLogin: state.closeLogin }),
+        shallow
+    );
 
     const { user } = useUserStore((state) => ({
         user: state.user,
@@ -103,22 +104,26 @@ const RegisterContent = () => {
                     setToAnimateFadeIn();
 
                     const formData = new FormData();
-                    formData.append("profileImage", profileImage.file ? profileImage.file : noUserPhoto);
-                    formData.append("name", name);
-                    formData.append("cpf", cpf);
-                    formData.append("email", email);
-                    formData.append("password", password);
-                    formData.append("tel", tel);
+                    formData.append(
+                        'profileImage',
+                        profileImage.file ? profileImage.file : noUserPhoto
+                    );
+                    formData.append('name', name);
+                    formData.append('cpf', cpf);
+                    formData.append('email', email);
+                    formData.append('tel', tel);
 
-                    api.post("/register/registerAccount", formData, {
+                    api.post('/register/registerAccount', formData, {
                         headers: {
-                            "Content-Type": "multipart/form-data",
+                            'Content-Type': 'multipart/form-data',
                         },
                     })
                         .then((res) => {
                             registerComplete();
-                            setRegisterMessage("Cadastro realizado com sucesso");
-                            localStorage.setItem("userToken", res.data);
+                            setRegisterMessage(
+                                'Cadastro realizado com sucesso'
+                            );
+                            localStorage.setItem('userToken', res.data);
 
                             setToAnimateFadeOut();
 
@@ -128,10 +133,16 @@ const RegisterContent = () => {
                         })
                         .catch((error) => {
                             window.scrollTo(0, 0);
-                            if (error.response.data === "Telefone Já cadastrado") {
-                                setRegisterMessage("Cadastro já registrado no sistema");
+                            if (
+                                error.response.data === 'Telefone Já cadastrado'
+                            ) {
+                                setRegisterMessage(
+                                    'Cadastro já registrado no sistema'
+                                );
                             } else {
-                                setRegisterMessage("Ocorreu um erro no cadastro");
+                                setRegisterMessage(
+                                    'Ocorreu um erro no cadastro'
+                                );
                             }
                             errorExist();
                             console.log(error);
@@ -155,7 +166,7 @@ const RegisterContent = () => {
             setTimeout(() => {
                 registerNotComplete();
                 notSubmitting();
-                navigate("/");
+                navigate('/');
             }, 3000);
         }
 
@@ -167,7 +178,7 @@ const RegisterContent = () => {
         }
     }, [isRegisterCompleted, errorSubmitting]);
 
-    useIsUserLogged("/register");
+    useIsUserLogged('/register');
 
     const handleFileChange = async (e) => {
         const file = await e.target.files[0];
@@ -189,10 +200,10 @@ const RegisterContent = () => {
         const { value } = e.target;
 
         const phoneNumber = value
-            .replace(/\D/g, "")
-            .replace(/(\d{2})(\d)/, "($1) $2")
-            .replace(/(\d{5})(\d)/, "$1-$2")
-            .replace(/(-\d{4})\d+?$/, "$1");
+            .replace(/\D/g, '')
+            .replace(/(\d{2})(\d)/, '($1) $2')
+            .replace(/(\d{5})(\d)/, '$1-$2')
+            .replace(/(-\d{4})\d+?$/, '$1');
 
         return phoneNumber;
     };
@@ -201,11 +212,11 @@ const RegisterContent = () => {
         const { value } = e.target;
 
         const cpf = value
-            .replace(/\D/g, "")
-            .replace(/(\d{3})(\d)/, "$1.$2")
-            .replace(/(\d{3})(\d)/, "$1.$2")
-            .replace(/(\d{3})(\d)/, "$1-$2")
-            .replace(/(-\d{2})\d+?$/, "$1");
+            .replace(/\D/g, '')
+            .replace(/(\d{3})(\d)/, '$1.$2')
+            .replace(/(\d{3})(\d)/, '$1.$2')
+            .replace(/(\d{3})(\d)/, '$1-$2')
+            .replace(/(-\d{2})\d+?$/, '$1');
 
         return cpf;
     };
@@ -213,22 +224,22 @@ const RegisterContent = () => {
     const schema = Yup.object().shape({
         profileImage: Yup.mixed(),
         name: Yup.string()
-            .min(6, "Insira acima de 6 caracteres")
-            .max(50, "Insira abaixo de 50 caracteres")
-            .required("Nome é obrigatório"),
+            .min(6, 'Insira acima de 6 caracteres')
+            .max(50, 'Insira abaixo de 50 caracteres')
+            .required('Nome é obrigatório'),
         cpf: Yup.string()
-            .min(6, "Insira acima de 6 caracteres")
-            .max(50, "Insira abaixo de 50 caracteres")
-            .required("CPF é obrigatório"),
-        email: Yup.string().email("Email inválido").required("Email é obrigatório"),
-        password: Yup.string().required("Senha é obrigatória"),
-        confirmPassword: Yup.string()
-            .oneOf([Yup.ref("password"), null], "As senhas devem ser iguais")
-            .required("Confirme sua senha"),
-        tel: Yup.string().min(14, "Insira o telefone corretamente").required("Telefone é obrigatório"),
+            .min(6, 'Insira acima de 6 caracteres')
+            .max(50, 'Insira abaixo de 50 caracteres')
+            .required('CPF é obrigatório'),
+        email: Yup.string()
+            .email('Email inválido')
+            .required('Email é obrigatório'),
+        tel: Yup.string()
+            .min(14, 'Insira o telefone corretamente')
+            .required('Telefone é obrigatório'),
         confirmTel: Yup.string()
-            .oneOf([Yup.ref("tel"), null], "Os telefones devem ser iguais")
-            .required("Confirme seu telefone"),
+            .oneOf([Yup.ref('tel'), null], 'Os telefones devem ser iguais')
+            .required('Confirme seu telefone'),
     });
 
     const { register, handleSubmit, formState } = useForm({
@@ -249,155 +260,177 @@ const RegisterContent = () => {
     };
 
     return (
-        <div className="register__register-content">
+        <div className='register__register-content'>
             {isLoading && <Loading>Enviando dados</Loading>}
-            <form onSubmit={handleSubmit(onSubmit)} className="register__register-content__form">
-                <label htmlFor="profileImage" className="register__register-content__form__image-label">
-                    <div className="register__register-content__form__image-label__image-box">
+            <form
+                onSubmit={handleSubmit(onSubmit)}
+                className='register__register-content__form'
+            >
+                <label
+                    htmlFor='profileImage'
+                    className='register__register-content__form__image-label'
+                >
+                    <div className='register__register-content__form__image-label__image-box'>
                         <img
-                            src={profileImage.url ? profileImage.url : noUserPhoto}
-                            alt="Perfil"
-                            className="register__register-content__form__image-label__image-box__image"
+                            src={
+                                profileImage.url
+                                    ? profileImage.url
+                                    : noUserPhoto
+                            }
+                            alt='Perfil'
+                            className='register__register-content__form__image-label__image-box__image'
                         />
                     </div>
 
                     <input
-                        {...register("profileImage")}
-                        type="file"
-                        name="profileImage"
-                        id="profileImage"
+                        {...register('profileImage')}
+                        type='file'
+                        name='profileImage'
+                        id='profileImage'
                         onChange={handleFileChange}
-                        className="register__register-content__form__image-label__input"
+                        className='register__register-content__form__image-label__input'
                     />
                 </label>
 
                 <div
-                    style={user.length > 0 ? { display: "none" } : {}}
-                    className="register__register-content__form__profile-data-box"
+                    style={user.length > 0 ? { display: 'none' } : {}}
+                    className='register__register-content__form__profile-data-box'
                 >
-                    <label htmlFor="name" className="register__register-content__form__profile-data-box__label">
+                    <label
+                        htmlFor='name'
+                        className='register__register-content__form__profile-data-box__label'
+                    >
                         Nome Completo
                         <input
-                            {...register("name")}
-                            type="text"
-                            autoCorrect="off"
-                            autoComplete="off"
-                            name="name"
-                            id="name"
+                            {...register('name')}
+                            type='text'
+                            autoCorrect='off'
+                            autoComplete='off'
+                            name='name'
+                            id='name'
                             value={name}
                             onChange={setName}
-                            style={errors.name ? { border: "2px solid rgb(209, 52, 52)" } : {}}
-                            className="register__register-content__form__profile-data-box__label__input"
+                            style={
+                                errors.name
+                                    ? { border: '2px solid rgb(209, 52, 52)' }
+                                    : {}
+                            }
+                            className='register__register-content__form__profile-data-box__label__input'
                         />
                     </label>
                     {errors.name && <span>{errors.name.message}</span>}
 
-                    <label htmlFor="cpf" className="register__register-content__form__profile-data-box__label">
+                    <label
+                        htmlFor='cpf'
+                        className='register__register-content__form__profile-data-box__label'
+                    >
                         CPF
                         <input
-                            {...register("cpf")}
-                            type="text"
-                            autoCorrect="off"
-                            autoComplete="off"
-                            name="cpf"
-                            id="cpf"
+                            {...register('cpf')}
+                            type='text'
+                            autoCorrect='off'
+                            autoComplete='off'
+                            name='cpf'
+                            id='cpf'
                             value={cpf}
-                            onChange={(e) => setCpfFromFetch(handleCpfChange(e))}
-                            style={errors.cpf ? { border: "2px solid rgb(209, 52, 52)" } : {}}
-                            className="register__register-content__form__profile-data-box__label__input"
+                            onChange={(e) =>
+                                setCpfFromFetch(handleCpfChange(e))
+                            }
+                            style={
+                                errors.cpf
+                                    ? { border: '2px solid rgb(209, 52, 52)' }
+                                    : {}
+                            }
+                            className='register__register-content__form__profile-data-box__label__input'
                         />
                     </label>
                     {errors.cpf && <span>{errors.cpf.message}</span>}
 
-                    <label htmlFor="email" className="register__register-content__form__profile-data-box__label">
+                    <label
+                        htmlFor='email'
+                        className='register__register-content__form__profile-data-box__label'
+                    >
                         E-mail
                         <input
-                            {...register("email")}
-                            type="text"
-                            autoCorrect="off"
-                            autoComplete="off"
-                            name="email"
-                            id="email"
+                            {...register('email')}
+                            type='text'
+                            autoCorrect='off'
+                            autoComplete='off'
+                            name='email'
+                            id='email'
                             value={email}
                             onChange={setEmail}
-                            style={errors.email ? { border: "2px solid rgb(209, 52, 52)" } : {}}
-                            className="register__register-content__form__profile-data-box__label__input"
+                            style={
+                                errors.email
+                                    ? { border: '2px solid rgb(209, 52, 52)' }
+                                    : {}
+                            }
+                            className='register__register-content__form__profile-data-box__label__input'
                         />
                     </label>
                     {errors.email && <span>{errors.email.message}</span>}
 
-                    <label htmlFor="password" className="register__register-content__form__profile-data-box__label">
-                        Senha
-                        <input
-                            {...register("password")}
-                            type="password"
-                            autoCorrect="off"
-                            autoComplete="off"
-                            name="password"
-                            id="password"
-                            value={password}
-                            onChange={setPassword}
-                            style={errors.password ? { border: "2px solid rgb(209, 52, 52)" } : {}}
-                            className="register__register-content__form__profile-data-box__label__input"
-                        />
-                    </label>
-                    {errors.password && <span>{errors.password.message}</span>}
-
-                    <label htmlFor="passwordConfirm" className="register__register-content__form__profile-data-box__label">
-                        Repita a senha
-                        <input
-                            {...register("confirmPassword")}
-                            type="password"
-                            autoCorrect="off"
-                            autoComplete="off"
-                            name="confirmPassword"
-                            id="confirmPassword"
-                            value={confirmPassword}
-                            onChange={setConfirmPassword}
-                            style={errors.confirmPassword ? { border: "2px solid rgb(209, 52, 52)" } : {}}
-                            className="register__register-content__form__profile-data-box__label__input"
-                        />
-                    </label>
-                    {errors.confirmPassword && <span>{errors.confirmPassword.message}</span>}
-
-                    <label htmlFor="tel" className="register__register-content__form__profile-data-box__label">
+                    <label
+                        htmlFor='tel'
+                        className='register__register-content__form__profile-data-box__label'
+                    >
                         Telefone
                         <input
-                            {...register("tel")}
-                            type="text"
-                            autoCorrect="off"
-                            autoComplete="off"
-                            name="tel"
-                            id="tel"
+                            {...register('tel')}
+                            type='text'
+                            autoCorrect='off'
+                            autoComplete='off'
+                            name='tel'
+                            id='tel'
                             value={tel}
-                            onChange={(e) => setTelFromFetch(handleTelChange(e))}
-                            placeholder="(__) _____-____"
-                            style={errors.tel ? { border: "2px solid rgb(209, 52, 52)" } : {}}
-                            className="register__register-content__form__profile-data-box__label__input"
+                            onChange={(e) =>
+                                setTelFromFetch(handleTelChange(e))
+                            }
+                            placeholder='(__) _____-____'
+                            style={
+                                errors.tel
+                                    ? { border: '2px solid rgb(209, 52, 52)' }
+                                    : {}
+                            }
+                            className='register__register-content__form__profile-data-box__label__input'
                         />
                     </label>
                     {errors.tel && <span>{errors.tel.message}</span>}
 
-                    <label htmlFor="telConfirm" className="register__register-content__form__profile-data-box__label">
+                    <label
+                        htmlFor='telConfirm'
+                        className='register__register-content__form__profile-data-box__label'
+                    >
                         Confirmar telefone
                         <input
-                            {...register("confirmTel")}
-                            type="text"
-                            autoCorrect="off"
-                            autoComplete="off"
-                            name="confirmTel"
-                            id="confirmTel"
+                            {...register('confirmTel')}
+                            type='text'
+                            autoCorrect='off'
+                            autoComplete='off'
+                            name='confirmTel'
+                            id='confirmTel'
                             value={confirmTel}
-                            onChange={(e) => setConfirmTelFromFetch(handleTelChange(e))}
-                            placeholder="(__) _____-____"
-                            style={errors.confirmTel ? { border: "2px solid rgb(209, 52, 52)" } : {}}
-                            className="register__register-content__form__profile-data-box__label__input"
+                            onChange={(e) =>
+                                setConfirmTelFromFetch(handleTelChange(e))
+                            }
+                            placeholder='(__) _____-____'
+                            style={
+                                errors.confirmTel
+                                    ? { border: '2px solid rgb(209, 52, 52)' }
+                                    : {}
+                            }
+                            className='register__register-content__form__profile-data-box__label__input'
                         />
                     </label>
-                    {errors.confirmTel && <span>{errors.confirmTel.message}</span>}
+                    {errors.confirmTel && (
+                        <span>{errors.confirmTel.message}</span>
+                    )}
                 </div>
 
-                <button type="submit" className="register__register-content__form__save-btn">
+                <button
+                    type='submit'
+                    className='register__register-content__form__save-btn'
+                >
                     Salvar
                 </button>
             </form>

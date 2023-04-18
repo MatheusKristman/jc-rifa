@@ -1,4 +1,4 @@
-import { create } from "zustand";
+import { create } from 'zustand';
 
 const useHeaderStore = create((set) => ({
     isMenuOpen: false,
@@ -7,16 +7,11 @@ const useHeaderStore = create((set) => ({
     isLoginModalOpen: false,
     openLogin: () => set(() => ({ isLoginModalOpen: true })),
     closeLogin: () => set(() => ({ isLoginModalOpen: false })),
-    usernameValue: "",
+    usernameValue: '',
     handleUsernameValue: (value) => set(() => ({ usernameValue: value })),
-    passwordValue: "",
-    handlePasswordValue: (e) => set(() => ({ passwordValue: e.target.value })),
     isUsernameSelected: false,
     selectUsername: () => set(() => ({ isUsernameSelected: true })),
     unselectUsername: () => set(() => ({ isUsernameSelected: false })),
-    isPasswordSelected: false,
-    selectPassword: () => set(() => ({ isPasswordSelected: true })),
-    unselectPassword: () => set(() => ({ isPasswordSelected: false })),
     logoutConfirmation: false,
     setToConfirmLogout: () => set(() => ({ logoutConfirmation: true })),
     setToNotConfirmLogout: () => set(() => ({ logoutConfirmation: false })),
@@ -32,7 +27,7 @@ const useHeaderStore = create((set) => ({
     submitError: false,
     errorExist: () => set(() => ({ submitError: true })),
     errorDontExist: () => set(() => ({ submitError: false })),
-    loginMessage: "",
+    loginMessage: '',
     setLoginMessage: (value) => set(() => ({ loginMessage: value })),
 }));
 
