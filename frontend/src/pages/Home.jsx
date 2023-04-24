@@ -116,7 +116,7 @@ const Home = () => {
                                                 );
                                             let numbersAvailableFromRaffle = [
                                                 ...raffleSelected[0]
-                                                    .NumbersAvailable,
+                                                    ?.NumbersAvailable,
                                                 ...res.data.rafflesBuyed,
                                             ];
                                             let numbersBuyedFromRaffle = [

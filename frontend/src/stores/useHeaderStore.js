@@ -9,9 +9,14 @@ const useHeaderStore = create((set) => ({
     closeLogin: () => set(() => ({ isLoginModalOpen: false })),
     usernameValue: '',
     handleUsernameValue: (value) => set(() => ({ usernameValue: value })),
+    passwordValue: '',
+    handlePasswordValue: (e) => set(() => ({ passwordValue: e.target.value })),
     isUsernameSelected: false,
     selectUsername: () => set(() => ({ isUsernameSelected: true })),
     unselectUsername: () => set(() => ({ isUsernameSelected: false })),
+    isPasswordSelected: false,
+    selectPassword: () => set(() => ({ isPasswordSelected: true })),
+    unselectPassword: () => set(() => ({ isPasswordSelected: false })),
     logoutConfirmation: false,
     setToConfirmLogout: () => set(() => ({ logoutConfirmation: true })),
     setToNotConfirmLogout: () => set(() => ({ logoutConfirmation: false })),
@@ -29,6 +34,9 @@ const useHeaderStore = create((set) => ({
     errorDontExist: () => set(() => ({ submitError: false })),
     loginMessage: '',
     setLoginMessage: (value) => set(() => ({ loginMessage: value })),
+    isAdmin: false,
+    userIsAdmin: () => set(() => ({ isAdmin: true })),
+    userIsNotAdmin: () => set(() => ({ isAdmin: false })),
 }));
 
 export default useHeaderStore;

@@ -41,6 +41,15 @@ const loginValidate = (data) => {
     return schema.validate(data);
 };
 
+const loginAdminValidate = (data) => {
+    const schema = Joi.object({
+        tel: Joi.string().required().min(15).max(16),
+        password: Joi.string().required().min(8),
+    });
+
+    return schema.validate(data);
+};
+
 const createNewRaffleValidate = (data) => {
     const schema = Joi.object({
         raffleImage: Joi.binary(),
@@ -69,6 +78,7 @@ const updateRaffleValidate = (data) => {
 
 module.exports.registerValidate = registerValidate;
 module.exports.loginValidate = loginValidate;
+module.exports.loginAdminValidate = loginAdminValidate;
 module.exports.updateValidate = updateValidate;
 
 module.exports.createNewRaffleValidate = createNewRaffleValidate;

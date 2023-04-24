@@ -455,9 +455,14 @@ const LogInModal = () => {
     const {
         usernameValue,
         handleUsernameValue,
+        passwordValue,
+        handlePasswordValue,
         isUsernameSelected,
         selectUsername,
         unselectUsername,
+        isPasswordSelected,
+        selectPassword,
+        unselectPassword,
         closeLogin,
         submitting,
         isSubmitting,
@@ -470,13 +475,21 @@ const LogInModal = () => {
         setLoginMessage,
         loginSuccess,
         loginMessage,
+        isAdmin,
+        userIsAdmin,
+        userIsNotAdmin,
     } = useHeaderStore(
         (state) => ({
             usernameValue: state.usernameValue,
             handleUsernameValue: state.handleUsernameValue,
+            passwordValue: state.passwordValue,
+            handlePasswordValue: state.handlePasswordValue,
             isUsernameSelected: state.isUsernameSelected,
             selectUsername: state.selectUsername,
             unselectUsername: state.unselectUsername,
+            isPasswordSelected: state.isPasswordSelected,
+            selectPassword: state.selectPassword,
+            unselectPassword: state.unselectPassword,
             closeLogin: state.closeLogin,
             submitting: state.submitting,
             isSubmitting: state.isSubmitting,
@@ -489,9 +502,16 @@ const LogInModal = () => {
             setLoginMessage: state.setLoginMessage,
             loginSuccess: state.loginSuccess,
             loginMessage: state.loginMessage,
+            isAdmin: state.isAdmin,
+            userIsAdmin: state.userIsAdmin,
+            userIsNotAdmin: state.userIsNotAdmin,
         }),
         shallow
     );
+
+    useEffect(() => {
+        userIsNotAdmin();
+    }, []);
 
     const loginModalOverlayRef = useRef(null);
     const loginModalBoxRef = useRef(null);
@@ -548,9 +568,10 @@ const LogInModal = () => {
     useEffect(() => {
         const submitData = () => {
             if (isSubmitting) {
-                const sendDataToDB = () => {
-                    api.post('/login', {
+                const sendAdminDataToDB = () => {
+                    api.post('/loginAdmin', {
                         tel: usernameValue,
+                        password: passwordValue,
                     })
                         .then((res) => {
                             loginSuccess();
@@ -559,11 +580,42 @@ const LogInModal = () => {
                         })
                         .catch((error) => {
                             errorExist();
-                            if (
-                                error.response.data ===
-                                'Telefone ou senha incorretos'
-                            ) {
-                                setLoginMessage('Telefone ou senha incorretos');
+                            if (error.response.data === 'Usuário incorreto') {
+                                setLoginMessage('Usuário incorreto');
+                            } else {
+                                setLoginMessage(
+                                    'Ocorreu um erro, tente novamente'
+                                );
+                            }
+                            console.log(error);
+                        });
+                };
+
+                const sendDataToDB = () => {
+                    if (isAdmin) {
+                        console.log('is admin');
+                        sendAdminDataToDB();
+                        return;
+                    }
+
+                    api.post('/login', {
+                        tel: usernameValue,
+                    })
+                        .then((res) => {
+                            if (res.data.isAdmin) {
+                                userIsAdmin();
+                                notSubmitting();
+                                return;
+                            }
+                            loginSuccess();
+                            setLoginMessage('Conectado com sucesso');
+                            localStorage.setItem('userToken', res.data.token);
+                            console.log(res.data.token);
+                        })
+                        .catch((error) => {
+                            errorExist();
+                            if (error.response.data === 'Usuário incorreto') {
+                                setLoginMessage('Usuário incorreto');
                             } else {
                                 setLoginMessage(
                                     'Ocorreu um erro, tente novamente'
@@ -692,6 +744,52 @@ const LogInModal = () => {
                         </div>
                         {errors.username && (
                             <span>{errors.username.message}</span>
+                        )}
+
+                        {isAdmin && (
+                            <div className='header__login-modal-overlay__box__content__form__password-box'>
+                                <label
+                                    htmlFor='password'
+                                    className={
+                                        isPasswordSelected
+                                            ? 'header__login-modal-overlay__box__content__form__password-box__label input-selected'
+                                            : 'header__login-modal-overlay__box__content__form__password-box__label'
+                                    }
+                                >
+                                    Senha
+                                </label>
+                                <input
+                                    {...register('password')}
+                                    type='text'
+                                    name='password'
+                                    id='password'
+                                    value={passwordValue}
+                                    onChange={(e) => {
+                                        handlePasswordValue(e);
+                                        setValue('password', e.target.value);
+                                    }}
+                                    onFocus={selectPassword}
+                                    onBlur={() =>
+                                        passwordValue === ''
+                                            ? unselectPassword()
+                                            : selectPassword()
+                                    }
+                                    autoComplete='off'
+                                    autoCorrect='off'
+                                    style={
+                                        errors.password
+                                            ? {
+                                                  borderColor:
+                                                      'rgb(209, 52, 52)',
+                                              }
+                                            : {}
+                                    }
+                                    className='header__login-modal-overlay__box__content__form__password-box__input'
+                                />
+                            </div>
+                        )}
+                        {errors.password && (
+                            <span>{errors.password.message}</span>
                         )}
 
                         <button

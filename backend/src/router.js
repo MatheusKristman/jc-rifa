@@ -40,6 +40,7 @@ router.get('/raffles', auth, AccountController.read);
 
 // Rota Login
 router.post('/login', AccountController.login);
+router.post('/loginAdmin', AccountController.loginAdmin);
 
 // Rota consulta números
 router.get('/query-numbers/:cpf', AccountController.readUserBuyedNumbers);

@@ -7,6 +7,7 @@ const {
     registerValidate,
     loginValidate,
     updateValidate,
+    loginAdminValidate,
 } = require('./validate');
 const jwt = require('jsonwebtoken');
 
@@ -155,10 +156,48 @@ module.exports = {
 
         const selectedUser = await Account.findOne({ tel: req.body.tel });
         if (!selectedUser) {
-            return res.status(400).send('Telefone ou senha incorretos');
+            return res.status(400).send('Usuário incorreto');
+        }
+
+        if (selectedUser.admin) {
+            return res.status(200).json({ isAdmin: true });
         }
 
         console.log('passou validação');
+
+        const daysToExpire = '15d';
+
+        const token = jwt.sign(
+            { _id: selectedUser._id, admin: selectedUser.admin },
+            process.env.TOKEN_SECRET,
+            {
+                expiresIn: daysToExpire,
+            }
+        );
+
+        res.json({ token, isAdmin: false });
+    },
+    loginAdmin: async (req, res) => {
+        const { error } = loginAdminValidate(req.body);
+
+        if (error) {
+            return res.status(400).send(error.message);
+        }
+
+        const selectedUser = await Account.findOne({ tel: req.body.tel });
+
+        if (!selectedUser) {
+            return res.status(400).send('Usuário incorreto');
+        }
+
+        const passwordCompared = req.body.password === selectedUser.password;
+
+        console.log('db: ' + selectedUser.password);
+        console.log('body: ' + req.body.password);
+
+        if (!passwordCompared) {
+            return res.status(400).send('Usuário incorreto');
+        }
 
         const daysToExpire = '15d';
 
