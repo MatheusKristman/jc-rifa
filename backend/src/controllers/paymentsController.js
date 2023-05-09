@@ -1,24 +1,26 @@
-const mercadopago = require("mercadopago");
-require("dotenv").config();
+const mercadopago = require('mercadopago');
+require('dotenv').config();
 
 console.log(process.env.MERCADO_PAGO_ACCESS_TOKEN);
 
-mercadopago.configurations.setAccessToken(process.env.MERCADO_PAGO_ACCESS_TOKEN);
+mercadopago.configurations.setAccessToken(
+    process.env.MERCADO_PAGO_ACCESS_TOKEN
+);
 
 module.exports = {
     pay: async (req, res) => {
         const paymentData = {
-            notification_url: "https://eoqhcniy7v8myie.m.pipedream.net",
+            notification_url: 'https://eoqhcniy7v8myie.m.pipedream.net',
             external_reference: req.body.id,
             transaction_amount: req.body.fullPrice,
             description: req.body.title,
-            payment_method_id: "pix",
+            payment_method_id: 'pix',
             payer: {
                 email: req.body.email,
                 first_name: req.body.firstName,
                 last_name: req.body.lastName,
                 identification: {
-                    type: "CPF",
+                    type: 'CPF',
                     number: req.body.cpf,
                 },
             },
@@ -30,3 +32,5 @@ module.exports = {
             .catch((error) => res.status(400).send({ error: error.message }));
     },
 };
+
+// TODO arrumar erro number identification
