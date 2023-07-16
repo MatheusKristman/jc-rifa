@@ -63,6 +63,11 @@ const useRaffleStore = create((set) => ({
     set(() => ({ isDeleteConfirmationAnimated: true })),
   deactivateDeleteConfirmationAnimation: () =>
     set(() => ({ isDeleteConfirmationAnimated: false })),
+  isDeleteButtonEnabled: false,
+  enableDeleteButton: () => set(() => ({ isDeleteButtonEnabled: true })),
+  disableDeleteButton: () => set(() => ({ isDeleteButtonEnabled: false })),
+  resetOnEditRaffle: () =>
+    set(() => ({ winner: {}, participants: [], raffleSelected: {} })),
 }));
 
 export default useRaffleStore;

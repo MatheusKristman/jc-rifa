@@ -2815,11 +2815,13 @@ body {
   color: #fff;
   cursor: pointer;
   outline: none;
+  transition: filter 0.4s ease;
+}
+.edit-raffle__content__container__btns__delete-btn:disabled {
+  filter: brightness(60%);
+  cursor: not-allowed;
 }
 @media screen and (min-width: 1024px) {
-  .edit-raffle__content__container__btns__delete-btn {
-    transition: filter 0.4s ease;
-  }
   .edit-raffle__content__container__btns__delete-btn:hover {
     filter: brightness(80%);
   }

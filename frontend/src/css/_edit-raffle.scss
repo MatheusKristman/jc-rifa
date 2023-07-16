@@ -52,10 +52,14 @@
           color: $white;
           cursor: pointer;
           outline: none;
+          transition: filter 0.4s ease;
+
+          &:disabled {
+            filter: brightness(60%);
+            cursor: not-allowed;
+          }
 
           @include breakpoint(largeScreen) {
-            transition: filter 0.4s ease;
-
             &:hover {
               filter: brightness(80%);
             }

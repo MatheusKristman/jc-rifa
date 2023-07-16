@@ -43,6 +43,10 @@ const EditRaffleContent = () => {
     setNotToFetchWinner,
     activateDeleteConfirmationAnimation,
     openDeleteConfirmation,
+    resetOnEditRaffle,
+    isDeleteButtonEnabled,
+    enableDeleteButton,
+    disableDeleteButton,
   } = useRaffleStore(
     (state) => ({
       raffleSelected: state.raffleSelected,
@@ -70,6 +74,10 @@ const EditRaffleContent = () => {
       activateDeleteConfirmationAnimation:
         state.activateDeleteConfirmationAnimation,
       openDeleteConfirmation: state.openDeleteConfirmation,
+      resetOnEditRaffle: state.resetOnEditRaffle,
+      isDeleteButtonEnabled: state.isDeleteButtonEnabled,
+      enableDeleteButton: state.enableDeleteButton,
+      disableDeleteButton: state.disableDeleteButton,
     }),
     shallow,
   );
@@ -259,6 +267,12 @@ const EditRaffleContent = () => {
       .catch((error) => console.log(error));
   };
 
+  const handleBackButton = () => {
+    resetOnEditRaffle();
+    disableDeleteButton();
+    navigate("/raffle-management");
+  };
+
   const openDeleteConfirmationModal = () => {
     openDeleteConfirmation();
     activateDeleteConfirmationAnimation();
@@ -444,12 +458,18 @@ const EditRaffleContent = () => {
     }
   }, [isRaffleCreated, submitError]);
 
+  useEffect(() => {
+    if (raffleSelected.hasOwnProperty("_id")) {
+      enableDeleteButton();
+    }
+  }, [raffleSelected, participants]);
+
   return (
     <div className="edit-raffle__content">
       <div className="edit-raffle__content__container">
         <div className="edit-raffle__content__container__btns">
           <button
-            onClick={() => navigate("/raffle-management")}
+            onClick={handleBackButton}
             className="edit-raffle__content__container__btns__back-btn"
           >
             Voltar
@@ -458,6 +478,7 @@ const EditRaffleContent = () => {
           <button
             type="button"
             onClick={() => handleDeleteButton(raffleSelected._id)}
+            disabled={!isDeleteButtonEnabled}
             className="edit-raffle__content__container__btns__delete-btn"
           >
             Apagar

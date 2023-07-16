@@ -1,22 +1,25 @@
-const Raffle = require('../models/Raffle');
-const Account = require('../models/Account');
-const { createNewRaffleValidate, updateRaffleValidate } = require('./validate');
+const Raffle = require("../models/Raffle");
+const Account = require("../models/Account");
+const { createNewRaffleValidate, updateRaffleValidate } = require("./validate");
 
-const fs = require('fs');
-const multer = require('multer');
-const Winner = require('../models/Winner');
+const fs = require("fs");
+const multer = require("multer");
+const Winner = require("../models/Winner");
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, './public/data/uploads/');
+    cb(null, "./public/data/uploads/");
   },
   filename: function (req, file, cb) {
-    let fileExtension = file.originalname.split('.')[1];
-    cb(null, file.fieldname + '-' + Date.now() + '.' + fileExtension);
+    let fileExtension = file.originalname.split(".")[1];
+    cb(null, file.fieldname + "-" + Date.now() + "." + fileExtension);
   },
 });
 
-const upload = multer({ storage: storage, limits: { fileSize: 2 * 1024 * 1024 } });
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: 2 * 1024 * 1024 },
+});
 
 module.exports = {
   upload,
@@ -30,7 +33,7 @@ module.exports = {
     const raffleAlreadyExists = await Raffle.findOne({ title: req.body.title });
 
     if (raffleAlreadyExists) {
-      return res.status(400).send('Rifa já cadastrada');
+      return res.status(400).send("Rifa já cadastrada");
     }
 
     function generateNumbers(quant) {
@@ -38,17 +41,20 @@ module.exports = {
       let length = 0;
 
       if (quant <= 100) {
-        arrNumbers.push('00');
+        arrNumbers.push("00");
         length = 2;
       } else if (quant <= 1000) {
-        arrNumbers = ['000'];
+        arrNumbers = ["000"];
         length = 3;
       } else if (quant <= 10000) {
-        arrNumbers = ['0000'];
+        arrNumbers = ["0000"];
         length = 4;
       } else if (quant <= 100000) {
-        arrNumbers = ['00000'];
+        arrNumbers = ["00000"];
         length = 5;
+      } else if (quant <= 1000000) {
+        arrNumbers = ["000000"];
+        length = 6;
       }
 
       for (let i = 1; i < quant; i++) {
@@ -66,7 +72,7 @@ module.exports = {
       let paddedNumber = number.toString();
 
       while (paddedNumber.length < size) {
-        paddedNumber = '0' + paddedNumber;
+        paddedNumber = "0" + paddedNumber;
       }
 
       return paddedNumber;
@@ -74,7 +80,9 @@ module.exports = {
 
     const raffle = {
       raffleImage: {
-        data: req.file ? fs.readFileSync('public/data/uploads/' + req.file.filename) : null,
+        data: req.file
+          ? fs.readFileSync("public/data/uploads/" + req.file.filename)
+          : null,
         contentType: req.file ? req.file.mimetype : null,
       },
       title: req.body.title,
@@ -90,7 +98,7 @@ module.exports = {
 
       if (raffleCreated && req.file) {
         fs.unlinkSync(`public/data/uploads/${req.file.filename}`);
-        console.log('imagem removida com sucesso');
+        console.log("imagem removida com sucesso");
       }
 
       res.json(raffleCreated);
@@ -127,17 +135,17 @@ module.exports = {
 
     try {
       await Account.updateMany(
-        { 'rafflesBuyed.raffleId': id },
+        { "rafflesBuyed.raffleId": id },
         {
           $set: {
-            'rafflesBuyed.$.title': selectedRaffle.title,
-            'rafflesBuyed.$.raffleImage': selectedRaffle.raffleImage,
+            "rafflesBuyed.$.title": selectedRaffle.title,
+            "rafflesBuyed.$.raffleImage": selectedRaffle.raffleImage,
           },
-        }
+        },
       );
       const users = await Account.find({
-        'rafflesBuyed.raffleId': id,
-        'rafflesBuyed.status': 'approved',
+        "rafflesBuyed.raffleId": id,
+        "rafflesBuyed.status": "approved",
       });
 
       res.send(users);
@@ -160,7 +168,7 @@ module.exports = {
     const newRaffle = {
       raffleImage: {
         data: req.file
-          ? fs.readFileSync('public/data/uploads/' + req.file.filename)
+          ? fs.readFileSync("public/data/uploads/" + req.file.filename)
           : raffle.raffleImage.data,
         contentType: req.file ? req.file.mimetype : null,
       },
@@ -171,11 +179,14 @@ module.exports = {
     };
 
     try {
-      const selectedRaffle = await Raffle.findOneAndUpdate({ _id: req.body.id }, newRaffle);
+      const selectedRaffle = await Raffle.findOneAndUpdate(
+        { _id: req.body.id },
+        newRaffle,
+      );
 
       if (selectedRaffle && req.file) {
         fs.unlinkSync(`public/data/uploads/${req.file.filename}`);
-        console.log('Imagem removida com sucesso');
+        console.log("Imagem removida com sucesso");
       }
 
       const selectedRaffleUpdated = await Raffle.findById(req.body.id);
@@ -190,22 +201,27 @@ module.exports = {
 
     const raffleSelected = await Raffle.findOne({ _id: id });
 
-    const chosenNumberContainsOnRaffle = raffleSelected.BuyedNumbers.includes(number);
+    const chosenNumberContainsOnRaffle =
+      raffleSelected.BuyedNumbers.includes(number);
 
     if (!chosenNumberContainsOnRaffle) {
-      return res.status(404).send('Número não foi comprado, insira outro número');
+      return res
+        .status(404)
+        .send("Número não foi comprado, insira outro número");
     }
 
     try {
       const winner = await Account.findOne({
-        'rafflesBuyed.numbersBuyed': number,
-        'rafflesBuyed.status': 'approved',
+        "rafflesBuyed.numbersBuyed": number,
+        "rafflesBuyed.status": "approved",
       });
 
       console.log(winner);
 
       if (!winner) {
-        return res.status(404).send('Usuário não encontrado, insira um novo número');
+        return res
+          .status(404)
+          .send("Usuário não encontrado, insira um novo número");
       }
 
       const winnerCreated = await Winner.create({
@@ -225,7 +241,7 @@ module.exports = {
           $set: {
             isFinished: true,
           },
-        }
+        },
       );
 
       res.json(winnerCreated);
@@ -234,10 +250,10 @@ module.exports = {
     }
   },
   delete: async (req, res) => {
-    const { id } = req.body;
+    const { id } = req.params;
 
     try {
-      await Raffle.deleteOne({ id: id });
+      await Raffle.deleteOne({ _id: id });
 
       const raffles = await Raffle.find();
 
