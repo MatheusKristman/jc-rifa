@@ -7,23 +7,36 @@ import NewRaffleContent from "./components/new-raffle/NewRaffleContent";
 import AlertBox from "./components/AlertBox";
 
 const NewRaffle = () => {
-    const { isRaffleCreated, submitError, raffleCreatedMessage } = useNewRaffleStore((state) => ({
-        isRaffleCreated: state.isRaffleCreated,
-        submitError: state.submitError,
-        raffleCreatedMessage: state.raffleCreatedMessage,
+  const { isRaffleCreated, submitError, raffleCreatedMessage } =
+    useNewRaffleStore((state) => ({
+      isRaffleCreated: state.isRaffleCreated,
+      submitError: state.submitError,
+      raffleCreatedMessage: state.raffleCreatedMessage,
     }));
 
-    useIsUserLogged("create-new-raffle");
+  useIsUserLogged("create-new-raffle");
 
-    return (
-        <div className="new-raffle">
-            <Header />
-            <NewRaffleContent />
-            <Footer />
-            {isRaffleCreated && <AlertBox success={isRaffleCreated} error={submitError} message={raffleCreatedMessage} />}
-            {submitError && <AlertBox success={isRaffleCreated} error={submitError} message={raffleCreatedMessage} />}
-        </div>
-    );
+  return (
+    <div className="new-raffle">
+      <Header />
+      <NewRaffleContent />
+      <Footer />
+      {isRaffleCreated && (
+        <AlertBox
+          success={isRaffleCreated}
+          error={submitError}
+          message={raffleCreatedMessage}
+        />
+      )}
+      {submitError && (
+        <AlertBox
+          success={isRaffleCreated}
+          error={submitError}
+          message={raffleCreatedMessage}
+        />
+      )}
+    </div>
+  );
 };
 
 export default NewRaffle;
