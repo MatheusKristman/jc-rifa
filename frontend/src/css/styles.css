@@ -23,6 +23,12 @@ body {
   overflow-x: hidden;
 }
 
+.home {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
 #root {
   display: flex;
   flex-direction: column;
@@ -780,6 +786,7 @@ body {
   background-color: #080812;
   border-radius: 10px;
   padding: 16px 12px;
+  flex: 1;
 }
 .hero__container {
   display: flex;
@@ -2370,6 +2377,7 @@ body {
   border-radius: 10px;
   border: none;
   outline: none;
+  transition: border 0.3s ease;
 }
 .contact__contact-content__container__form__inputs-wrapper__label__select {
   appearance: none;
@@ -2383,6 +2391,7 @@ body {
   padding: 8px 12px;
   outline: none;
   color: #5a5a5a;
+  transition: border 0.3s ease;
 }
 .contact__contact-content__container__form__inputs-wrapper__label__textarea {
   padding: 8px 12px;
@@ -2393,6 +2402,7 @@ body {
   border: none;
   outline: none;
   resize: none;
+  transition: border 0.3s ease;
 }
 .contact__contact-content__container__form__inputs-wrapper__label__tip {
   font-size: 0.8rem;
@@ -2425,6 +2435,12 @@ body {
   .contact__contact-content__container__form__submit-btn:hover {
     filter: brightness(80%);
   }
+}
+
+.contact-error-message {
+  font-size: 1rem;
+  font-weight: 400;
+  color: rgb(209, 52, 52);
 }
 
 .change-password {
