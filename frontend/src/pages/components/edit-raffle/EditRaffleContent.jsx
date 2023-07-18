@@ -219,7 +219,7 @@ const EditRaffleContent = () => {
     if (finishNumber) {
       setToChooseWinner();
       api
-        .post("/edit-raffle/finish", {
+        .post("/raffle/generate-a-winner", {
           id: raffleSelected._id,
           number: finishNumber,
         })
@@ -256,7 +256,7 @@ const EditRaffleContent = () => {
 
   const resetWinner = () => {
     api
-      .delete(`/edit-raffle/cancel/${winner._id}`)
+      .delete(`/winner/delete-winner/${winner._id}`)
       .then((res) => {
         if (res.data) {
           setWinner({});

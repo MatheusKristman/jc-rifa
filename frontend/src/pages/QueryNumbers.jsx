@@ -32,7 +32,7 @@ const QueryNumbers = () => {
         setToAnimateFadeOut: state.setToAnimateFadeOut,
     }));
 
-    useIsUserLogged("/query-numbers");
+    useIsUserLogged();
 
     const { isUserLogged, user } = useUserStore(
         (state) => ({
@@ -53,10 +53,10 @@ const QueryNumbers = () => {
             setToLoad();
             setToAnimateFadeIn();
 
-            api.get(`/query-numbers/${user.cpf}`)
+            api.get(`/account/get-raffle-numbers/${user.cpf}`)
                 .then((res) => {
                     setUserRafflesBuyed(res.data);
-                    api.get("/get-raffles")
+                    api.get("/get-all-raffles")
                         .then((res) => {
                             setRaffles(res.data.filter((raffle, index) => raffle._id === userRafflesBuyed[index]?.raffleId));
 
@@ -78,7 +78,7 @@ const QueryNumbers = () => {
                 })
                 .catch((error) => console.log(error));
 
-            api.get(`/all-winners`)
+            api.get(`/all-all-winners`)
                 .then((res) => setRafflesConcluded(res.data))
                 .catch((error) => console.error(error));
         } else {

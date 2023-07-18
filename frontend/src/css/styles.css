@@ -2139,8 +2139,10 @@ body {
 }
 .register__register-content__form__image-label__image-box {
   width: 100%;
+  min-width: 150px;
   max-width: 150px;
   height: 100%;
+  min-height: 150px;
   max-height: 150px;
   border-radius: 50%;
   overflow: hidden;
@@ -2148,7 +2150,9 @@ body {
 }
 .register__register-content__form__image-label__image-box__image {
   width: 100%;
+  min-width: 150px;
   height: 100%;
+  min-height: 150px;
   object-fit: cover;
   object-position: center;
   position: relative;

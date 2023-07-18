@@ -1,15 +1,17 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const RaffleSchema = new mongoose.Schema({
-    raffleImage: { data: Buffer, contentType: String },
-    title: { type: String },
-    subtitle: { type: String },
+    raffleImage: { type: String, required: true },
+    title: { type: String, required: true },
+    subtitle: { type: String, required: true },
     description: { type: String },
-    price: { type: String },
-    QuantNumbers: { type: Number },
-    NumbersAvailable: { type: Array },
+    price: { type: String, required: true },
+    QuantNumbers: { type: Number, required: true },
+    NumbersAvailable: { type: Array, required: true },
     BuyedNumbers: { type: Array, default: [] },
     isFinished: { type: Boolean, default: false },
 });
 
-module.exports = mongoose.model("Raffles", RaffleSchema);
+const Raffle = mongoose.model("Raffles", RaffleSchema);
+
+export default Raffle;

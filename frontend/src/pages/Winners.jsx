@@ -21,7 +21,7 @@ const Winners = () => {
         const fetchWinners = () => {
             setToLoad();
             setToAnimateFadeIn();
-            api.get("/all-winners")
+            api.get("/winner/get-all-winners")
                 .then((res) => {
                     setWinners(res.data);
 

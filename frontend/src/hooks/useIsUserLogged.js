@@ -3,7 +3,7 @@ import api from "../services/api";
 
 import useUserStore from "../stores/useUserStore";
 
-const useIsUserLogged = (path) => {
+const useIsUserLogged = () => {
     const { setUser, userLogged, userNotLogged } = useUserStore((state) => ({
         setUser: state.setUser,
         userLogged: state.userLogged,
@@ -14,7 +14,7 @@ const useIsUserLogged = (path) => {
         const token = localStorage.getItem("userToken") || null;
 
         if (token) {
-            api.get(path, {
+            api.get("/account/is-user-logged", {
                 headers: {
                     "authorization-token": token,
                 },

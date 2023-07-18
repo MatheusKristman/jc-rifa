@@ -37,7 +37,7 @@ const RaffleManagementContent = () => {
       setToAnimateFadeIn();
 
       api
-        .get("/raffle-management/get-raffles")
+        .get("/raffle/get-all-raffles")
         .then((res) => {
           setRaffles(res.data);
 

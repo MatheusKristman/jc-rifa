@@ -538,7 +538,7 @@ const LogInModal = () => {
         const submitData = () => {
             if (isSubmitting) {
                 const sendAdminDataToDB = () => {
-                    api.post('/loginAdmin', {
+                    api.post('/account/login-admin', {
                         tel: usernameValue,
                         password: passwordValue,
                     })
@@ -565,7 +565,7 @@ const LogInModal = () => {
                         return;
                     }
 
-                    api.post('/login', {
+                    api.post('/account/login', {
                         tel: usernameValue,
                     })
                         .then((res) => {

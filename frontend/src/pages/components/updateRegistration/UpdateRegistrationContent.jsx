@@ -287,7 +287,7 @@ const UpdateRegistrationContent = () => {
                     formData.append('city', city);
                     formData.append('reference', reference);
 
-                    api.put('/updateRegistration/updating', formData, {
+                    api.put('/account/update-account', formData, {
                         headers: {
                             'Content-Type': 'multipart/form-data',
                         },

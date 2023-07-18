@@ -8,10 +8,10 @@ import {
   BsCheck2Circle,
 } from "react-icons/bs";
 import { CiCircleMinus, CiCirclePlus } from "react-icons/ci";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { shallow } from "zustand/shallow";
-import buyingLoading from "../../../assets/buying-loading.svg";
 
+import buyingLoading from "../../../assets/buying-loading.svg";
 import PrizeDisplayed from "../PrizeDisplayed";
 import useRaffleStore from "../../../stores/useRaffleStore";
 import api from "../../../services/api";
@@ -83,6 +83,7 @@ const RaffleSelectedContent = () => {
       setToRaffleLoad: state.setToRaffleLoad,
       setToRaffleNotLoad: state.setToRaffleNotLoad,
     }));
+  const { selected } = useParams();
 
   useEffect(() => {
     setRaffleSelected({});
@@ -95,8 +96,9 @@ const RaffleSelectedContent = () => {
     const fetchRaffleSelected = () => {
       if (!raffleSelected.hasOwnProperty("_id")) {
         setToRaffleLoad();
+        console.log(selected)
         api
-          .get(window.location.pathname)
+          .get(`/raffle/get-raffle-selected/${selected}`)
           .then((res) => {
             setRaffleSelected(res.data);
             setToRaffleNotLoad();
@@ -195,7 +197,7 @@ const RaffleSelectedContent = () => {
         cpf: user.cpf,
       };
       api
-        .post(`/payment`, data, {
+        .post(`/payment/payment-management`, data, {
           headers: {
             "Content-Type": "application/json",
           },
@@ -216,7 +218,7 @@ const RaffleSelectedContent = () => {
           console.log(user);
 
           api
-            .post("/raffles/buy", {
+            .post("/account/raffle-buy", {
               id: user._id,
               raffleId: raffleSelected._id,
               paymentId: res.data.response.response.id,

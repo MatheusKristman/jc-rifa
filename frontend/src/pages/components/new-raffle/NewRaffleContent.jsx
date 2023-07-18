@@ -3,12 +3,13 @@ import { shallow } from "zustand/shallow";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
-import api from "../../../services/api";
 import { useNavigate } from "react-router-dom";
 
-import DefaultPrize from "../../../assets/default-prize.jpg";
 import useNewRaffleStore from "../../../stores/useNewRaffleStore";
+import useGeneralStore from "../../../stores/useGeneralStore";
+import DefaultPrize from "../../../assets/default-prize.jpg";
 import useRaffleStore from "../../../stores/useRaffleStore";
+import api from "../../../services/api";
 
 const NewRaffleContent = () => {
     const {
@@ -64,9 +65,12 @@ const NewRaffleContent = () => {
             resetValues: state.resetValues,
         }),
         shallow
-    );
-
+        );
     const { setRaffles } = useRaffleStore((state) => ({ setRaffles: state.setRaffles }), shallow);
+    const { setToLoad, setNotToLoad } = useGeneralStore((state) => ({
+        setToLoad: state.setToLoad,
+        setNotToLoad: state.setNotToLoad,
+    }));
 
     const handleFileChange = async (e) => {
         const file = await e.target.files[0];
@@ -105,6 +109,7 @@ const NewRaffleContent = () => {
         const submitData = () => {
             if (isSubmitting) {
                 const sendRaffleToDB = () => {
+                    setToLoad();
                     const formData = new FormData();
 
                     formData.append("raffleImage", raffleImage.file ? raffleImage.file : DefaultPrize);
@@ -114,12 +119,12 @@ const NewRaffleContent = () => {
                     formData.append("price", price);
                     formData.append("QuantNumbers", raffleNumbers);
 
-                    api.post("/create-new-raffle/creating", formData, {
+                    api.post("/raffle/create-raffle", formData, {
                         headers: {
                             "Content-Type": "multipart/form-data",
                         },
                     })
-                        .then((res) => {
+                        .then(() => {
                             api.get("/create-new-raffle/get-raffles")
                                 .then((res) => {
                                     setRaffles(res.data);
@@ -140,6 +145,10 @@ const NewRaffleContent = () => {
 
                             errorExist();
                             console.log(error);
+                        })
+                        .finally(() => {
+                            console.log("terminei o load");
+                            setNotToLoad();
                         });
                 };
 

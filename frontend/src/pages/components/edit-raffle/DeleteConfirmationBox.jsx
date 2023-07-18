@@ -41,7 +41,7 @@ const DeleteConfirmationBox = () => {
   const handleConfirm = () => {
     setToLoad();
     api
-      .delete(`/delete-raffle/${raffleSelected._id}`)
+      .delete(`/raffle/delete-raffle/${raffleSelected._id}`)
       .then((res) => {
         setRaffles(res.data);
         toast.success("Rifa deletada com sucesso", {

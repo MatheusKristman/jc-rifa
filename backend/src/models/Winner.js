@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const WinnerSchema = new mongoose.Schema({
     name: { type: String },
@@ -11,4 +11,6 @@ const WinnerSchema = new mongoose.Schema({
     raffleImage: { data: Buffer, contentType: String },
 });
 
-module.exports = mongoose.model("Winners", WinnerSchema);
+const Winner = mongoose.model("Winners", WinnerSchema);
+
+export default Winner;

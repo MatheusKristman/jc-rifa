@@ -10,7 +10,7 @@ import PaymentModal from "./components/raffle/PaymentModal";
 import useGeneralStore from "../stores/useGeneralStore";
 
 const RaffleSelected = () => {
-    useIsUserLogged("/raffles");
+    useIsUserLogged();
 
     const { isMessageBoxDisplaying, isErrorBoxDisplaying, messageText, isPaymentModalOpen } = useBuyNumbersStore(
         (state) => ({

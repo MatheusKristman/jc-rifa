@@ -22,30 +22,6 @@ const ContactContent = () => {
         message: '',
     });
     const [isSubmitting, setSubmit] = useState(false);
-    const {
-        isFaqOpen1,
-        isFaqOpen2,
-        isFaqOpen3,
-        openFaq1,
-        openFaq2,
-        openFaq3,
-        closeFaq1,
-        closeFaq2,
-        closeFaq3,
-    } = useHomeFaqStore(
-        (state) => ({
-            isFaqOpen1: state.isFaqOpen1,
-            isFaqOpen2: state.isFaqOpen2,
-            isFaqOpen3: state.isFaqOpen3,
-            openFaq1: state.openFaq1,
-            openFaq2: state.openFaq2,
-            openFaq3: state.openFaq3,
-            closeFaq1: state.closeFaq1,
-            closeFaq2: state.closeFaq2,
-            closeFaq3: state.closeFaq3,
-        }),
-        shallow
-    );
     const { raffles, setRaffles } = useRaffleStore((state) => ({
         raffles: state.raffles,
         setRaffles: state.setRaffles,
@@ -54,10 +30,6 @@ const ContactContent = () => {
         setToLoad: state.setToLoad,
         setNotToLoad: state.setNotToLoad,
     }));
-
-    const faq1Ref = useRef();
-    const faq2Ref = useRef();
-    const faq3Ref = useRef();
 
     const handleContactChange = (option, value) => {
         setContactData((prev) => ({ ...prev, [option]: value }));
@@ -125,7 +97,7 @@ const ContactContent = () => {
     useEffect(() => {
         const handleRaffleFetch = () => {
             setToLoad();
-            api.get('/get-raffles')
+            api.get('/raffle/get-all-raffles')
                 .then((res) => {
                     setRaffles(res.data);
                 })

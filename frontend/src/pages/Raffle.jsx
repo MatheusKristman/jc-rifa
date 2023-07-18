@@ -4,7 +4,7 @@ import { Header, Footer } from "./components";
 import RafflePageContent from "./components/raffle/RafflePageContent";
 
 const Raffle = () => {
-    useIsUserLogged("/raffles");
+    useIsUserLogged();
 
     return (
         <div className="raffle">

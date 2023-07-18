@@ -85,7 +85,7 @@ const RafflePageContent = () => {
         const fetchRaffles = () => {
             setToLoad();
             setToAnimateFadeIn();
-            api.get("/raffles/get-all")
+            api.get("/raffle/get-all-raffles")
                 .then((res) => {
                     setRaffles(res.data);
 

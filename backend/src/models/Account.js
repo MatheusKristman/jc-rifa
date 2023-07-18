@@ -1,7 +1,7 @@
-const mongoose = require('mongoose');
+import mongoose from "mongoose";
 
 const AccountSchema = new mongoose.Schema({
-  profileImage: { data: Buffer, contentType: String },
+  profileImage: { type: String, default: null },
   name: { type: String, required: true },
   cpf: { type: String, required: true },
   email: { type: String, required: true },
@@ -30,4 +30,6 @@ const AccountSchema = new mongoose.Schema({
   admin: { type: Boolean, default: false },
 });
 
-module.exports = mongoose.model('Accounts', AccountSchema);
+const Account = mongoose.model("Accounts", AccountSchema);
+
+export default Account;

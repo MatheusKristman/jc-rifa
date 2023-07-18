@@ -47,7 +47,7 @@ const Home = () => {
 
     const [searchParams] = useSearchParams();
 
-    useIsUserLogged('/');
+    useIsUserLogged();
 
     useEffect(() => {
         setRaffles([]);
@@ -102,7 +102,7 @@ const Home = () => {
                                     body.status === 'charged_back'
                                 ) {
                                     api.delete(
-                                        `/payment-cancel?id=${body.id}&paymentId=${body.paymentId}&raffleId=${raffleToBeDeleted[0].raffleId}`
+                                        `/account/payment-cancel?id=${body.id}&paymentId=${body.paymentId}&raffleId=${raffleToBeDeleted[0].raffleId}`
                                     )
                                         .then((res) => {
                                             console.log(res.data);
@@ -139,7 +139,7 @@ const Home = () => {
                                             };
 
                                             api.post(
-                                                '/delete-canceled-numbers',
+                                                '/account/delete-canceled-numbers',
                                                 body
                                             )
                                                 .then(() => {
@@ -155,7 +155,7 @@ const Home = () => {
                                         })
                                         .catch((error) => console.error(error));
                                 } else {
-                                    api.post('/get-payment-data', body)
+                                    api.post('/account/check-payment-status', body)
                                         .then((res) => {
                                             console.log(res.data);
                                             setToAnimateFadeOut();
@@ -186,7 +186,7 @@ const Home = () => {
         const fetchRaffles = () => {
             if (raffles.length === 0) {
                 setToRaffleLoad();
-                api.get('/get-raffles')
+                api.get('/raffle/get-all-raffles')
                     .then((res) => {
                         setRaffles(
                             res.data.filter(
@@ -208,7 +208,7 @@ const Home = () => {
         const fetchWinners = () => {
             setToAnimateFadeIn();
             setToLoad();
-            api.get('/all-winners')
+            api.get('/winner/get-all-winners')
                 .then((res) => {
                     setWinners(res.data);
 
