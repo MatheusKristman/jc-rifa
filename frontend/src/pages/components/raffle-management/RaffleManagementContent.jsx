@@ -40,6 +40,7 @@ const RaffleManagementContent = () => {
         .get("/raffle/get-all-raffles")
         .then((res) => {
           setRaffles(res.data);
+          console.log(res.data);
 
           setToAnimateFadeOut();
 
@@ -64,6 +65,29 @@ const RaffleManagementContent = () => {
   const convertProgress = (current, total) => {
     return (100 * current) / total;
   };
+
+  useEffect(() => {
+    // if (raffles) {
+    //   if (
+    //     JSON.stringify(import.meta.env.MODE) ===
+    //     JSON.stringify("development")
+    //   ) {
+    //     setActualProfilePhoto(
+    //       `${import.meta.env.VITE_API_KEY_DEV}${
+    //         import.meta.env.VITE_API_PORT
+    //       }/user-uploads/${user.profileImage}`,
+    //     );
+    //   } else {
+    //     setActualProfilePhoto(
+    //       `${import.meta.env.VITE_API_KEY}/user-uploads/${
+    //         user.profileImage
+    //       }`,
+    //     );
+    //   }
+    // } else {
+    //   setActualProfilePhoto(null);
+    // }
+  }, []);
 
   return (
     <div className="raffle-management__content">

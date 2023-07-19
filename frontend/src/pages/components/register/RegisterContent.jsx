@@ -16,6 +16,25 @@ import useGeneralStore from "../../../stores/useGeneralStore";
 import Loading from "../Loading";
 import useHeaderStore from "../../../stores/useHeaderStore";
 
+const schema = Yup.object().shape({
+  profileImage: Yup.mixed(),
+  name: Yup.string()
+    .min(6, "Insira acima de 6 caracteres")
+    .max(50, "Insira abaixo de 50 caracteres")
+    .required("Nome é obrigatório"),
+  cpf: Yup.string()
+    .min(6, "Insira acima de 6 caracteres")
+    .max(50, "Insira abaixo de 50 caracteres")
+    .required("CPF é obrigatório"),
+  email: Yup.string().email("Email inválido").required("Email é obrigatório"),
+  tel: Yup.string()
+    .min(14, "Insira o telefone corretamente")
+    .required("Telefone é obrigatório"),
+  confirmTel: Yup.string()
+    .oneOf([Yup.ref("tel"), null], "Os telefones devem ser iguais")
+    .required("Confirme seu telefone"),
+});
+
 const RegisterContent = () => {
   const {
     profileImage,
@@ -149,39 +168,12 @@ const RegisterContent = () => {
     return cpf;
   };
 
-  const schema = Yup.object().shape({
-    profileImage: Yup.mixed(),
-    name: Yup.string()
-      .min(6, "Insira acima de 6 caracteres")
-      .max(50, "Insira abaixo de 50 caracteres")
-      .required("Nome é obrigatório"),
-    cpf: Yup.string()
-      .min(6, "Insira acima de 6 caracteres")
-      .max(50, "Insira abaixo de 50 caracteres")
-      .required("CPF é obrigatório"),
-    email: Yup.string().email("Email inválido").required("Email é obrigatório"),
-    tel: Yup.string()
-      .min(14, "Insira o telefone corretamente")
-      .required("Telefone é obrigatório"),
-    confirmTel: Yup.string()
-      .oneOf([Yup.ref("tel"), null], "Os telefones devem ser iguais")
-      .required("Confirme seu telefone"),
-  });
-
   const { register, handleSubmit, formState } = useForm({
     resolver: yupResolver(schema),
   });
   const { errors } = formState;
 
   const onSubmit = (data) => {
-    console.log(data);
-    if (!profileImage.file) {
-      setProfileImage({
-        file: null,
-        url: noUserPhoto,
-      });
-    }
-
     submitting();
   };
 
@@ -195,6 +187,8 @@ const RegisterContent = () => {
         const sendToDB = () => {
           setToLoad();
           setToAnimateFadeIn();
+
+          console.log(profileImage);
 
           const formData = new FormData();
           formData.append("profileImage", profileImage);
@@ -260,11 +254,6 @@ const RegisterContent = () => {
       }, 4000);
     }
   }, [isRegisterCompleted, errorSubmitting]);
-
-  useEffect(() => {
-    console.log(profileImage);
-    console.log(actualProfilePhoto);
-  }, [profileImage, actualProfilePhoto]);
 
   return (
     <div className="register__register-content">
