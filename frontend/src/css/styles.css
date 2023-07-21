@@ -2712,6 +2712,11 @@ body {
 .new-raffle__content__container__form__image-label__input {
   display: none;
 }
+.new-raffle__content__container__form__image-label span {
+  margin-top: 10px;
+  color: rgb(209, 52, 52);
+  font-size: 0.9rem;
+}
 .new-raffle__content__container__form__inputs-box {
   width: 100%;
   background-color: #15152a;
