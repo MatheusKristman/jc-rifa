@@ -10,25 +10,19 @@ import DeleteConfirmationBox from "./components/edit-raffle/DeleteConfirmationBo
 import Loading from "./components/Loading";
 
 const EditRaffle = () => {
-  const { isRaffleCreated, submitError, raffleCreatedMessage } =
-    useNewRaffleStore((state) => ({
-      isRaffleCreated: state.isRaffleCreated,
-      submitError: state.submitError,
-      raffleCreatedMessage: state.raffleCreatedMessage,
-    }));
-  const { isDeleteConfirmationOpen, raffleSelected } = useRaffleStore(
-    (state) => ({
-      isDeleteConfirmationOpen: state.isDeleteConfirmationOpen,
-      raffleSelected: state.raffleSelected,
-    }),
-  );
-  const { isLoading } = useGeneralStore((state) => ({
-    isLoading: state.isLoading,
+  const { isRaffleCreated, submitError, raffleCreatedMessage } = useNewRaffleStore((state) => ({
+    isRaffleCreated: state.isRaffleCreated,
+    submitError: state.submitError,
+    raffleCreatedMessage: state.raffleCreatedMessage,
   }));
-
-  useEffect(() => {
-    console.log(raffleSelected);
-  }, [raffleSelected]);
+  const { isDeleteConfirmationOpen, raffleSelected } = useRaffleStore((state) => ({
+    isDeleteConfirmationOpen: state.isDeleteConfirmationOpen,
+    raffleSelected: state.raffleSelected,
+  }));
+  const { isLoading, loadingMessage } = useGeneralStore((state) => ({
+    isLoading: state.isLoading,
+    loadingMessage: state.loadingMessage,
+  }));
 
   return (
     <div className="edit-raffle">
@@ -36,21 +30,13 @@ const EditRaffle = () => {
       <EditRaffleContent />
       <Footer />
       {isRaffleCreated && (
-        <AlertBox
-          success={isRaffleCreated}
-          error={submitError}
-          message={raffleCreatedMessage}
-        />
+        <AlertBox success={isRaffleCreated} error={submitError} message={raffleCreatedMessage} />
       )}
       {submitError && (
-        <AlertBox
-          success={isRaffleCreated}
-          error={submitError}
-          message={raffleCreatedMessage}
-        />
+        <AlertBox success={isRaffleCreated} error={submitError} message={raffleCreatedMessage} />
       )}
       {isDeleteConfirmationOpen && <DeleteConfirmationBox />}
-      {isLoading && <Loading>Excluindo a rifa, aguarde um momento.</Loading>}
+      {isLoading && <Loading>{loadingMessage}</Loading>}
     </div>
   );
 };
