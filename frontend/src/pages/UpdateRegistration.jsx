@@ -2,6 +2,7 @@ import React from "react";
 import useRegisterStore from "../stores/useRegisterStore";
 import { Header, Footer } from "./components";
 import UpdateRegistrationContent from "./components/updateRegistration/UpdateRegistrationContent";
+import UpdatePasswordContent from "./components/updateRegistration/UpdatePasswordContent";
 import AlertBox from "./components/AlertBox";
 import { ToastContainer } from "react-toastify";
 
@@ -17,6 +18,7 @@ const UpdateRegistration = () => {
     <div className="register">
       <Header />
       <UpdateRegistrationContent />
+      <UpdatePasswordContent />
       <Footer />
       {isRegisterCompleted && (
         <AlertBox

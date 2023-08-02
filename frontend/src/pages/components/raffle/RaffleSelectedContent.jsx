@@ -19,11 +19,19 @@ import useBuyNumbersStore from "../../../stores/useBuyNumbersStore";
 import useUserStore from "../../../stores/useUserStore";
 import useHeaderStore from "../../../stores/useHeaderStore";
 import useGeneralStore from "../../../stores/useGeneralStore";
+import { toast } from "react-toastify";
 
 const RaffleSelectedContent = () => {
-  const { raffleSelected, setRaffleSelected } = useRaffleStore((state) => ({
+  const {
+    raffleSelected,
+    setRaffleSelected,
+    raffleSelectedImageUrl,
+    setRaffleSelectedImageUrl,
+  } = useRaffleStore((state) => ({
     raffleSelected: state.raffleSelected,
     setRaffleSelected: state.setRaffleSelected,
+    raffleSelectedImageUrl: state.raffleSelectedImageUrl,
+    setRaffleSelectedImageUrl: state.setRaffleSelectedImageUrl,
   }));
 
   const {
@@ -64,7 +72,7 @@ const RaffleSelectedContent = () => {
       setQrCodePayment: state.setQrCodePayment,
       setPaymentLink: state.setPaymentLink,
     }),
-    shallow
+    shallow,
   );
 
   const { openLogin } = useHeaderStore((state) => ({
@@ -96,11 +104,32 @@ const RaffleSelectedContent = () => {
     const fetchRaffleSelected = () => {
       if (!raffleSelected.hasOwnProperty("_id")) {
         setToRaffleLoad();
-        console.log(selected)
+        console.log(selected);
         api
           .get(`/raffle/get-raffle-selected/${selected}`)
           .then((res) => {
             setRaffleSelected(res.data);
+
+            let url = "";
+            if (res.data.raffleImage) {
+              if (
+                JSON.stringify(import.meta.env.MODE) ===
+                JSON.stringify("development")
+              ) {
+                url = `${import.meta.env.VITE_API_KEY_DEV}${
+                  import.meta.env.VITE_API_PORT
+                }/raffle-uploads/${res.data.raffleImage}`;
+              } else {
+                url = `${import.meta.env.VITE_API_KEY}/raffle-uploads/${
+                  res.data.raffleImage
+                }`;
+              }
+            } else {
+              url = null;
+            }
+
+            setRaffleSelectedImageUrl(url);
+
             setToRaffleNotLoad();
           })
           .catch((error) => console.log(error));
@@ -178,15 +207,6 @@ const RaffleSelectedContent = () => {
         numbersBuyed.push(chosenNumber);
       }
 
-      console.log(
-        "🚀 ~ file: RaffleSelectedContent.jsx:147 ~ handleBuy ~ numbersBuyed:",
-        numbersBuyed
-      );
-      console.log(
-        "🚀 ~ file: RaffleSelectedContent.jsx:146 ~ handleBuy ~ numbersAvailableToBuy:",
-        numbersAvailableToBuy
-      );
-
       const data = {
         id: user._id,
         fullPrice: priceNumber * numberQuant,
@@ -206,16 +226,18 @@ const RaffleSelectedContent = () => {
           console.log(res.data.response.response);
           setQrCodePayment(
             res.data.response.response.point_of_interaction.transaction_data
-              .qr_code
+              .qr_code,
           );
 
           setPaymentLink(
             res.data.response.response.point_of_interaction.transaction_data
-              .ticket_url
+              .ticket_url,
           );
 
           console.log(user._id);
           console.log(user);
+
+          // TODO arrumar preço que esta retornando
 
           api
             .post("/account/raffle-buy", {
@@ -237,11 +259,28 @@ const RaffleSelectedContent = () => {
               console.log(error);
             });
         })
-        .catch((error) => console.error(error));
+        .catch((error) => {
+          console.error(error);
+          setToNotBuy();
+
+          toast.error(
+            "Ocorreu um erro durante a compra, tente novamente mais tarde",
+            {
+              position: "top-right",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "dark",
+            },
+          );
+        });
     } else if (numberQuant > numbersAvailableToBuy.length) {
       setToMessageBoxDisplay();
       setMessageText(
-        "Selecione a quantidade até " + numbersAvailableToBuy.length
+        "Selecione a quantidade até " + numbersAvailableToBuy.length,
       );
     } else {
       openLogin();
@@ -253,13 +292,13 @@ const RaffleSelectedContent = () => {
       <div className="raffle-selected__raffle-selected-content__container">
         <div className="raffle-selected__raffle-selected-content__container__raffle-displayed">
           <PrizeDisplayed
-            image={raffleSelected.raffleImage}
+            image={raffleSelectedImageUrl || null}
             title={raffleSelected.title}
             subtitle={raffleSelected.subtitle}
             progress={convertProgress(
               raffleSelected?.QuantNumbers -
                 raffleSelected?.NumbersAvailable?.length,
-              raffleSelected?.QuantNumbers
+              raffleSelected?.QuantNumbers,
             )}
             winner={raffleSelected?.isFinished}
           />

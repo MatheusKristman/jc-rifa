@@ -12,88 +12,130 @@ import useIsUserLogged from "../hooks/useIsUserLogged";
 import useGeneralStore from "../stores/useGeneralStore";
 
 const QueryNumbers = () => {
-    const { isQueryNumbersModalOpen, openModal, setUserRafflesBuyed, userRafflesBuyed, setRafflesConcluded } =
-        useQueryNumbersStore(
-            (state) => ({
-                isQueryNumbersModalOpen: state.isQueryNumbersModalOpen,
-                openModal: state.openModal,
-                setCpf: state.setCpf,
-                setUserRafflesBuyed: state.setUserRafflesBuyed,
-                userRafflesBuyed: state.userRafflesBuyed,
-                setRafflesConcluded: state.setRafflesConcluded,
-            }),
-            shallow
-        );
+  const {
+    isQueryNumbersModalOpen,
+    openModal,
+    setUserRafflesBuyed,
+    userRafflesBuyed,
+    setRafflesConcluded,
+    setRafflesImagesUrls,
+  } = useQueryNumbersStore(
+    (state) => ({
+      isQueryNumbersModalOpen: state.isQueryNumbersModalOpen,
+      openModal: state.openModal,
+      setCpf: state.setCpf,
+      setUserRafflesBuyed: state.setUserRafflesBuyed,
+      userRafflesBuyed: state.userRafflesBuyed,
+      setRafflesConcluded: state.setRafflesConcluded,
+      setRafflesImagesUrls: state.setRafflesImagesUrls,
+    }),
+    shallow,
+  );
 
-    const { setToLoad, setNotToLoad, setToAnimateFadeIn, setToAnimateFadeOut } = useGeneralStore((state) => ({
-        setToLoad: state.setToLoad,
-        setNotToLoad: state.setNotToLoad,
-        setToAnimateFadeIn: state.setToAnimateFadeIn,
-        setToAnimateFadeOut: state.setToAnimateFadeOut,
+  const { setToLoad, setNotToLoad, setToAnimateFadeIn, setToAnimateFadeOut } =
+    useGeneralStore((state) => ({
+      setToLoad: state.setToLoad,
+      setNotToLoad: state.setNotToLoad,
+      setToAnimateFadeIn: state.setToAnimateFadeIn,
+      setToAnimateFadeOut: state.setToAnimateFadeOut,
     }));
 
-    useIsUserLogged();
+  useIsUserLogged();
 
-    const { isUserLogged, user } = useUserStore(
-        (state) => ({
-            isUserLogged: state.isUserLogged,
-            user: state.user,
-        }),
-        shallow
-    );
+  const { isUserLogged, user } = useUserStore(
+    (state) => ({
+      isUserLogged: state.isUserLogged,
+      user: state.user,
+    }),
+    shallow,
+  );
 
-    const { setRaffles } = useRaffleStore((state) => ({
-        setRaffles: state.setRaffles,
-    }));
+  const { setRaffles } = useRaffleStore((state) => ({
+    setRaffles: state.setRaffles,
+  }));
 
-    useEffect(() => {
-        setRaffles([]);
-        setUserRafflesBuyed([]);
-        if (isUserLogged) {
-            setToLoad();
-            setToAnimateFadeIn();
+  useEffect(() => {
+    setRaffles([]);
+    setUserRafflesBuyed([]);
+    if (isUserLogged) {
+      setToLoad();
+      setToAnimateFadeIn();
 
-            api.get(`/account/get-raffle-numbers/${user.cpf}`)
-                .then((res) => {
-                    setUserRafflesBuyed(res.data);
-                    api.get("/get-all-raffles")
-                        .then((res) => {
-                            setRaffles(res.data.filter((raffle, index) => raffle._id === userRafflesBuyed[index]?.raffleId));
+      api
+        .get(`/account/get-raffle-numbers/${user.cpf}`)
+        .then((res) => {
+          setUserRafflesBuyed(res.data);
+          api
+            .get("raffle/get-all-raffles")
+            .then((res) => {
+              setRaffles(
+                res.data.filter(
+                  (raffle, index) =>
+                    raffle._id === userRafflesBuyed[index]?.raffleId,
+                ),
+              );
 
-                            setToAnimateFadeOut();
+              const urls = [];
+              for (let i = 0; i < res.data.length; i++) {
+                if (res.data[i].raffleImage) {
+                  if (
+                    JSON.stringify(import.meta.env.MODE) ===
+                    JSON.stringify("development")
+                  ) {
+                    urls.push(
+                      `${import.meta.env.VITE_API_KEY_DEV}${
+                        import.meta.env.VITE_API_PORT
+                      }/raffle-uploads/${res.data[i].raffleImage}`,
+                    );
+                  } else {
+                    urls.push(
+                      `${import.meta.env.VITE_API_KEY}/raffle-uploads/${
+                        res.data[i].raffleImage
+                      }`,
+                    );
+                  }
+                } else {
+                  urls.push(null);
+                }
+              }
 
-                            setTimeout(() => {
-                                setNotToLoad();
-                            }, 400);
-                        })
-                        .catch((error) => {
-                            console.error(error);
+              setRafflesImagesUrls(urls);
 
-                            setToAnimateFadeOut();
+              setToAnimateFadeOut();
 
-                            setTimeout(() => {
-                                setNotToLoad();
-                            }, 400);
-                        });
-                })
-                .catch((error) => console.log(error));
+              setTimeout(() => {
+                setNotToLoad();
+              }, 400);
+            })
+            .catch((error) => {
+              console.error(error);
 
-            api.get(`/all-all-winners`)
-                .then((res) => setRafflesConcluded(res.data))
-                .catch((error) => console.error(error));
-        } else {
-            openModal();
-        }
-    }, [setRaffles, setUserRafflesBuyed]);
+              setToAnimateFadeOut();
 
-    return (
-        <div className="query-numbers">
-            <Header />
-            <QueryNumbersContent />
-            {isQueryNumbersModalOpen && <QueryNumbersModal />}
-            <Footer />
-        </div>
-    );
+              setTimeout(() => {
+                setNotToLoad();
+              }, 400);
+            });
+        })
+        .catch((error) => console.log(error));
+
+      api
+        .get(`winner/get-all-winners`)
+        .then((res) => setRafflesConcluded(res.data))
+        .catch((error) => console.error(error));
+    } else {
+      openModal();
+    }
+  }, [setRaffles, setUserRafflesBuyed]);
+
+  return (
+    <div className="query-numbers">
+      <Header />
+      <QueryNumbersContent />
+      {isQueryNumbersModalOpen && <QueryNumbersModal />}
+      <Footer />
+    </div>
+  );
 };
 
 export default QueryNumbers;

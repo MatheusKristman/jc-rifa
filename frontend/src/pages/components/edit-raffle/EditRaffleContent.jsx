@@ -17,7 +17,6 @@ import useGeneralStore from "../../../stores/useGeneralStore";
 import NumberBuyedLoading from "./NumberBuyedLoading";
 import WinnerLoading from "./WinnerLoading";
 import Loading from "../Loading";
-// TODO arrumar a forma que os dados são recebidos para esse novo formato e verificar se possui algum bug
 
 const schema = Yup.object().shape({
   editTitle: Yup.string().required("Título é obrigatório"),
@@ -80,7 +79,8 @@ const EditRaffleContent = () => {
       isFetchingWinner: state.isFetchingWinner,
       setToFetchWinner: state.setToFetchWinner,
       setNotToFetchWinner: state.setNotToFetchWinner,
-      activateDeleteConfirmationAnimation: state.activateDeleteConfirmationAnimation,
+      activateDeleteConfirmationAnimation:
+        state.activateDeleteConfirmationAnimation,
       openDeleteConfirmation: state.openDeleteConfirmation,
       resetOnEditRaffle: state.resetOnEditRaffle,
       isDeleteButtonEnabled: state.isDeleteButtonEnabled,
@@ -240,10 +240,16 @@ const EditRaffleContent = () => {
         .catch((error) => {
           console.log(error);
           setNotToChooseWinner();
-          if (error?.response.data === "Número não foi comprado, insira outro número") {
+          if (
+            error?.response.data ===
+            "Número não foi comprado, insira outro número"
+          ) {
             setFinishNumberError(error.response.data);
             setWinner({});
-          } else if (error?.response.data === "Usuário não encontrado, insira um novo número") {
+          } else if (
+            error?.response.data ===
+            "Usuário não encontrado, insira um novo número"
+          ) {
             setFinishNumberError(error.response.data);
             setWinner({});
           } else {
@@ -307,7 +313,10 @@ const EditRaffleContent = () => {
     };
 
     function fetchWinner() {
-      if (!winner.hasOwnProperty("_id") && raffleSelected.hasOwnProperty("_id")) {
+      if (
+        !winner.hasOwnProperty("_id") &&
+        raffleSelected.hasOwnProperty("_id")
+      ) {
         setToFetchWinner();
         api
           .post("/edit-raffle/winner", { title: raffleSelected.title })
@@ -331,7 +340,10 @@ const EditRaffleContent = () => {
         .then((res) => {
           setRaffleSelected(res.data);
           if (res.data.raffleImage) {
-            if (JSON.stringify(import.meta.env.MODE) === JSON.stringify("development")) {
+            if (
+              JSON.stringify(import.meta.env.MODE) ===
+              JSON.stringify("development")
+            ) {
               setActualRaffleImageUrl(
                 `${import.meta.env.VITE_API_KEY_DEV}${
                   import.meta.env.VITE_API_PORT
@@ -339,7 +351,9 @@ const EditRaffleContent = () => {
               );
             } else {
               setActualRaffleImageUrl(
-                `${import.meta.env.VITE_API_KEY}/raffle-uploads/${res.data.raffleImage}`,
+                `${import.meta.env.VITE_API_KEY}/raffle-uploads/${
+                  res.data.raffleImage
+                }`,
               );
             }
           } else {
@@ -388,7 +402,8 @@ const EditRaffleContent = () => {
 
   useEffect(() => {
     if (raffleSelected.hasOwnProperty("NumbersAvailable")) {
-      const actualProgress = raffleSelected.QuantNumbers - raffleSelected.NumbersAvailable.length;
+      const actualProgress =
+        raffleSelected.QuantNumbers - raffleSelected.NumbersAvailable.length;
       setProgress(actualProgress, raffleSelected.QuantNumbers);
     }
   }, [raffleSelected]);
@@ -429,7 +444,9 @@ const EditRaffleContent = () => {
             })
             .catch((error) => {
               if (error) {
-                setRaffleCreatedMessage("Ocorreu um erro na atualização da rifa");
+                setRaffleCreatedMessage(
+                  "Ocorreu um erro na atualização da rifa",
+                );
               }
 
               errorExist();
@@ -482,7 +499,8 @@ const EditRaffleContent = () => {
         <div className="edit-raffle__content__container__btns">
           <button
             onClick={handleBackButton}
-            className="edit-raffle__content__container__btns__back-btn">
+            className="edit-raffle__content__container__btns__back-btn"
+          >
             Voltar
           </button>
 
@@ -490,7 +508,8 @@ const EditRaffleContent = () => {
             type="button"
             onClick={() => handleDeleteButton(raffleSelected._id)}
             disabled={!isDeleteButtonEnabled}
-            className="edit-raffle__content__container__btns__delete-btn">
+            className="edit-raffle__content__container__btns__delete-btn"
+          >
             Apagar
           </button>
         </div>
@@ -501,7 +520,8 @@ const EditRaffleContent = () => {
           <div className="edit-raffle__content__container__statistics-wrapper__progress-bar">
             <div
               className="edit-raffle__content__container__statistics-wrapper__progress-bar__bar"
-              style={{ width: `${progress}%` }}>
+              style={{ width: `${progress}%` }}
+            >
               <p>{`${progress.toFixed(0)}%`}</p>
             </div>
           </div>
@@ -516,12 +536,14 @@ const EditRaffleContent = () => {
                   image={user.profileImage}
                   name={user.name}
                   numbers={
-                    user.rafflesBuyed.filter((raffle) => raffle.raffleId === raffleSelected._id)[0]
-                      ?.numbersBuyed
+                    user.rafflesBuyed.filter(
+                      (raffle) => raffle.raffleId === raffleSelected._id,
+                    )[0]?.numbersBuyed
                   }
                   raffleImage={
-                    user.rafflesBuyed.filter((raffle) => raffle.raffleId === raffleSelected._id)[0]
-                      ?.raffleImage
+                    user.rafflesBuyed.filter(
+                      (raffle) => raffle.raffleId === raffleSelected._id,
+                    )[0]?.raffleImage
                   }
                 />
               ))
@@ -532,17 +554,23 @@ const EditRaffleContent = () => {
 
           <textarea
             className="edit-raffle__content__container__statistics-wrapper__remaining-numbers"
-            value={raffleSelected.NumbersAvailable?.map((number) => " " + number)}
+            value={raffleSelected.NumbersAvailable?.map(
+              (number) => " " + number,
+            )}
             readOnly
           />
         </div>
 
         <h1 className="edit-raffle__content__container__title">Editar Rifa</h1>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="edit-raffle__content__container__form">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="edit-raffle__content__container__form"
+        >
           <label
             htmlFor="editRaffleImage"
-            className="edit-raffle__content__container__form__image-label">
+            className="edit-raffle__content__container__form__image-label"
+          >
             <div className="edit-raffle__content__container__form__image-label__image-box">
               <img
                 src={actualRaffleImageUrl ? actualRaffleImageUrl : DefaultPrize}
@@ -563,7 +591,8 @@ const EditRaffleContent = () => {
           <div className="edit-raffle__content__container__form__inputs-box">
             <label
               htmlFor="editTitle"
-              className="edit-raffle__content__container__form__inputs-box__label">
+              className="edit-raffle__content__container__form__inputs-box__label"
+            >
               Título
               <input
                 {...register("editTitle")}
@@ -572,7 +601,11 @@ const EditRaffleContent = () => {
                 id="editTitle"
                 value={title}
                 onChange={setTitle}
-                style={errors.editTitle ? { border: "2px solid rgb(209, 52, 52)" } : {}}
+                style={
+                  errors.editTitle
+                    ? { border: "2px solid rgb(209, 52, 52)" }
+                    : {}
+                }
                 className="edit-raffle__content__container__form__inputs-box__label__input"
               />
               {errors.editTitle && <span>{errors.editTitle?.message}</span>}
@@ -580,7 +613,8 @@ const EditRaffleContent = () => {
 
             <label
               htmlFor="editSubtitle"
-              className="edit-raffle__content__container__form__inputs-box__label">
+              className="edit-raffle__content__container__form__inputs-box__label"
+            >
               Subtítulo
               <input
                 {...register("editSubtitle")}
@@ -589,15 +623,22 @@ const EditRaffleContent = () => {
                 id="editSubtitle"
                 value={subtitle}
                 onChange={setSubtitle}
-                style={errors.editSubtitle ? { border: "2px solid rgb(209, 52, 52)" } : {}}
+                style={
+                  errors.editSubtitle
+                    ? { border: "2px solid rgb(209, 52, 52)" }
+                    : {}
+                }
                 className="edit-raffle__content__container__form__inputs-box__label__input"
               />
-              {errors.editSubtitle && <span>{errors.editSubtitle?.message}</span>}
+              {errors.editSubtitle && (
+                <span>{errors.editSubtitle?.message}</span>
+              )}
             </label>
 
             <label
               htmlFor="editDescription"
-              className="edit-raffle__content__container__form__inputs-box__label">
+              className="edit-raffle__content__container__form__inputs-box__label"
+            >
               Descrição
               <textarea
                 {...register("editDescription")}
@@ -605,15 +646,22 @@ const EditRaffleContent = () => {
                 name="editDescription"
                 value={description}
                 onChange={setDescription}
-                style={errors.editDescription ? { border: "2px solid rgb(209, 52, 52)" } : {}}
+                style={
+                  errors.editDescription
+                    ? { border: "2px solid rgb(209, 52, 52)" }
+                    : {}
+                }
                 className="edit-raffle__content__container__form__inputs-box__label__textarea"
               />
-              {errors.editDescription && <span>{errors.editDescription?.message}</span>}
+              {errors.editDescription && (
+                <span>{errors.editDescription?.message}</span>
+              )}
             </label>
 
             <label
               htmlFor="editPrice"
-              className="edit-raffle__content__container__form__inputs-box__label">
+              className="edit-raffle__content__container__form__inputs-box__label"
+            >
               Preço por números
               <input
                 {...register("editPrice")}
@@ -622,19 +670,28 @@ const EditRaffleContent = () => {
                 id="editPrice"
                 value={price}
                 onChange={(e) => coinMask(e)}
-                style={errors.editPrice ? { border: "2px solid rgb(209, 52, 52)" } : {}}
+                style={
+                  errors.editPrice
+                    ? { border: "2px solid rgb(209, 52, 52)" }
+                    : {}
+                }
                 className="edit-raffle__content__container__form__inputs-box__label__input"
               />
               {errors.editPrice && <span>{errors.editPrice?.message}</span>}
             </label>
           </div>
 
-          <button type="submit" className="edit-raffle__content__container__form__submit-btn">
+          <button
+            type="submit"
+            className="edit-raffle__content__container__form__submit-btn"
+          >
             Salvar
           </button>
         </form>
 
-        <h1 className="edit-raffle__content__container__title">Finalizar rifa</h1>
+        <h1 className="edit-raffle__content__container__title">
+          Finalizar rifa
+        </h1>
 
         <div className="edit-raffle__content__container__finish-raffle-container">
           {isFetchingWinner ? <WinnerLoading /> : null}
@@ -644,30 +701,39 @@ const EditRaffleContent = () => {
               value={finishNumber}
               onChange={setFinishNumber}
               placeholder="Insira número sorteado"
-              style={finishNumberError ? { border: "2px solid rgb(209, 52, 52)" } : {}}
+              style={
+                finishNumberError
+                  ? { border: "2px solid rgb(209, 52, 52)" }
+                  : {}
+              }
               className="edit-raffle__content__container__finish-raffle-container__input"
             />
           )}
-          {finishNumberError && <span className="finish-number-error">{finishNumberError}</span>}
+          {finishNumberError && (
+            <span className="finish-number-error">{finishNumberError}</span>
+          )}
 
           {isChoosingWinner ? (
             <button
               type="button"
-              className="edit-raffle__content__container__finish-raffle-container__finishing-btn">
+              className="edit-raffle__content__container__finish-raffle-container__finishing-btn"
+            >
               Finalizando
             </button>
           ) : winner.hasOwnProperty("_id") ? (
             <button
               type="button"
               onClick={resetWinner}
-              className="edit-raffle__content__container__finish-raffle-container__reset-btn">
+              className="edit-raffle__content__container__finish-raffle-container__reset-btn"
+            >
               Sortear Novamente
             </button>
           ) : (
             <button
               type="button"
               onClick={finishRaffle}
-              className="edit-raffle__content__container__finish-raffle-container__finish-btn">
+              className="edit-raffle__content__container__finish-raffle-container__finish-btn"
+            >
               Finalizar
             </button>
           )}
@@ -676,13 +742,16 @@ const EditRaffleContent = () => {
             {winner.hasOwnProperty("_id") ? (
               <div
                 key={winner._id}
-                className="edit-raffle__content__container__finish-raffle-container__winner-display-box__winner-box">
+                className="edit-raffle__content__container__finish-raffle-container__winner-display-box__winner-box"
+              >
                 <div className="edit-raffle__content__container__finish-raffle-container__winner-display-box__winner-box__image-box">
                   <img
                     className="edit-raffle__content__container__finish-raffle-container__winner-display-box__winner-box__image-box__image"
                     src={
                       winner.profileImage.data
-                        ? `data:${winner.profileImage.contentType};base64,${_arrayBufferToBase64(
+                        ? `data:${
+                            winner.profileImage.contentType
+                          };base64,${_arrayBufferToBase64(
                             winner.profileImage.data.data,
                           )}`
                         : NoUserPhoto

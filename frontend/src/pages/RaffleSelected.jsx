@@ -8,44 +8,61 @@ import useIsUserLogged from "../hooks/useIsUserLogged";
 import AlertBox from "./components/AlertBox";
 import PaymentModal from "./components/raffle/PaymentModal";
 import useGeneralStore from "../stores/useGeneralStore";
+import { ToastContainer } from "react-toastify";
 
 const RaffleSelected = () => {
-    useIsUserLogged();
+  useIsUserLogged();
 
-    const { isMessageBoxDisplaying, isErrorBoxDisplaying, messageText, isPaymentModalOpen } = useBuyNumbersStore(
-        (state) => ({
-            isMessageBoxDisplaying: state.isMessageBoxDisplaying,
-            isErrorBoxDisplaying: state.isErrorBoxDisplaying,
-            messageText: state.messageText,
-            isPaymentModalOpen: state.isPaymentModalOpen,
-        }),
-        shallow
-    );
+  const {
+    isMessageBoxDisplaying,
+    isErrorBoxDisplaying,
+    messageText,
+    isPaymentModalOpen,
+  } = useBuyNumbersStore(
+    (state) => ({
+      isMessageBoxDisplaying: state.isMessageBoxDisplaying,
+      isErrorBoxDisplaying: state.isErrorBoxDisplaying,
+      messageText: state.messageText,
+      isPaymentModalOpen: state.isPaymentModalOpen,
+    }),
+    shallow,
+  );
 
-    const { isLoading } = useGeneralStore((state) => ({ isLoading: state.isLoading }));
+  const { isLoading } = useGeneralStore((state) => ({
+    isLoading: state.isLoading,
+  }));
 
-    useEffect(() => {
-        if (isPaymentModalOpen) {
-            document.documentElement.style.overflowY = "hidden";
-        } else {
-            document.documentElement.style.overflowY = "unset";
-        }
-    }, [isPaymentModalOpen]);
+  useEffect(() => {
+    if (isPaymentModalOpen) {
+      document.documentElement.style.overflowY = "hidden";
+    } else {
+      document.documentElement.style.overflowY = "unset";
+    }
+  }, [isPaymentModalOpen]);
 
-    return (
-        <div className="raffle-selected">
-            <Header />
-            <RaffleSelectedContent />
-            {isMessageBoxDisplaying && (
-                <AlertBox success={isMessageBoxDisplaying} error={isErrorBoxDisplaying} message={messageText} />
-            )}
-            {isErrorBoxDisplaying && (
-                <AlertBox success={isMessageBoxDisplaying} error={isErrorBoxDisplaying} message={messageText} />
-            )}
-            {isPaymentModalOpen && <PaymentModal />}
-            <Footer />
-        </div>
-    );
+  return (
+    <div className="raffle-selected">
+      <Header />
+      <ToastContainer />
+      <RaffleSelectedContent />
+      {isMessageBoxDisplaying && (
+        <AlertBox
+          success={isMessageBoxDisplaying}
+          error={isErrorBoxDisplaying}
+          message={messageText}
+        />
+      )}
+      {isErrorBoxDisplaying && (
+        <AlertBox
+          success={isMessageBoxDisplaying}
+          error={isErrorBoxDisplaying}
+          message={messageText}
+        />
+      )}
+      {isPaymentModalOpen && <PaymentModal />}
+      <Footer />
+    </div>
+  );
 };
 
 export default RaffleSelected;

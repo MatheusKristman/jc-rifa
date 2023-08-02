@@ -16,8 +16,6 @@ import useIsUserLogged from "../../../hooks/useIsUserLogged";
 import useGeneralStore from "../../../stores/useGeneralStore";
 import Loading from "../Loading";
 
-// TODO adicionar função de mudar a senha
-
 const schema = Yup.object().shape({
   profileImage: Yup.mixed(),
   name: Yup.string()

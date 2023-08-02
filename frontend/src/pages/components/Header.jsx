@@ -464,7 +464,6 @@ const LoginMessageBox = () => {
   );
 };
 
-// TODO adicionar função de mudar senha
 const LogInModal = () => {
   const {
     usernameValue,
@@ -570,6 +569,7 @@ const LogInModal = () => {
     username: Yup.string()
       .min(15, "Insira acima de 15 caracteres")
       .required("Usuário é obrigatório"),
+    password: Yup.string(),
   });
 
   const { register, handleSubmit, formState, getValues, setValue } = useForm({
@@ -595,11 +595,7 @@ const LogInModal = () => {
             })
             .catch((error) => {
               errorExist();
-              if (error.response.data === "Usuário incorreto") {
-                setLoginMessage("Usuário incorreto");
-              } else {
-                setLoginMessage("Ocorreu um erro, tente novamente");
-              }
+              setLoginMessage("Usuário incorreto");
               console.log(error);
             });
         };
@@ -628,11 +624,7 @@ const LogInModal = () => {
             })
             .catch((error) => {
               errorExist();
-              if (error.response.data === "Usuário incorreto") {
-                setLoginMessage("Usuário incorreto");
-              } else {
-                setLoginMessage("Ocorreu um erro, tente novamente");
-              }
+              setLoginMessage("Usuário incorreto");
               console.log(error);
             });
         };

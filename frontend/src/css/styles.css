@@ -2248,6 +2248,74 @@ body {
   cursor: pointer;
   outline: none;
 }
+.register__update-password-content {
+  width: 100%;
+  max-width: 600px;
+  margin: 0px auto 25px;
+}
+.register__update-password-content__title {
+  font-size: 1.35rem;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 15px;
+}
+.register__update-password-content__form-box {
+  width: 100%;
+  padding: 16px 12px;
+  background-color: #080812;
+  border-radius: 10px;
+}
+.register__update-password-content__form-box__form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background-color: #15152a;
+  padding: 10px;
+  border-radius: 10px;
+}
+.register__update-password-content__form-box__form__label {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-size: 0.9rem;
+  color: #fff;
+  font-weight: 600;
+}
+.register__update-password-content__form-box__form__label__input {
+  padding: 8px 12px;
+  font-size: 1rem;
+  color: #5a5a5a;
+  border-radius: 10px;
+  border: none;
+  outline: none;
+  transition: border 0.4s ease;
+}
+.register__update-password-content__form-box__form__label__error {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: rgb(209, 52, 52);
+}
+.register__update-password-content__form-box__form__submit-button {
+  margin-top: 15px;
+  background-color: #198754;
+  border: none;
+  border-radius: 4px;
+  padding: 10px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #fff;
+  outline: none;
+  cursor: pointer;
+  transition: filter 0.3s ease;
+}
+.register__update-password-content__form-box__form__submit-button:hover {
+  filter: brightness(80%);
+}
+.register__update-password-content__form-box__form__submit-button:disabled {
+  filter: brightness(80%);
+  cursor: not-allowed;
+}
 
 .terms {
   width: 100%;

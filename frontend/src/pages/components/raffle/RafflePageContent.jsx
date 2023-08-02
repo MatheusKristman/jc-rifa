@@ -10,340 +10,378 @@ import useGeneralStore from "../../../stores/useGeneralStore";
 import Loading from "../Loading";
 
 const RafflePageContent = () => {
-    const {
-        raffles,
-        setRaffles,
-        isActiveOn,
-        setActiveOn,
-        setActiveOff,
-        isConcludedOn,
-        setConcludedOn,
-        setConcludedOff,
-        sliceBegin,
-        sliceEnd,
-        sliceEndBiggerThanRaffles,
-        pageMultiplier,
-        setSliceBegin,
-        setSliceEnd,
-        setNextPage,
-        setPreviousPage,
-        rafflesDisplaying,
-        setRafflesDisplaying,
-        isPreviousPageBtnDisplayed,
-        showPreviousPageBtn,
-        hidePreviousPageBtn,
-        isNextPageBtnDisplayed,
-        showNextPageBtn,
-        hideNextPageBtn,
-        resetPageMultiplier,
-        resetSliceBegin,
-        resetSliceEnd,
-    } = useRaffleStore((state) => ({
-        raffles: state.raffles,
-        setRaffles: state.setRaffles,
-        isActiveOn: state.isActiveOn,
-        setActiveOn: state.setActiveOn,
-        setActiveOff: state.setActiveOff,
-        isConcludedOn: state.isConcludedOn,
-        setConcludedOn: state.setConcludedOn,
-        setConcludedOff: state.setConcludedOff,
-        sliceBegin: state.sliceBegin,
-        sliceEnd: state.sliceEnd,
-        sliceEndBiggerThanRaffles: state.sliceEndBiggerThanRaffles,
-        pageMultiplier: state.pageMultiplier,
-        setSliceBegin: state.setSliceBegin,
-        setSliceEnd: state.setSliceEnd,
-        setNextPage: state.setNextPage,
-        setPreviousPage: state.setPreviousPage,
-        rafflesDisplaying: state.rafflesDisplaying,
-        setRafflesDisplaying: state.setRafflesDisplaying,
-        isPreviousPageBtnDisplayed: state.isPreviousPageBtnDisplayed,
-        showPreviousPageBtn: state.showPreviousPageBtn,
-        hidePreviousPageBtn: state.hidePreviousPageBtn,
-        isNextPageBtnDisplayed: state.isNextPageBtnDisplayed,
-        showNextPageBtn: state.showNextPageBtn,
-        hideNextPageBtn: state.hideNextPageBtn,
-        resetPageMultiplier: state.resetPageMultiplier,
-        resetSliceBegin: state.resetSliceBegin,
-        resetSliceEnd: state.resetSliceEnd,
-    }));
+  const {
+    raffles,
+    setRaffles,
+    isActiveOn,
+    setActiveOn,
+    setActiveOff,
+    isConcludedOn,
+    setConcludedOn,
+    setConcludedOff,
+    sliceBegin,
+    sliceEnd,
+    sliceEndBiggerThanRaffles,
+    pageMultiplier,
+    setSliceBegin,
+    setSliceEnd,
+    setNextPage,
+    setPreviousPage,
+    rafflesDisplaying,
+    setRafflesDisplaying,
+    isPreviousPageBtnDisplayed,
+    showPreviousPageBtn,
+    hidePreviousPageBtn,
+    isNextPageBtnDisplayed,
+    showNextPageBtn,
+    hideNextPageBtn,
+    resetPageMultiplier,
+    resetSliceBegin,
+    resetSliceEnd,
+    rafflesImagesUrls,
+    setRafflesImagesUrls,
+  } = useRaffleStore((state) => ({
+    raffles: state.raffles,
+    setRaffles: state.setRaffles,
+    isActiveOn: state.isActiveOn,
+    setActiveOn: state.setActiveOn,
+    setActiveOff: state.setActiveOff,
+    isConcludedOn: state.isConcludedOn,
+    setConcludedOn: state.setConcludedOn,
+    setConcludedOff: state.setConcludedOff,
+    sliceBegin: state.sliceBegin,
+    sliceEnd: state.sliceEnd,
+    sliceEndBiggerThanRaffles: state.sliceEndBiggerThanRaffles,
+    pageMultiplier: state.pageMultiplier,
+    setSliceBegin: state.setSliceBegin,
+    setSliceEnd: state.setSliceEnd,
+    setNextPage: state.setNextPage,
+    setPreviousPage: state.setPreviousPage,
+    rafflesDisplaying: state.rafflesDisplaying,
+    setRafflesDisplaying: state.setRafflesDisplaying,
+    isPreviousPageBtnDisplayed: state.isPreviousPageBtnDisplayed,
+    showPreviousPageBtn: state.showPreviousPageBtn,
+    hidePreviousPageBtn: state.hidePreviousPageBtn,
+    isNextPageBtnDisplayed: state.isNextPageBtnDisplayed,
+    showNextPageBtn: state.showNextPageBtn,
+    hideNextPageBtn: state.hideNextPageBtn,
+    resetPageMultiplier: state.resetPageMultiplier,
+    resetSliceBegin: state.resetSliceBegin,
+    resetSliceEnd: state.resetSliceEnd,
+    rafflesImagesUrls: state.rafflesImagesUrls,
+    setRafflesImagesUrls: state.setRafflesImagesUrls,
+  }));
 
-    const { isLoading, setToLoad, setNotToLoad, setToAnimateFadeIn, setToAnimateFadeOut } = useGeneralStore((state) => ({
-        isLoading: state.isLoading,
-        setToLoad: state.setToLoad,
-        setNotToLoad: state.setNotToLoad,
-        setToAnimateFadeIn: state.setToAnimateFadeIn,
-        setToAnimateFadeOut: state.setToAnimateFadeOut,
-    }));
+  const {
+    isLoading,
+    setToLoad,
+    setNotToLoad,
+    setToAnimateFadeIn,
+    setToAnimateFadeOut,
+  } = useGeneralStore((state) => ({
+    isLoading: state.isLoading,
+    setToLoad: state.setToLoad,
+    setNotToLoad: state.setNotToLoad,
+    setToAnimateFadeIn: state.setToAnimateFadeIn,
+    setToAnimateFadeOut: state.setToAnimateFadeOut,
+  }));
 
-    useEffect(() => {
-        setRaffles([]);
-        setRafflesDisplaying([]);
-    }, []);
+  useEffect(() => {
+    setRaffles([]);
+    setRafflesDisplaying([]);
+  }, []);
 
-    useEffect(() => {
-        const fetchRaffles = () => {
-            setToLoad();
-            setToAnimateFadeIn();
-            api.get("/raffle/get-all-raffles")
-                .then((res) => {
-                    setRaffles(res.data);
+  useEffect(() => {
+    const fetchRaffles = () => {
+      setToLoad();
+      setToAnimateFadeIn();
+      api
+        .get("/raffle/get-all-raffles")
+        .then((res) => {
+          setRaffles(res.data);
 
-                    if (raffles.length <= sliceEnd) {
-                        sliceEndBiggerThanRaffles(raffles.length);
-                    }
-
-                    setToAnimateFadeOut();
-
-                    setTimeout(() => {
-                        setNotToLoad();
-                    }, 400);
-                })
-                .catch((error) => {
-                    console.log(error);
-
-                    setToAnimateFadeOut();
-
-                    setTimeout(() => {
-                        setNotToLoad();
-                    }, 400);
-                });
-        };
-
-        fetchRaffles();
-    }, [setRaffles]);
-
-    useEffect(() => {
-        const verificationPageBtns = () => {
-            console.log(sliceEnd);
-            if (raffles.length > 10 && rafflesDisplaying.length <= 10) {
-                showPreviousPageBtn();
-                showNextPageBtn();
-            }
-
-            if (sliceBegin === 0 && rafflesDisplaying.length <= 10) {
-                hidePreviousPageBtn();
-                hideNextPageBtn();
-            }
-
-            if (sliceEnd >= raffles.length) {
-                showPreviousPageBtn();
-                hideNextPageBtn();
-            }
-
-            // roda somente em caso de não ter proximo e nem anterior
-            if (sliceEnd <= raffles.length + 1) {
-                hidePreviousPageBtn();
-                hideNextPageBtn();
-            }
-
-            if (sliceBegin === 0 && raffles.length > 10) {
-                hidePreviousPageBtn();
-                showNextPageBtn();
-            }
-        };
-
-        const handlePage = () => {
-            if (raffles.length !== 0) {
-                verificationPageBtns();
-
-                if (isConcludedOn) {
-                    hideNextPageBtn();
-                    hidePreviousPageBtn();
-                }
-
-                if (isActiveOn) {
-                    setRafflesDisplaying(
-                        raffles
-                            .filter(
-                                (raffle) =>
-                                    convertProgress(
-                                        raffle?.QuantNumbers - raffle?.NumbersAvailable.length,
-                                        raffle?.QuantNumbers
-                                    ) < 100 && !raffle?.isFinished
-                            )
-                            .slice(sliceBegin, sliceEnd)
-                    );
-                    verificationPageBtns();
-                }
-
-                if (isConcludedOn) {
-                    setRafflesDisplaying(
-                        raffles.filter(
-                            (raffle) =>
-                                convertProgress(raffle?.QuantNumbers - raffle?.NumbersAvailable.length, raffle?.QuantNumbers) ===
-                                    100 || raffle?.isFinished
-                        )
-                    );
-                }
-            }
-        };
-
-        handlePage();
-    }, [
-        pageMultiplier,
-        setRafflesDisplaying,
-        showNextPageBtn,
-        showPreviousPageBtn,
-        hideNextPageBtn,
-        hidePreviousPageBtn,
-        isActiveOn,
-        isConcludedOn,
-        raffles,
-    ]);
-
-    const handleActiveBtn = () => {
-        if (raffles.length <= sliceEnd) {
+          if (raffles.length <= sliceEnd) {
             sliceEndBiggerThanRaffles(raffles.length);
-        } else {
-            resetSliceEnd();
+          }
+
+          setToAnimateFadeOut();
+
+          setTimeout(() => {
+            setNotToLoad();
+          }, 400);
+        })
+        .catch((error) => {
+          console.log(error);
+
+          setToAnimateFadeOut();
+
+          setTimeout(() => {
+            setNotToLoad();
+          }, 400);
+        });
+    };
+
+    fetchRaffles();
+  }, [setRaffles]);
+
+  useEffect(() => {
+    const verificationPageBtns = () => {
+      console.log(sliceEnd);
+      if (raffles.length > 10 && rafflesDisplaying.length <= 10) {
+        showPreviousPageBtn();
+        showNextPageBtn();
+      }
+
+      if (sliceBegin === 0 && rafflesDisplaying.length <= 10) {
+        hidePreviousPageBtn();
+        hideNextPageBtn();
+      }
+
+      if (sliceEnd >= raffles.length) {
+        showPreviousPageBtn();
+        hideNextPageBtn();
+      }
+
+      // roda somente em caso de não ter proximo e nem anterior
+      if (sliceEnd <= raffles.length + 1) {
+        hidePreviousPageBtn();
+        hideNextPageBtn();
+      }
+
+      if (sliceBegin === 0 && raffles.length > 10) {
+        hidePreviousPageBtn();
+        showNextPageBtn();
+      }
+    };
+
+    const handlePage = () => {
+      if (raffles.length !== 0) {
+        verificationPageBtns();
+
+        if (isConcludedOn) {
+          hideNextPageBtn();
+          hidePreviousPageBtn();
         }
-        resetPageMultiplier();
-        resetSliceBegin();
-        setActiveOn();
-        setConcludedOff();
+
+        if (isActiveOn) {
+          setRafflesDisplaying(
+            raffles
+              .filter(
+                (raffle) =>
+                  convertProgress(
+                    raffle?.QuantNumbers - raffle?.NumbersAvailable.length,
+                    raffle?.QuantNumbers,
+                  ) < 100 && !raffle?.isFinished,
+              )
+              .slice(sliceBegin, sliceEnd),
+          );
+          verificationPageBtns();
+        }
+
+        if (isConcludedOn) {
+          setRafflesDisplaying(
+            raffles.filter(
+              (raffle) =>
+                convertProgress(
+                  raffle?.QuantNumbers - raffle?.NumbersAvailable.length,
+                  raffle?.QuantNumbers,
+                ) === 100 || raffle?.isFinished,
+            ),
+          );
+        }
+      }
     };
 
-    const handleConcludedBtn = () => {
-        resetPageMultiplier();
-        resetSliceBegin();
-        resetSliceEnd();
-        setConcludedOn();
-        setActiveOff();
-    };
+    handlePage();
+  }, [
+    pageMultiplier,
+    setRafflesDisplaying,
+    showNextPageBtn,
+    showPreviousPageBtn,
+    hideNextPageBtn,
+    hidePreviousPageBtn,
+    isActiveOn,
+    isConcludedOn,
+    raffles,
+  ]);
 
-    const handleNextBtn = () => {
-        window.scrollTo(0, 0);
-        setNextPage();
-        setSliceEnd();
-        setSliceBegin();
-    };
+  useEffect(() => {
+    const urls = [];
+    for (let i = 0; i < rafflesDisplaying.length; i++) {
+      if (rafflesDisplaying[i].raffleImage) {
+        if (
+          JSON.stringify(import.meta.env.MODE) === JSON.stringify("development")
+        ) {
+          urls.push(
+            `${import.meta.env.VITE_API_KEY_DEV}${
+              import.meta.env.VITE_API_PORT
+            }/raffle-uploads/${rafflesDisplaying[i].raffleImage}`,
+          );
+        } else {
+          urls.push(
+            `${import.meta.env.VITE_API_KEY}/raffle-uploads/${
+              rafflesDisplaying[i].raffleImage
+            }`,
+          );
+        }
+      } else {
+        urls.push(null);
+      }
+    }
 
-    const handlePreviousBtn = () => {
-        window.scrollTo(0, 0);
-        setPreviousPage();
-        setSliceEnd();
-        setSliceBegin();
-    };
+    setRafflesImagesUrls(urls);
+  }, [rafflesDisplaying]);
 
-    const convertProgress = (current, total) => {
-        return (100 * current) / total;
-    };
+  useEffect(() => {
+    console.log(rafflesImagesUrls);
+  }, [rafflesImagesUrls]);
 
-    return (
-        <div className="raffle__raffle-content">
-            {isLoading && <Loading>Buscando Sorteios</Loading>}
-            <div className="raffle__raffle-content__container">
-                <div className="raffle__raffle-content__container__above-box">
-                    <h1 className="raffle__raffle-content__container__above-box__title">⚡ Prêmios</h1>
+  const handleActiveBtn = () => {
+    if (raffles.length <= sliceEnd) {
+      sliceEndBiggerThanRaffles(raffles.length);
+    } else {
+      resetSliceEnd();
+    }
+    resetPageMultiplier();
+    resetSliceBegin();
+    setActiveOn();
+    setConcludedOff();
+  };
 
-                    <span className="raffle__raffle-content__container__above-box__desc">Escolha sua sorte</span>
-                </div>
+  const handleConcludedBtn = () => {
+    resetPageMultiplier();
+    resetSliceBegin();
+    resetSliceEnd();
+    setConcludedOn();
+    setActiveOff();
+  };
 
-                <div className="raffle__raffle-content__container__filter-box">
-                    <span className="raffle__raffle-content__container__filter-box__desc">LISTAR</span>
+  const handleNextBtn = () => {
+    window.scrollTo(0, 0);
+    setNextPage();
+    setSliceEnd();
+    setSliceBegin();
+  };
 
-                    <div className="raffle__raffle-content__container__filter-box__btn-wrapper">
-                        <button
-                            onClick={handleActiveBtn}
-                            className={
-                                isActiveOn
-                                    ? "raffle__raffle-content__container__filter-box__btn-wrapper__btn filter-btn-active"
-                                    : "raffle__raffle-content__container__filter-box__btn-wrapper__btn"
-                            }
-                        >
-                            Ativos
-                        </button>
-                        <button
-                            onClick={handleConcludedBtn}
-                            className={
-                                isConcludedOn
-                                    ? "raffle__raffle-content__container__filter-box__btn-wrapper__btn filter-btn-active"
-                                    : "raffle__raffle-content__container__filter-box__btn-wrapper__btn"
-                            }
-                        >
-                            Concluídos
-                        </button>
-                    </div>
-                </div>
+  const handlePreviousBtn = () => {
+    window.scrollTo(0, 0);
+    setPreviousPage();
+    setSliceEnd();
+    setSliceBegin();
+  };
 
-                <div className="raffle__raffle-content__container__prizes-wrapper">
-                    {isActiveOn &&
-                        rafflesDisplaying.map((raffle) => (
-                            <Link to={`/raffles/${raffle._id}`}>
-                                <Prizes
-                                    key={raffle._id}
-                                    title={raffle.title}
-                                    subtitle={raffle.subtitle}
-                                    image={
-                                        raffle.raffleImage.data
-                                            ? `data:${raffle.raffleImage.contentType};base64,${_arrayBufferToBase64(
-                                                  raffle.raffleImage.data.data
-                                              )}`
-                                            : null
-                                    }
-                                    progress={convertProgress(
-                                        raffle?.QuantNumbers - raffle?.NumbersAvailable.length,
-                                        raffle?.QuantNumbers
-                                    )}
-                                    winner={raffle?.isFinished}
-                                />
-                            </Link>
-                        ))}
+  const convertProgress = (current, total) => {
+    return (100 * current) / total;
+  };
 
-                    {isConcludedOn &&
-                        rafflesDisplaying.map((raffle) => (
-                            <Link to={`/raffles/${raffle._id}`}>
-                                <Prizes
-                                    key={raffle._id}
-                                    title={raffle.title}
-                                    subtitle={raffle.subtitle}
-                                    image={
-                                        raffle.raffleImage.data
-                                            ? `data:${raffle.raffleImage.contentType};base64,${_arrayBufferToBase64(
-                                                  raffle.raffleImage.data.data
-                                              )}`
-                                            : null
-                                    }
-                                    progress={convertProgress(
-                                        raffle?.QuantNumbers - raffle?.NumbersAvailable.length,
-                                        raffle?.QuantNumbers
-                                    )}
-                                    winner={raffle?.isFinished}
-                                />
-                            </Link>
-                        ))}
-                </div>
+  return (
+    <div className="raffle__raffle-content">
+      {isLoading && <Loading>Buscando Sorteios</Loading>}
+      <div className="raffle__raffle-content__container">
+        <div className="raffle__raffle-content__container__above-box">
+          <h1 className="raffle__raffle-content__container__above-box__title">
+            ⚡ Prêmios
+          </h1>
 
-                <div className="raffle__raffle-content__container__pages-btn-wrapper">
-                    <button
-                        onClick={() => {
-                            if (pageMultiplier !== 1) {
-                                handlePreviousBtn();
-                            }
-                        }}
-                        className={
-                            isPreviousPageBtnDisplayed
-                                ? "raffle__raffle-content__container__pages-btn-wrapper__btn"
-                                : "raffle__raffle-content__container__pages-btn-wrapper__btn desactive"
-                        }
-                    >
-                        <BsChevronLeft /> Anterior
-                    </button>
-                    <button
-                        onClick={handleNextBtn}
-                        className={
-                            isNextPageBtnDisplayed
-                                ? "raffle__raffle-content__container__pages-btn-wrapper__btn"
-                                : "raffle__raffle-content__container__pages-btn-wrapper__btn desactive"
-                        }
-                    >
-                        Próximo <BsChevronRight />
-                    </button>
-                </div>
-            </div>
+          <span className="raffle__raffle-content__container__above-box__desc">
+            Escolha sua sorte
+          </span>
         </div>
-    );
+
+        <div className="raffle__raffle-content__container__filter-box">
+          <span className="raffle__raffle-content__container__filter-box__desc">
+            LISTAR
+          </span>
+
+          <div className="raffle__raffle-content__container__filter-box__btn-wrapper">
+            <button
+              onClick={handleActiveBtn}
+              className={
+                isActiveOn
+                  ? "raffle__raffle-content__container__filter-box__btn-wrapper__btn filter-btn-active"
+                  : "raffle__raffle-content__container__filter-box__btn-wrapper__btn"
+              }
+            >
+              Ativos
+            </button>
+            <button
+              onClick={handleConcludedBtn}
+              className={
+                isConcludedOn
+                  ? "raffle__raffle-content__container__filter-box__btn-wrapper__btn filter-btn-active"
+                  : "raffle__raffle-content__container__filter-box__btn-wrapper__btn"
+              }
+            >
+              Concluídos
+            </button>
+          </div>
+        </div>
+
+        <div className="raffle__raffle-content__container__prizes-wrapper">
+          {isActiveOn &&
+            rafflesDisplaying.map((raffle, index) => (
+              <Link to={`/raffles/${raffle._id}`}>
+                <Prizes
+                  key={raffle._id}
+                  title={raffle.title}
+                  subtitle={raffle.subtitle}
+                  image={rafflesImagesUrls[index] || null}
+                  progress={convertProgress(
+                    raffle?.QuantNumbers - raffle?.NumbersAvailable.length,
+                    raffle?.QuantNumbers,
+                  )}
+                  winner={raffle?.isFinished}
+                />
+              </Link>
+            ))}
+
+          {isConcludedOn &&
+            rafflesDisplaying.map((raffle, index) => (
+              <Link to={`/raffles/${raffle._id}`}>
+                <Prizes
+                  key={raffle._id}
+                  title={raffle.title}
+                  subtitle={raffle.subtitle}
+                  image={rafflesImagesUrls[index] || null}
+                  progress={convertProgress(
+                    raffle?.QuantNumbers - raffle?.NumbersAvailable.length,
+                    raffle?.QuantNumbers,
+                  )}
+                  winner={raffle?.isFinished}
+                />
+              </Link>
+            ))}
+        </div>
+
+        <div className="raffle__raffle-content__container__pages-btn-wrapper">
+          <button
+            onClick={() => {
+              if (pageMultiplier !== 1) {
+                handlePreviousBtn();
+              }
+            }}
+            className={
+              isPreviousPageBtnDisplayed
+                ? "raffle__raffle-content__container__pages-btn-wrapper__btn"
+                : "raffle__raffle-content__container__pages-btn-wrapper__btn desactive"
+            }
+          >
+            <BsChevronLeft /> Anterior
+          </button>
+          <button
+            onClick={handleNextBtn}
+            className={
+              isNextPageBtnDisplayed
+                ? "raffle__raffle-content__container__pages-btn-wrapper__btn"
+                : "raffle__raffle-content__container__pages-btn-wrapper__btn desactive"
+            }
+          >
+            Próximo <BsChevronRight />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default RafflePageContent;
