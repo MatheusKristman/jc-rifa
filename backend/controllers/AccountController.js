@@ -402,3 +402,33 @@ export const deleteCanceledNumbers = async (req, res) => {
     return res.status(400).send(error.message);
   }
 };
+
+export const updatePassword = async (req, res) => {
+  const { id, actualPassword, newPassword } = req.body;
+
+  try {
+    const admin = await Account.findOne({ _id: id, admin: true });
+
+    if (admin && actualPassword === admin.password) {
+      if (actualPassword !== newPassword) {
+        admin.password = newPassword;
+
+        await admin.save();
+
+        return res.status(200).json(admin);
+      } else {
+        return res.status(405).json({
+          message: "Senha precisa ser diferente da que já está cadastrada",
+        });
+      }
+    }
+
+    return res
+      .status(401)
+      .json({ message: "Usuário não autorizado para alterar senha" });
+  } catch (error) {
+    return res.status(400).json({
+      message: "Ocorreu um erro durante o processo de alteração de senha",
+    });
+  }
+};

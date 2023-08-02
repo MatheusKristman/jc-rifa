@@ -1,13 +1,14 @@
 import express from "express";
 import {
-    getUser,
-    readUserBuyedNumbers,
-    readPayment,
-    deleteCanceledNumbers,
-    buyRaffle,
-    login,
-    loginAdmin,
-    paymentCanceled,
+  getUser,
+  readUserBuyedNumbers,
+  readPayment,
+  deleteCanceledNumbers,
+  buyRaffle,
+  login,
+  loginAdmin,
+  paymentCanceled,
+  updatePassword,
 } from "../controllers/AccountController.js";
 import { auth } from "../controllers/authController.js";
 
@@ -17,6 +18,7 @@ router.get("/is-user-logged", auth, getUser);
 router.get("/get-raffle-numbers/:cpf", readUserBuyedNumbers);
 router.post("/check-payment-status", readPayment);
 router.post("/delete-canceled-numbers", deleteCanceledNumbers);
+router.post("/update-password", updatePassword);
 router.post("/raffle-buy", buyRaffle);
 router.post("/login", login);
 router.post("/login-admin", loginAdmin);
