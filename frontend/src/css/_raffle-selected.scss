@@ -1,434 +1,420 @@
 .raffle-selected {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+
+  &__raffle-selected-content {
     width: 100%;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
+    flex: 1;
 
-    &__raffle-selected-content {
+    &__container {
+      width: 100%;
+      max-width: 600px;
+      margin: 25px auto;
+      padding: 16px 12px;
+      background-color: $dark;
+      border-radius: 10px;
+
+      &__raffle-displayed {
         width: 100%;
-        flex: 1;
+        margin-bottom: 10px;
+      }
 
-        &__container {
-            width: 100%;
-            max-width: 600px;
-            margin: 25px auto;
-            padding: 16px 12px;
-            background-color: $dark;
-            border-radius: 10px;
+      &__price-tag {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 5px;
+        width: 100%;
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 0.9rem;
+        margin-bottom: 10px;
+        pointer-events: none;
 
-            &__raffle-displayed {
-                width: 100%;
-                margin-bottom: 10px;
-            }
-
-            &__price-tag {
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                gap: 5px;
-                width: 100%;
-                color: rgba(255, 255, 255, 0.7);
-                font-size: 0.9rem;
-                margin-bottom: 10px;
-                pointer-events: none;
-
-                strong {
-                    background-color: #151944;
-                    border-radius: 4px;
-                    padding: 6px 10px;
-                    font-weight: 600;
-                    color: $white;
-                }
-            }
-
-            &__desc-card {
-                background-color: $darkPurple;
-                border-radius: 10px;
-                padding: 8px 12px;
-                max-height: 300px;
-                overflow-y: auto;
-                margin-bottom: 10px;
-
-                &__desc {
-                    color: $white;
-                    opacity: 0.9;
-                    font-size: 0.9rem;
-                    font-weight: 400;
-                    white-space: pre-wrap;
-                }
-            }
-
-            &__social-wrapper {
-                display: flex;
-                align-items: center;
-                gap: 5px;
-                margin-bottom: 10px;
-
-                &__social {
-                    width: 30px;
-                    height: 30px;
-                    padding: 5px;
-                    border-radius: 4px;
-                    font-size: 1.5rem;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    color: $white;
-
-                    &:nth-child(1) {
-                        background-color: #3b5998;
-                    }
-
-                    &:nth-child(2) {
-                        background-color: #1da1f2;
-                    }
-
-                    &:nth-child(3) {
-                        background-color: #08c;
-                    }
-
-                    &:nth-child(4) {
-                        background-color: #4dc247;
-                    }
-                }
-            }
-
-            &__title-wrapper {
-                display: flex;
-                align-items: flex-end;
-                gap: 5px;
-                margin-bottom: 10px;
-
-                &__title {
-                    font-size: 1.35rem;
-                    font-weight: 600;
-                    color: $white;
-                }
-
-                &__desc {
-                    font-size: 0.9rem;
-                    color: $white;
-                    opacity: 0.7;
-                }
-            }
-
-            &__link-query-numbers {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                gap: 5px;
-                width: 100%;
-                background-color: $green;
-                padding: 8px;
-                border-radius: 4px;
-                color: $white;
-                text-decoration: none;
-                text-align: center;
-                font-weight: 600;
-                font-size: 0.9rem;
-                margin-bottom: 10px;
-
-                @include breakpoint(largeScreen) {
-                    transition: filter 0.4s ease;
-
-                    &:hover {
-                        filter: brightness(80%);
-                    }
-                }
-            }
-
-            &__buy-numbers-box {
-                background-color: $darkPurple;
-                border-radius: 10px;
-                padding: 20px 60px;
-                margin-bottom: 10px;
-
-                &__desc {
-                    font-size: 0.9rem;
-                    color: $white;
-                    opacity: 0.7;
-                    text-align: center;
-                    width: 100%;
-                    display: block;
-                    margin-bottom: 20px;
-                }
-
-                &__buy-numbers-wrapper {
-                    width: 100%;
-                    display: grid;
-                    grid-template-columns: 1fr 1fr;
-                    grid-template-rows: auto auto auto;
-                    gap: 10px;
-                    margin-bottom: 10px;
-
-                    &__numbers-btn {
-                        background-color: rgba(0, 0, 0, 0.4);
-                        border: none;
-                        border-radius: 4px;
-                        cursor: pointer;
-                        outline: none;
-                        padding: 15px;
-
-                        &__title {
-                            font-size: 1.7rem;
-                            font-weight: 400;
-                            color: $white;
-                            opacity: 0.7;
-
-                            small {
-                                font-size: 1.3rem;
-                                opacity: 0.4;
-                            }
-                        }
-
-                        &__desc {
-                            font-size: 0.8rem;
-                            text-transform: uppercase;
-                            color: $white;
-                            opacity: 0.7;
-                            display: block;
-                        }
-                    }
-
-                    .emphasis {
-                        position: relative;
-                        background-color: #070710;
-                        border: 2px solid #272756;
-
-                        .emphasis-tag {
-                            width: 55%;
-                            position: absolute;
-                            top: 0;
-                            left: 50%;
-                            background-color: #272756;
-                            border-radius: 20px;
-                            padding: 5px 12px;
-                            font-size: 0.85rem;
-                            color: $white;
-                            word-wrap: break-word;
-                            transform: translate(-50%, -70%);
-                        }
-                    }
-                }
-
-                &__selected-numbers-wrapper {
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    gap: 10px;
-                    width: 100%;
-
-                    &__btn {
-                        background-color: transparent;
-                        border: none;
-                        font-size: 2rem;
-                        color: $white;
-                        opacity: 0.7;
-                        cursor: pointer;
-                        outline: none;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                    }
-
-                    &__selected-numbers-display {
-                        background-color: rgba(0, 0, 0, 0.4);
-                        border: 1px solid #272756;
-                        border-radius: 10px;
-                        display: flex;
-                        justify-content: center;
-                        align-items: center;
-                        padding: 10px;
-                        width: 60%;
-                        font-size: 1.2rem;
-                        color: $white;
-                        opacity: 0.7;
-                    }
-                }
-            }
-
-            &__buy-btn {
-                width: 100%;
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                gap: 5px;
-                padding: 10px 25px;
-                background-color: $green;
-                border-radius: 4px;
-                border: none;
-                cursor: pointer;
-                outline: none;
-
-                &__desc {
-                    font-size: 1rem;
-                    font-weight: 600;
-                    color: $white;
-                    width: 85%;
-                    text-align: center;
-
-                    img {
-                        width: 15px;
-                        transform: translateY(1px) scale(1.7);
-                    }
-                }
-
-                &__price {
-                    font-size: 1rem;
-                    font-weight: 600;
-                    color: $white;
-                    width: 15%;
-                    text-align: center;
-                }
-
-                @include breakpoint(largeScreen) {
-                    transition: filter 0.4s ease;
-
-                    &:hover {
-                        filter: brightness(80%);
-                    }
-                }
-            }
-
-            &__payment-overlay {
-                width: 100%;
-                height: 100%;
-                position: fixed;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background-color: rgba(32, 33, 36, 0.5);
-                backdrop-filter: blur(10px);
-                overflow: auto;
-                padding: 40px;
-                z-index: 6;
-                opacity: 0;
-                animation: paymentFadeIn 0.2s ease forwards;
-
-                &::before {
-                    content: "";
-                    height: 100%;
-                    display: inline-block;
-                    vertical-align: middle;
-                }
-
-                &__payment-box {
-                    background-color: $dark;
-                    display: inline-block;
-                    width: 100%;
-                    height: auto;
-                    max-width: 300px;
-                    vertical-align: middle;
-                    position: relative;
-                    left: 50%;
-                    transform: translateX(-50%);
-                    padding: 1rem;
-                    border-radius: 10px;
-                    z-index: 7;
-                    opacity: 0;
-                    animation: paymentModalIn 0.4s ease forwards;
-
-                    &__qrcode-box {
-                        margin-bottom: 20px;
-                        width: 100%;
-                        height: auto;
-                        border: 2px solid white;
-
-                        svg {
-                            width: 100%;
-                            height: auto;
-                        }
-                    }
-
-                    &__payment-link {
-                        display: block;
-                        width: 100%;
-                        padding: 10px 20px;
-                        margin-bottom: 10px;
-                        background-color: $green;
-                        border: none;
-                        border-radius: 8px;
-                        font-size: 1rem;
-                        color: $white;
-                        outline: none;
-                        cursor: pointer;
-
-                        @include breakpoint(largeScreen) {
-                            transition: filter 0.4s ease;
-
-                            &:hover {
-                                filter: brightness(80%);
-                            }
-                        }
-                    }
-
-                    &__close-btn {
-                        display: block;
-                        width: 100%;
-                        padding: 10px 20px;
-                        background-color: $blue;
-                        border: none;
-                        border-radius: 8px;
-                        font-size: 1rem;
-                        color: $white;
-                        outline: none;
-                        cursor: pointer;
-
-                        @include breakpoint(largeScreen) {
-                            transition: filter 0.4s ease;
-
-                            &:hover {
-                                filter: brightness(80%);
-                            }
-                        }
-                    }
-                }
-            }
+        strong {
+          background-color: #151944;
+          border-radius: 4px;
+          padding: 6px 10px;
+          font-weight: 600;
+          color: $white;
         }
+      }
+
+      &__desc-card {
+        background-color: $darkPurple;
+        border-radius: 10px;
+        padding: 8px 12px;
+        max-height: 300px;
+        overflow-y: auto;
+        margin-bottom: 10px;
+
+        &__desc {
+          color: $white;
+          opacity: 0.9;
+          font-size: 0.9rem;
+          font-weight: 400;
+          white-space: pre-wrap;
+        }
+      }
+
+      &__social-wrapper {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        margin-bottom: 10px;
+
+        &__social {
+          width: 30px;
+          height: 30px;
+          padding: 5px;
+          border-radius: 4px;
+          font-size: 1.5rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: $white;
+          background-color: #4dc247;
+        }
+      }
+
+      &__title-wrapper {
+        display: flex;
+        align-items: flex-end;
+        gap: 5px;
+        margin-bottom: 10px;
+
+        &__title {
+          font-size: 1.35rem;
+          font-weight: 600;
+          color: $white;
+        }
+
+        &__desc {
+          font-size: 0.9rem;
+          color: $white;
+          opacity: 0.7;
+        }
+      }
+
+      &__link-query-numbers {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        width: 100%;
+        background-color: $green;
+        padding: 8px;
+        border-radius: 4px;
+        color: $white;
+        text-decoration: none;
+        text-align: center;
+        font-weight: 600;
+        font-size: 0.9rem;
+        margin-bottom: 10px;
+
+        @include breakpoint(largeScreen) {
+          transition: filter 0.4s ease;
+
+          &:hover {
+            filter: brightness(80%);
+          }
+        }
+      }
+
+      &__buy-numbers-box {
+        background-color: $darkPurple;
+        border-radius: 10px;
+        padding: 20px 60px;
+        margin-bottom: 10px;
+
+        &__desc {
+          font-size: 0.9rem;
+          color: $white;
+          opacity: 0.7;
+          text-align: center;
+          width: 100%;
+          display: block;
+          margin-bottom: 20px;
+        }
+
+        &__buy-numbers-wrapper {
+          width: 100%;
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          grid-template-rows: auto auto auto;
+          gap: 10px;
+          margin-bottom: 10px;
+
+          &__numbers-btn {
+            background-color: rgba(0, 0, 0, 0.4);
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            outline: none;
+            padding: 15px;
+
+            &__title {
+              font-size: 1.7rem;
+              font-weight: 400;
+              color: $white;
+              opacity: 0.7;
+
+              small {
+                font-size: 1.3rem;
+                opacity: 0.4;
+              }
+            }
+
+            &__desc {
+              font-size: 0.8rem;
+              text-transform: uppercase;
+              color: $white;
+              opacity: 0.7;
+              display: block;
+            }
+          }
+
+          .emphasis {
+            position: relative;
+            background-color: #070710;
+            border: 2px solid #272756;
+
+            .emphasis-tag {
+              width: 55%;
+              position: absolute;
+              top: 0;
+              left: 50%;
+              background-color: #272756;
+              border-radius: 20px;
+              padding: 5px 12px;
+              font-size: 0.85rem;
+              color: $white;
+              word-wrap: break-word;
+              transform: translate(-50%, -70%);
+            }
+          }
+        }
+
+        &__selected-numbers-wrapper {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 10px;
+          width: 100%;
+
+          &__btn {
+            background-color: transparent;
+            border: none;
+            font-size: 2rem;
+            color: $white;
+            opacity: 0.7;
+            cursor: pointer;
+            outline: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          }
+
+          &__selected-numbers-display {
+            background-color: rgba(0, 0, 0, 0.4);
+            border: 1px solid #272756;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+            width: 60%;
+            font-size: 1.2rem;
+            color: $white;
+            opacity: 0.7;
+          }
+        }
+      }
+
+      &__buy-btn {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 5px;
+        padding: 10px 25px;
+        background-color: $green;
+        border-radius: 4px;
+        border: none;
+        cursor: pointer;
+        outline: none;
+
+        &__desc {
+          font-size: 1rem;
+          font-weight: 600;
+          color: $white;
+          width: 85%;
+          text-align: center;
+
+          img {
+            width: 15px;
+            transform: translateY(1px) scale(1.7);
+          }
+        }
+
+        &__price {
+          font-size: 1rem;
+          font-weight: 600;
+          color: $white;
+          width: 15%;
+          text-align: center;
+        }
+
+        @include breakpoint(largeScreen) {
+          transition: filter 0.4s ease;
+
+          &:hover {
+            filter: brightness(80%);
+          }
+        }
+      }
+
+      &__payment-overlay {
+        width: 100%;
+        height: 100%;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(32, 33, 36, 0.5);
+        backdrop-filter: blur(10px);
+        overflow: auto;
+        padding: 40px;
+        z-index: 6;
+        opacity: 0;
+        animation: paymentFadeIn 0.2s ease forwards;
+
+        &::before {
+          content: "";
+          height: 100%;
+          display: inline-block;
+          vertical-align: middle;
+        }
+
+        &__payment-box {
+          background-color: $dark;
+          display: inline-block;
+          width: 100%;
+          height: auto;
+          max-width: 300px;
+          vertical-align: middle;
+          position: relative;
+          left: 50%;
+          transform: translateX(-50%);
+          padding: 1rem;
+          border-radius: 10px;
+          z-index: 7;
+          opacity: 0;
+          animation: paymentModalIn 0.4s ease forwards;
+
+          &__qrcode-box {
+            margin-bottom: 20px;
+            width: 100%;
+            height: auto;
+            border: 2px solid white;
+
+            svg {
+              width: 100%;
+              height: auto;
+            }
+          }
+
+          &__payment-link {
+            display: block;
+            width: 100%;
+            padding: 10px 20px;
+            margin-bottom: 10px;
+            background-color: $green;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            color: $white;
+            outline: none;
+            cursor: pointer;
+
+            @include breakpoint(largeScreen) {
+              transition: filter 0.4s ease;
+
+              &:hover {
+                filter: brightness(80%);
+              }
+            }
+          }
+
+          &__close-btn {
+            display: block;
+            width: 100%;
+            padding: 10px 20px;
+            background-color: $blue;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            color: $white;
+            outline: none;
+            cursor: pointer;
+
+            @include breakpoint(largeScreen) {
+              transition: filter 0.4s ease;
+
+              &:hover {
+                filter: brightness(80%);
+              }
+            }
+          }
+        }
+      }
     }
+  }
 }
 
 @keyframes paymentFadeIn {
-    from {
-        opacity: 0;
-    }
+  from {
+    opacity: 0;
+  }
 
-    to {
-        opacity: 1;
-    }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes paymentModalIn {
-    from {
-        transform: translateY(-25%) translateX(-50%);
-        opacity: 0;
-    }
+  from {
+    transform: translateY(-25%) translateX(-50%);
+    opacity: 0;
+  }
 
-    to {
-        transform: translateY(0) translateX(-50%);
-        opacity: 1;
-    }
+  to {
+    transform: translateY(0) translateX(-50%);
+    opacity: 1;
+  }
 }
 
 @keyframes paymentModalOut {
-    from {
-        transform: translateY(0) translateX(-50%);
-        opacity: 1;
-    }
+  from {
+    transform: translateY(0) translateX(-50%);
+    opacity: 1;
+  }
 
-    to {
-        transform: translateY(-50%) translateX(-50%);
-        opacity: 0;
-    }
+  to {
+    transform: translateY(-50%) translateX(-50%);
+    opacity: 0;
+  }
 }
 
 @keyframes paymentFadeOut {
-    from {
-        opacity: 1;
-    }
+  from {
+    opacity: 1;
+  }
 
-    to {
-        opacity: 0;
-    }
+  to {
+    opacity: 0;
+  }
 }

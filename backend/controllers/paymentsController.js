@@ -5,10 +5,12 @@ mercadopago.configurations.setAccessToken(
 );
 
 export const pay = async (req, res) => {
+  console.log(req.body.fullPrice);
+
   const paymentData = {
     notification_url: "https://eoqhcniy7v8myie.m.pipedream.net",
     external_reference: req.body.id,
-    transaction_amount: req.body.fullPrice,
+    transaction_amount: Math.round(req.body.fullPrice * 100) / 100,
     description: req.body.title,
     payment_method_id: "pix",
     payer: {

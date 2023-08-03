@@ -4,229 +4,301 @@ import Winner from "../models/Winner.js";
 import { createNewRaffleValidate, updateRaffleValidate } from "./validate.js";
 
 export const createNewRaffle = async (req, res) => {
-    const { error } = createNewRaffleValidate(req.body);
+  const { error } = createNewRaffleValidate(req.body);
 
-    if (error) {
-        return res.status(400).send(error.message);
+  if (error) {
+    return res.status(400).send(error.message);
+  }
+
+  const raffleAlreadyExists = await Raffle.findOne({ title: req.body.title });
+
+  if (raffleAlreadyExists) {
+    return res.status(400).send("Rifa já cadastrada");
+  }
+
+  function generateNumbers(quant) {
+    const length = Math.max(Math.ceil(Math.log10(quant + 1)), 2);
+    const numbers = [];
+
+    console.log(length);
+
+    for (let i = 0; i < quant; i++) {
+      numbers.push(padNumber(i, length));
     }
 
-    const raffleAlreadyExists = await Raffle.findOne({ title: req.body.title });
+    return numbers;
+  }
 
-    if (raffleAlreadyExists) {
-        return res.status(400).send("Rifa já cadastrada");
+  function padNumber(number, size) {
+    let paddedNumber = number.toString();
+
+    while (paddedNumber.length < size) {
+      paddedNumber = "0" + paddedNumber;
     }
 
-    function* generateNumbers(quant) {
-        let arrNumbers = [];
-        let length = 0;
+    return paddedNumber;
+  }
 
-        if (quant <= 100) {
-            arrNumbers.push("00");
-            length = 2;
-        } else if (quant <= 1000) {
-            arrNumbers = ["000"];
-            length = 3;
-        } else if (quant <= 10000) {
-            arrNumbers = ["0000"];
-            length = 4;
-        } else if (quant <= 100000) {
-            arrNumbers = ["00000"];
-            length = 5;
-        } else if (quant <= 1000000) {
-            arrNumbers = ["000000"];
-            length = 6;
-        }
+  const batchSize = 100000;
+  const generatedNumbers = generateNumbers(req.body.QuantNumbers);
 
-        for (let i = 1; i < quant; i++) {
-            let lastString = arrNumbers[i - 1];
+  const raffle = {
+    raffleImage: null,
+    title: req.body.title,
+    subtitle: req.body.subtitle,
+    description: req.body.description,
+    price: req.body.price,
+    QuantNumbers: req.body.QuantNumbers,
+    NumbersAvailable: [],
+  };
 
-            let newString = padNumber(parseInt(lastString) + 1, length);
+  if (req.file) {
+    raffle.raffleImage = req.file.filename;
+  }
 
-            arrNumbers.push(newString);
+  try {
+    const raffleCreated = await Raffle.create(raffle);
 
-            yield newString;
-        }
+    for (let i = 0; i < generatedNumbers.length; i += batchSize) {
+      const batchStart = i;
+      const batchEnd = Math.min(i + batchSize, generatedNumbers.length);
+      const batchNumbers = generatedNumbers.slice(batchStart, batchEnd);
 
-        return arrNumbers;
+      raffleCreated.NumbersAvailable.push(...batchNumbers);
+
+      await raffleCreated.save();
     }
 
-    function padNumber(number, size) {
-        let paddedNumber = number.toString();
-
-        while (paddedNumber.length < size) {
-            paddedNumber = "0" + paddedNumber;
-        }
-
-        return paddedNumber;
-    }
-
-    const raffle = {
-        raffleImage: null,
-        title: req.body.title,
-        subtitle: req.body.subtitle,
-        description: req.body.description,
-        price: req.body.price,
-        QuantNumbers: req.body.QuantNumbers,
-        NumbersAvailable: [...generateNumbers(req.body.QuantNumbers)],
-    };
-
-    if (req.file) {
-        raffle.raffleImage = req.file.filename;
-    }
-
-    try {
-        const raffleCreated = await Raffle.create(raffle);
-
-        res.json(raffleCreated);
-    } catch (error) {
-        return res.status(400).send(error.message);
-    }
+    res.json(raffleCreated);
+  } catch (error) {
+    return res.status(400).send(error.message);
+  }
 };
 
-export const getAllRaffles = async (req, res) => {
-    try {
-        const allRaffles = await Raffle.find({});
+// export const createNewRaffle = async (req, res) => {
+//   const { error } = createNewRaffleValidate(req.body);
+//
+//   if (error) {
+//     return res.status(400).send(error.message);
+//   }
+//
+//   const raffleAlreadyExists = await Raffle.findOne({ title: req.body.title });
+//
+//   if (raffleAlreadyExists) {
+//     return res.status(400).send("Rifa já cadastrada");
+//   }
+//
+//   async function* generateNumbers(quant, batchSize) {
+//     let currentNumber = 1;
+//
+//     for (let i = 0; i < quant; i++) {
+//       yield padNumber(currentNumber++, batchSize);
+//     }
+//   }
+//
+//   function padNumber(number, size) {
+//     let paddedNumber = number.toString();
+//
+//     while (paddedNumber.length < size) {
+//       paddedNumber = "0" + paddedNumber;
+//     }
+//
+//     return paddedNumber;
+//   }
+//
+//   const batchSize = 50000;
+//
+//   const raffle = {
+//     raffleImage: null,
+//     title: req.body.title,
+//     subtitle: req.body.subtitle,
+//     description: req.body.description,
+//     price: req.body.price,
+//     QuantNumbers: req.body.QuantNumbers,
+//   };
+//
+//   if (req.file) {
+//     raffle.raffleImage = req.file.filename;
+//   }
+//
+//   try {
+//     const raffleCreated = await Raffle.create(raffle);
+//
+//     const numGenerator = generateNumbers(req.body.QuantNumbers, batchSize);
+//     let batch = [];
+//
+//     for await (const num of numGenerator) {
+//       batch.push(num);
+//
+//       if (batch.length >= batchSize) {
+//         await Raffle.findOneAndUpdate(
+//           { _id: raffleCreated._id },
+//           { $push: { NumbersAvailable: { $each: batch } } },
+//         );
+//         batch = [];
+//       }
+//     }
+//
+//     if (batch.length > 0) {
+//       await Raffle.findOneAndUpdate(
+//         { _id: raffleCreated._id },
+//         { $push: { NumbersAvailable: { $each: batch } } },
+//       );
+//     }
+//
+//     res.json(raffleCreated.NumbersAvailable);
+//   } catch (error) {
+//     return res.status(400).send(error.message);
+//   }
+// };
 
-        res.json(allRaffles);
-    } catch (error) {
-        res.status(400).send(error.message);
-    }
+export const getAllRaffles = async (req, res) => {
+  try {
+    const allRaffles = await Raffle.find({});
+
+    res.json(allRaffles);
+  } catch (error) {
+    res.status(400).send(error.message);
+  }
 };
 
 export const getRaffle = async (req, res) => {
-    const { id } = req.params;
+  const { id } = req.params;
 
-    try {
-        const raffleSelected = await Raffle.findOne({ _id: id });
+  try {
+    const raffleSelected = await Raffle.findOne({ _id: id });
 
-        res.json(raffleSelected);
-    } catch (error) {
-        res.status(404).send(error.message);
-    }
+    res.json(raffleSelected);
+  } catch (error) {
+    res.status(404).send(error.message);
+  }
 };
 
 export const getBuyedNumbers = async (req, res) => {
-    const { id } = req.body;
+  const { id } = req.body;
 
-    console.log(id);
+  console.log(id);
 
-    const selectedRaffle = await Raffle.findOne({ _id: id });
+  const selectedRaffle = await Raffle.findOne({ _id: id });
 
-    try {
-        await Account.updateMany(
-            { "rafflesBuyed.raffleId": id },
-            {
-                $set: {
-                    "rafflesBuyed.$.title": selectedRaffle.title,
-                    "rafflesBuyed.$.raffleImage": selectedRaffle.raffleImage,
-                },
-            },
-        );
-        const users = await Account.find({
-            "rafflesBuyed.raffleId": id,
-            "rafflesBuyed.status": "approved",
-        });
+  try {
+    await Account.updateMany(
+      { "rafflesBuyed.raffleId": id },
+      {
+        $set: {
+          "rafflesBuyed.$.title": selectedRaffle.title,
+          "rafflesBuyed.$.raffleImage": selectedRaffle.raffleImage,
+        },
+      },
+    );
+    const users = await Account.find({
+      "rafflesBuyed.raffleId": id,
+      "rafflesBuyed.status": "approved",
+    });
 
-        res.send(users);
-    } catch (error) {
-        console.log(error);
-        res.status(404).send(error.message);
-    }
+    res.send(users);
+  } catch (error) {
+    console.log(error);
+    res.status(404).send(error.message);
+  }
 };
 
 export const updateRaffle = async (req, res) => {
-    const { error } = updateRaffleValidate(req.body);
+  const { error } = updateRaffleValidate(req.body);
 
-    if (error) {
-        return res.status(400).send(error.message);
-    }
+  if (error) {
+    return res.status(400).send(error.message);
+  }
 
-    const raffle = await Raffle.findOne({ _id: req.body.id });
+  const raffle = await Raffle.findOne({ _id: req.body.id });
 
-    console.log(raffle);
+  console.log(raffle);
 
-    const newRaffle = {
-        raffleImage: raffle.raffleImage,
-        title: req.body.title,
-        subtitle: req.body.subtitle,
-        description: req.body.description,
-        price: req.body.price,
-    };
+  const newRaffle = {
+    raffleImage: raffle.raffleImage,
+    title: req.body.title,
+    subtitle: req.body.subtitle,
+    description: req.body.description,
+    price: req.body.price,
+  };
 
-    if (req.file) {
-        newRaffle.raffleImage = req.file.filename;
-    }
+  if (req.file) {
+    newRaffle.raffleImage = req.file.filename;
+  }
 
-    try {
-        await Raffle.findOneAndUpdate({ _id: req.body.id }, newRaffle);
+  try {
+    await Raffle.findOneAndUpdate({ _id: req.body.id }, newRaffle);
 
-        const selectedRaffleUpdated = await Raffle.findById(req.body.id);
+    const selectedRaffleUpdated = await Raffle.findById(req.body.id);
 
-        return res.json(selectedRaffleUpdated);
-    } catch (error) {
-        return res.status(400).send(error.message);
-    }
+    return res.json(selectedRaffleUpdated);
+  } catch (error) {
+    return res.status(400).send(error.message);
+  }
 };
 
 export const finishRaffle = async (req, res) => {
-    const { id, number } = req.body;
+  const { id, number } = req.body;
 
-    const raffleSelected = await Raffle.findOne({ _id: id });
+  const raffleSelected = await Raffle.findOne({ _id: id });
 
-    const chosenNumberContainsOnRaffle = raffleSelected.BuyedNumbers.includes(number);
+  const chosenNumberContainsOnRaffle =
+    raffleSelected.BuyedNumbers.includes(number);
 
-    if (!chosenNumberContainsOnRaffle) {
-        return res.status(404).send("Número não foi comprado, insira outro número");
+  if (!chosenNumberContainsOnRaffle) {
+    return res.status(404).send("Número não foi comprado, insira outro número");
+  }
+
+  try {
+    const winner = await Account.findOne({
+      "rafflesBuyed.numbersBuyed": number,
+      "rafflesBuyed.status": "approved",
+    });
+
+    console.log(winner);
+
+    if (!winner) {
+      return res
+        .status(404)
+        .send("Usuário não encontrado, insira um novo número");
     }
 
-    try {
-        const winner = await Account.findOne({
-            "rafflesBuyed.numbersBuyed": number,
-            "rafflesBuyed.status": "approved",
-        });
+    const winnerCreated = await Winner.create({
+      name: winner.name,
+      tel: winner.tel,
+      email: winner.email,
+      profileImage: winner.profileImage,
+      raffleNumber: number,
+      raffleId: id,
+      raffleTitle: raffleSelected.title,
+      raffleImage: raffleSelected.raffleImage,
+    });
 
-        console.log(winner);
+    await Raffle.updateOne(
+      { _id: id },
+      {
+        $set: {
+          isFinished: true,
+        },
+      },
+    );
 
-        if (!winner) {
-            return res.status(404).send("Usuário não encontrado, insira um novo número");
-        }
-
-        const winnerCreated = await Winner.create({
-            name: winner.name,
-            tel: winner.tel,
-            email: winner.email,
-            profileImage: winner.profileImage,
-            raffleNumber: number,
-            raffleId: id,
-            raffleTitle: raffleSelected.title,
-            raffleImage: raffleSelected.raffleImage,
-        });
-
-        await Raffle.updateOne(
-            { _id: id },
-            {
-                $set: {
-                    isFinished: true,
-                },
-            },
-        );
-
-        res.json(winnerCreated);
-    } catch (error) {
-        return res.status(404).send(error.message);
-    }
+    res.json(winnerCreated);
+  } catch (error) {
+    return res.status(404).send(error.message);
+  }
 };
 
 export const deleteRaffle = async (req, res) => {
-    const { id } = req.params;
+  const { id } = req.params;
 
-    try {
-        await Raffle.deleteOne({ _id: id });
+  try {
+    await Raffle.deleteOne({ _id: id });
 
-        const raffles = await Raffle.find();
+    const raffles = await Raffle.find();
 
-        return res.status(200).json(raffles);
-    } catch (error) {
-        return res.status(400).json({ message: error.message });
-    }
+    return res.status(200).json(raffles);
+  } catch (error) {
+    return res.status(400).json({ message: error.message });
+  }
 };

@@ -237,8 +237,6 @@ const RaffleSelectedContent = () => {
           console.log(user._id);
           console.log(user);
 
-          // TODO arrumar preço que esta retornando
-
           api
             .post("/account/raffle-buy", {
               id: user._id,
@@ -316,25 +314,9 @@ const RaffleSelectedContent = () => {
 
         <div className="raffle-selected__raffle-selected-content__container__social-wrapper">
           <a
-            href="#"
-            className="raffle-selected__raffle-selected-content__container__social-wrapper__social"
-          >
-            <BsFacebook />
-          </a>
-          <a
-            href="#"
-            className="raffle-selected__raffle-selected-content__container__social-wrapper__social"
-          >
-            <BsTelegram />
-          </a>
-          <a
-            href="#"
-            className="raffle-selected__raffle-selected-content__container__social-wrapper__social"
-          >
-            <BsTwitter />
-          </a>
-          <a
-            href="#"
+            href={`${import.meta.env.VITE_WHATSAPP_BASE_API}`}
+            target="_blank"
+            rel="norefferer noopener"
             className="raffle-selected__raffle-selected-content__container__social-wrapper__social"
           >
             <BsWhatsapp />
