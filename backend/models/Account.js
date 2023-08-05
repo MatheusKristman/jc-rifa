@@ -17,14 +17,16 @@ const AccountSchema = new mongoose.Schema({
   reference: { type: String },
   rafflesBuyed: [
     {
-      paymentId: String,
-      raffleId: String,
-      title: String,
-      raffleImage: { data: Buffer, contentType: String },
+      paymentId: { type: String },
+      raffleId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Raffle",
+        required: true,
+      },
       pricePaid: { type: Number },
       status: { type: String },
       numberQuant: { type: Number },
-      numbersBuyed: [String],
+      numbersBuyed: { type: Array },
     },
   ],
   admin: { type: Boolean, default: false },

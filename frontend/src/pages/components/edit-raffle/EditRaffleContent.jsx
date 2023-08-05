@@ -227,6 +227,7 @@ const EditRaffleContent = () => {
   const finishRaffle = () => {
     if (finishNumber) {
       setToChooseWinner();
+
       api
         .post("/raffle/generate-a-winner", {
           id: raffleSelected._id,
@@ -235,20 +236,12 @@ const EditRaffleContent = () => {
         .then((res) => {
           setWinner(res.data);
           setFinishNumberError("");
-          setNotToChooseWinner();
         })
         .catch((error) => {
           console.log(error);
-          setNotToChooseWinner();
           if (
             error?.response.data ===
             "Número não foi comprado, insira outro número"
-          ) {
-            setFinishNumberError(error.response.data);
-            setWinner({});
-          } else if (
-            error?.response.data ===
-            "Usuário não encontrado, insira um novo número"
           ) {
             setFinishNumberError(error.response.data);
             setWinner({});
@@ -256,6 +249,9 @@ const EditRaffleContent = () => {
             setFinishNumberError("Ocorreu um erro, insiro um novo número");
             setWinner({});
           }
+        })
+        .finally(() => {
+          setNotToChooseWinner();
         });
     } else {
       setFinishNumberError("");
@@ -271,9 +267,35 @@ const EditRaffleContent = () => {
           setWinner({});
           setFinishNumberFromFetch("");
           setFinishNumberError("");
+
+          toast.success("Ganhador removido com sucesso", {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "dark",
+          });
         }
       })
-      .catch((error) => console.log(error));
+      .catch((error) => {
+        console.log(error);
+        toast.error(
+          "Ocorreu um erro ao remover ganhador da Rifa, tente novamente",
+          {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "dark",
+          },
+        );
+      });
   };
 
   const handleBackButton = () => {
@@ -297,16 +319,17 @@ const EditRaffleContent = () => {
       if (raffleSelected.hasOwnProperty("_id") && participants.length === 0) {
         setToLoadUsersNumberBuyed();
         api
-          .post("/edit-raffle/get-users", {
+          .post("/account/get-users-with-raffle-numbers", {
             id: raffleSelected._id,
           })
           .then((res) => {
-            setNotToLoadUsersNumberBuyed();
             setParticipants(res.data);
           })
           .catch((error) => {
             console.log(error);
             setParticipants([]);
+          })
+          .finally(() => {
             setNotToLoadUsersNumberBuyed();
           });
       }
@@ -318,13 +341,16 @@ const EditRaffleContent = () => {
         raffleSelected.hasOwnProperty("_id")
       ) {
         setToFetchWinner();
+
         api
-          .post("/edit-raffle/winner", { title: raffleSelected.title })
+          .post("/winner/get-winner", { raffleId: raffleSelected._id })
           .then((res) => {
             setWinner(res.data);
-            setNotToFetchWinner();
           })
           .catch((error) => {
+            console.log(error);
+          })
+          .finally(() => {
             setNotToFetchWinner();
           });
       }
@@ -339,6 +365,7 @@ const EditRaffleContent = () => {
         .get(`/raffle/get-raffle-selected/${id}`)
         .then((res) => {
           setRaffleSelected(res.data);
+
           if (res.data.raffleImage) {
             if (
               JSON.stringify(import.meta.env.MODE) ===
@@ -385,7 +412,6 @@ const EditRaffleContent = () => {
           console.log(error);
         })
         .finally(() => {
-          console.log("finalizado o loading dos raffle selected");
           fetchWinner();
           fetchRaffleParticipants();
 
@@ -401,10 +427,14 @@ const EditRaffleContent = () => {
   }, []);
 
   useEffect(() => {
-    if (raffleSelected.hasOwnProperty("NumbersAvailable")) {
-      const actualProgress =
-        raffleSelected.QuantNumbers - raffleSelected.NumbersAvailable.length;
-      setProgress(actualProgress, raffleSelected.QuantNumbers);
+    if (
+      raffleSelected.hasOwnProperty("quantNumbers") &&
+      raffleSelected.hasOwnProperty("quantBuyedNumbers")
+    ) {
+      setProgress(
+        raffleSelected.quantBuyedNumbers,
+        raffleSelected.quantNumbers,
+      );
     }
   }, [raffleSelected]);
 
@@ -552,13 +582,24 @@ const EditRaffleContent = () => {
             )}
           </div>
 
-          <textarea
-            className="edit-raffle__content__container__statistics-wrapper__remaining-numbers"
-            value={raffleSelected.NumbersAvailable?.map(
-              (number) => " " + number,
-            )}
-            readOnly
-          />
+          <div className="edit-raffle__content__container__statistics-wrapper__numbers-status">
+            <div className="edit-raffle__content__container__statistics-wrapper__numbers-status__numbers-quant">
+              <h3 className="edit-raffle__content__container__statistics-wrapper__numbers-status__numbers-quant__quant">
+                {raffleSelected.quantNumbers - raffleSelected.quantBuyedNumbers}
+              </h3>
+              <p className="edit-raffle__content__container__statistics-wrapper__numbers-status__numbers-quant__desc">
+                Disponível
+              </p>
+            </div>
+            <div className="edit-raffle__content__container__statistics-wrapper__numbers-status__numbers-quant">
+              <h3 className="edit-raffle__content__container__statistics-wrapper__numbers-status__numbers-quant__quant">
+                {raffleSelected.quantBuyedNumbers}
+              </h3>
+              <p className="edit-raffle__content__container__statistics-wrapper__numbers-status__numbers-quant__desc">
+                Comprados
+              </p>
+            </div>
+          </div>
         </div>
 
         <h1 className="edit-raffle__content__container__title">Editar Rifa</h1>

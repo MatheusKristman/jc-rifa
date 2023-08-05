@@ -35,13 +35,11 @@ export const createUser = async (req, res) => {
   }
 
   try {
-    await Account.create(user);
-
-    const selectedUser = await Account.findOne({ tel: req.body.tel });
+    const newUser = await Account.create(user);
 
     const daysToExpire = "15d";
     const token = jwt.sign(
-      { _id: selectedUser._id, admin: selectedUser.admin },
+      { _id: newUser._id, admin: newUser.admin },
       process.env.TOKEN_SECRET,
       {
         expiresIn: daysToExpire,
@@ -97,9 +95,11 @@ export const updateUser = async (req, res) => {
   }
 
   try {
-    await Account.findOneAndUpdate({ _id: req.body.id }, userData);
-
-    const selectedUserUpdated = await Account.findById(req.body.id);
+    const selectedUserUpdated = await Account.findOneAndUpdate(
+      { _id: req.body.id },
+      userData,
+      { new: true },
+    );
 
     return res.json(selectedUserUpdated);
   } catch (error) {
@@ -122,8 +122,6 @@ export const login = async (req, res) => {
   if (selectedUser.admin) {
     return res.status(200).json({ isAdmin: true });
   }
-
-  console.log("passou validação");
 
   const daysToExpire = "15d";
 
@@ -153,9 +151,6 @@ export const loginAdmin = async (req, res) => {
 
   const passwordCompared = req.body.password === selectedUser.password;
 
-  console.log("db: " + selectedUser.password);
-  console.log("body: " + req.body.password);
-
   if (!passwordCompared) {
     return res.status(400).send("Usuário incorreto");
   }
@@ -174,133 +169,256 @@ export const loginAdmin = async (req, res) => {
 };
 
 export const buyRaffle = async (req, res) => {
-  const {
-    id,
-    raffleId,
-    paymentId,
-    numbersAvailableToBuy,
-    numbersBuyed,
-    pricePaid,
-    status,
-    numberQuant,
-  } = req.body;
-
-  console.log("req.body: ", req.body);
-
-  const selectedUser = await Account.findOne({ _id: id });
-
-  if (!selectedUser) {
-    return res.status(404).send("Usuário não encontrado");
-  }
-
-  const raffleSelected = await Raffle.findOne({ _id: raffleId });
-
-  if (!raffleSelected) {
-    return res.status(404).send("Rifa não encontrada");
-  }
-
-  let numbersAlreadyBuyed = [...raffleSelected.BuyedNumbers];
-
-  numbersAlreadyBuyed = [...numbersAlreadyBuyed, ...req.body.numbersBuyed];
+  const { id, raffleId, paymentId, pricePaid, status, numberQuant } = req.body;
 
   try {
+    const selectedUser = await Account.findOne({ _id: id });
+
+    if (!selectedUser) {
+      return res.status(404).send("Usuário não encontrado");
+    }
+
+    const raffleSelected = await Raffle.findOne({ _id: raffleId });
+
+    if (!raffleSelected) {
+      return res.status(404).send("Rifa não encontrada");
+    }
+
+    if (
+      numberQuant >
+      raffleSelected.quantNumbers - raffleSelected.quantBuyedNumbers
+    ) {
+      return res
+        .status(406)
+        .send(
+          "A quantidade de números passa da quantidade disponível para compra",
+        );
+    }
+
+    const boughtNumbers = [];
+
+    const usersWithRaffle = await Account.find({
+      "rafflesBuyed.raffleId": raffleId,
+    });
+
+    usersWithRaffle.forEach((user) => {
+      user.rafflesBuyed.forEach((raffleEntry) => {
+        if (raffleEntry.raffleId.equals(raffleId)) {
+          boughtNumbers.push(...raffleEntry.numbersBuyed);
+        }
+      });
+    });
+
+    function generateNumbers(quant) {
+      let arrNumbers = [];
+      let length = 0;
+
+      if (quant <= 100) {
+        arrNumbers.push("00");
+        length = 2;
+      } else if (quant <= 1000) {
+        arrNumbers = ["000"];
+        length = 3;
+      } else if (quant <= 10000) {
+        arrNumbers = ["0000"];
+        length = 4;
+      } else if (quant <= 100000) {
+        arrNumbers = ["00000"];
+        length = 5;
+      } else if (quant <= 1000000) {
+        arrNumbers = ["000000"];
+        length = 6;
+      }
+
+      for (let i = 1; i < quant; i++) {
+        let lastString = arrNumbers[i - 1];
+
+        let newString = padNumber(parseInt(lastString) + 1, length);
+
+        arrNumbers.push(newString);
+      }
+
+      return arrNumbers;
+    }
+
+    function padNumber(number, size) {
+      let paddedNumber = number.toString();
+
+      while (paddedNumber.length < size) {
+        paddedNumber = "0" + paddedNumber;
+      }
+
+      return paddedNumber;
+    }
+
+    const numbers = generateNumbers(raffleSelected.quantNumbers);
+
+    const numbersAvailable = numbers.filter(
+      (number) => !boughtNumbers.includes(number),
+    );
+    const numbersBuyed = [];
+
+    for (let i = 0; i < numberQuant; i++) {
+      const random = Math.floor(Math.random() * numbersAvailable.length);
+      const chosenNumber = numbersAvailable.splice(random, 1)[0];
+      numbersBuyed.push(chosenNumber);
+    }
+
     await Raffle.findOneAndUpdate(
       { _id: raffleId },
       {
-        $set: {
-          NumbersAvailable: numbersAvailableToBuy,
-          BuyedNumbers: numbersAlreadyBuyed,
+        $inc: {
+          quantBuyedNumbers: numberQuant,
         },
       },
     );
+
+    const userUpdated = await Account.findOneAndUpdate(
+      { _id: id },
+      {
+        $push: {
+          rafflesBuyed: {
+            raffleId,
+            pricePaid,
+            paymentId,
+            status,
+            numberQuant,
+            numbersBuyed,
+          },
+        },
+      },
+      {
+        new: true,
+      },
+    );
+
+    return res.status(200).send(userUpdated);
   } catch (error) {
     return res.status(400).send(error.message);
   }
 
-  const alreadyBuyedNumbers = await Account.find({
-    "rafflesBuyed.raffleId": { $eq: raffleId },
-    _id: id,
-  });
+  // testar e depois apagar
+  //
+  // let numbersAlreadyBuyed = [...raffleSelected.BuyedNumbers];
+  //
+  // numbersAlreadyBuyed = [...numbersAlreadyBuyed, ...req.body.numbersBuyed];
+  //
+  // try {
+  //   await Raffle.findOneAndUpdate(
+  //     { _id: raffleId },
+  //     {
+  //       $set: {
+  //         NumbersAvailable: numbersAvailableToBuy,
+  //         BuyedNumbers: numbersAlreadyBuyed,
+  //       },
+  //     },
+  //   );
+  // } catch (error) {
+  //   return res.status(400).send(error.message);
+  // }
+  //
+  // const alreadyBuyedNumbers = await Account.find({
+  //   "rafflesBuyed.raffleId": { $eq: raffleId },
+  //   _id: id,
+  // });
+  //
+  // let actualNumbersBuyed = [];
+  //
+  // if (alreadyBuyedNumbers.length !== 0) {
+  //   actualNumbersBuyed = [
+  //     ...selectedUser.rafflesBuyed.filter(
+  //       (raffle) => raffle.raffleId === raffleId,
+  //     )[0].numbersBuyed,
+  //   ];
+  // }
+  //
+  // const newRaffleBuyed = {
+  //   raffleId: raffleId,
+  //   title: raffleSelected.title,
+  //   raffleImage: raffleSelected.raffleImage,
+  //   pricePaid: Number(pricePaid),
+  //   paymentId: paymentId,
+  //   status: status,
+  //   numberQuant: Number(numberQuant),
+  //   numbersBuyed:
+  //     actualNumbersBuyed.length !== 0
+  //       ? [...actualNumbersBuyed, ...numbersBuyed]
+  //       : numbersBuyed,
+  // };
+  //
+  // if (alreadyBuyedNumbers.length !== 0) {
+  //   try {
+  //     await Account.findOneAndUpdate(
+  //       { _id: id },
+  //       {
+  //         $set: {
+  //           "rafflesBuyed.$[elem].numbersBuyed": newRaffleBuyed.numbersBuyed,
+  //           "rafflesBuyed.$[elem].paymentId": newRaffleBuyed.paymentId,
+  //           "rafflesBuyed.$[elem].status": newRaffleBuyed.status,
+  //         },
+  //         $inc: {
+  //           "rafflesBuyed.$[elem].numberQuant": newRaffleBuyed.numberQuant,
+  //           "rafflesBuyed.$[elem].pricePaid": Number(newRaffleBuyed.pricePaid),
+  //         },
+  //       },
+  //       {
+  //         arrayFilters: [
+  //           {
+  //             "elem.raffleId": newRaffleBuyed.raffleId,
+  //           },
+  //         ],
+  //       },
+  //     );
+  //   } catch (error) {
+  //     return res.status(400).send(error.message);
+  //   }
+  // } else {
+  //   try {
+  //     await Account.findOneAndUpdate(
+  //       { _id: id },
+  //       {
+  //         $push: {
+  //           rafflesBuyed: [
+  //             {
+  //               raffleId: newRaffleBuyed.raffleId,
+  //               title: newRaffleBuyed.title,
+  //               raffleImage: newRaffleBuyed.raffleImage,
+  //               pricePaid: newRaffleBuyed.pricePaid,
+  //               paymentId: newRaffleBuyed.paymentId,
+  //               status: newRaffleBuyed.status,
+  //               numberQuant: newRaffleBuyed.numberQuant,
+  //               numbersBuyed: newRaffleBuyed.numbersBuyed,
+  //             },
+  //           ],
+  //         },
+  //       },
+  //     );
+  //   } catch (error) {
+  //     return res.status(400).send(error.message);
+  //   }
+  // }
+  //
+  // const userUpdated = await Account.findOne({ _id: id });
+  //
+  // res.json(userUpdated);
+};
 
-  let actualNumbersBuyed = [];
+export const getBuyedNumbers = async (req, res) => {
+  const { id } = req.body;
 
-  if (alreadyBuyedNumbers.length !== 0) {
-    actualNumbersBuyed = [
-      ...selectedUser.rafflesBuyed.filter(
-        (raffle) => raffle.raffleId === raffleId,
-      )[0].numbersBuyed,
-    ];
+  console.log(id);
+
+  try {
+    const users = await Account.find({
+      "rafflesBuyed.raffleId": id,
+      "rafflesBuyed.status": "approved",
+    });
+
+    res.send(users);
+  } catch (error) {
+    console.log(error);
+    res.status(404).send(error.message);
   }
-
-  const newRaffleBuyed = {
-    raffleId: raffleId,
-    title: raffleSelected.title,
-    raffleImage: raffleSelected.raffleImage,
-    pricePaid: Number(pricePaid),
-    paymentId: paymentId,
-    status: status,
-    numberQuant: Number(numberQuant),
-    numbersBuyed:
-      actualNumbersBuyed.length !== 0
-        ? [...actualNumbersBuyed, ...numbersBuyed]
-        : numbersBuyed,
-  };
-
-  if (alreadyBuyedNumbers.length !== 0) {
-    try {
-      await Account.findOneAndUpdate(
-        { _id: id },
-        {
-          $set: {
-            "rafflesBuyed.$[elem].numbersBuyed": newRaffleBuyed.numbersBuyed,
-            "rafflesBuyed.$[elem].paymentId": newRaffleBuyed.paymentId,
-            "rafflesBuyed.$[elem].status": newRaffleBuyed.status,
-          },
-          $inc: {
-            "rafflesBuyed.$[elem].numberQuant": newRaffleBuyed.numberQuant,
-            "rafflesBuyed.$[elem].pricePaid": Number(newRaffleBuyed.pricePaid),
-          },
-        },
-        {
-          arrayFilters: [
-            {
-              "elem.raffleId": newRaffleBuyed.raffleId,
-            },
-          ],
-        },
-      );
-    } catch (error) {
-      return res.status(400).send(error.message);
-    }
-  } else {
-    try {
-      await Account.findOneAndUpdate(
-        { _id: id },
-        {
-          $push: {
-            rafflesBuyed: [
-              {
-                raffleId: newRaffleBuyed.raffleId,
-                title: newRaffleBuyed.title,
-                raffleImage: newRaffleBuyed.raffleImage,
-                pricePaid: newRaffleBuyed.pricePaid,
-                paymentId: newRaffleBuyed.paymentId,
-                status: newRaffleBuyed.status,
-                numberQuant: newRaffleBuyed.numberQuant,
-                numbersBuyed: newRaffleBuyed.numbersBuyed,
-              },
-            ],
-          },
-        },
-      );
-    } catch (error) {
-      return res.status(400).send(error.message);
-    }
-  }
-
-  const userUpdated = await Account.findOne({ _id: id });
-
-  res.json(userUpdated);
 };
 
 export const readUserBuyedNumbers = async (req, res) => {
@@ -353,15 +471,15 @@ export const paymentCanceled = async (req, res) => {
 
   let userToModify = await Account.findOne({ _id: id });
 
-  let newNumbersAvailable = userToModify.rafflesBuyed.filter(
-    (raffle) => raffle.raffleId == raffleId,
-  )[0]?.numbersBuyed;
+  let quantToBeRemoved = userToModify.rafflesBuyed.filter(
+    (raffle) => raffle.paymentId == paymentId,
+  )[0]?.numbersBuyed?.length;
 
   userToModify = userToModify.rafflesBuyed.filter((raffle) => {
     return raffle.raffleId !== raffleId;
   });
 
-  if (paymentId && id && newNumbersAvailable) {
+  if (paymentId && id && quantToBeRemoved) {
     try {
       const userSelected = await Account.findOneAndUpdate(
         { _id: id },
@@ -377,7 +495,7 @@ export const paymentCanceled = async (req, res) => {
 
       return res.send({
         user: userSelected,
-        rafflesBuyed: newNumbersAvailable,
+        quantToBeRemoved,
       });
     } catch (error) {
       return res.status(400).send(error.message);
@@ -390,9 +508,8 @@ export const deleteCanceledNumbers = async (req, res) => {
     await Raffle.findOneAndUpdate(
       { _id: req.body.raffleId },
       {
-        $set: {
-          NumbersAvailable: req.body.numbersAvailableFromRaffle,
-          BuyedNumbers: req.body.numbersBuyedFromRaffle,
+        $inc: {
+          quantBuyedNumbers: -req.body.quantToBeRemoved,
         },
       },
     );

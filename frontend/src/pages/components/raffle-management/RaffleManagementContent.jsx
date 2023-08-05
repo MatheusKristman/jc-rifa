@@ -92,6 +92,7 @@ const RaffleManagementContent = () => {
   }, [setRaffles]);
 
   const convertProgress = (current, total) => {
+    console.log((100 * current) / total); // ver quanto da quando for comprado
     return (100 * current) / total;
   };
 
@@ -129,8 +130,8 @@ const RaffleManagementContent = () => {
                     subtitle={raffle.subtitle}
                     image={rafflesImagesUrls[index]}
                     progress={convertProgress(
-                      raffle?.QuantNumbers - raffle?.NumbersAvailable.length,
-                      raffle?.QuantNumbers,
+                      raffle?.quantBuyedNumbers,
+                      raffle?.quantNumbers,
                     )}
                     winner={raffle?.isFinished}
                   />

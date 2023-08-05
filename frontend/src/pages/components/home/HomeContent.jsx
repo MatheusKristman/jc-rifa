@@ -59,8 +59,8 @@ const PrizesHome = () => {
           title={raffles[0]?.title}
           subtitle={raffles[0]?.subtitle}
           progress={convertProgress(
-            raffles[0]?.QuantNumbers - raffles[0]?.NumbersAvailable.length,
-            raffles[0]?.QuantNumbers,
+            raffles[0]?.quantBuyedNumbers,
+            raffles[0]?.quantNumbers,
           )}
           winner={raffles[0]?.isFinished}
         />
@@ -77,8 +77,8 @@ const PrizesHome = () => {
             subtitle={raffle.subtitle}
             image={rafflesImagesUrls[index + 1] || null}
             progress={convertProgress(
-              raffle?.QuantNumbers - raffle?.NumbersAvailable.length,
-              raffle?.QuantNumbers,
+              raffle?.quantBuyedNumbers,
+              raffle?.quantNumbers,
             )}
           />
         </div>
@@ -134,7 +134,7 @@ const WinnersHome = () => {
             <WinnerBox
               key={winner._id}
               profileImage={
-                winner.profileImage?.data
+                winner.profileImage?.data // TODO arrumar a forma que recebe a foto de perfil do usuário
                   ? `data:${
                       winner.profileImage.contentType
                     };base64,${_arrayBufferToBase64(
@@ -143,7 +143,7 @@ const WinnersHome = () => {
                   : NoUserPhoto
               }
               name={winner.name}
-              raffleTitle={winner.raffleTitle}
+              raffleTitle={winner.raffleTitle} // TODO arrumar a forma que recebe os dados da rifa
               raffleNumber={winner.raffleNumber}
               raffleImage={
                 winner.raffleImage?.data

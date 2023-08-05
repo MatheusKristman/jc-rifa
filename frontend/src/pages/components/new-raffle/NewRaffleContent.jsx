@@ -84,7 +84,10 @@ const NewRaffleContent = () => {
     }),
     shallow,
   );
-  const { setRaffles } = useRaffleStore((state) => ({ setRaffles: state.setRaffles }), shallow);
+  const { setRaffles } = useRaffleStore(
+    (state) => ({ setRaffles: state.setRaffles }),
+    shallow,
+  );
   const { setToLoad, setNotToLoad } = useGeneralStore((state) => ({
     setToLoad: state.setToLoad,
     setNotToLoad: state.setNotToLoad,
@@ -172,7 +175,7 @@ const NewRaffleContent = () => {
           formData.append("subtitle", subtitle);
           formData.append("description", description);
           formData.append("price", price);
-          formData.append("QuantNumbers", raffleNumbers);
+          formData.append("quantNumbers", raffleNumbers);
 
           console.log(formData);
 
@@ -183,15 +186,6 @@ const NewRaffleContent = () => {
               },
             })
             .then(() => {
-              api
-                .get("/create-new-raffle/get-raffles")
-                .then((res) => {
-                  setRaffles(res.data);
-                })
-                .catch((error) => {
-                  console.log(error);
-                });
-
               raffleCreatedSuccess();
               setRaffleCreatedMessage("Rifa criada com sucesso");
             })
@@ -239,15 +233,24 @@ const NewRaffleContent = () => {
   return (
     <div className="new-raffle__content">
       <div className="new-raffle__content__container">
-        <h1 className="new-raffle__content__container__title">Criando uma nova rifa</h1>
+        <h1 className="new-raffle__content__container__title">
+          Criando uma nova rifa
+        </h1>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="new-raffle__content__container__form">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="new-raffle__content__container__form"
+        >
           <label
             htmlFor="raffleImage"
-            className="new-raffle__content__container__form__image-label">
+            className="new-raffle__content__container__form__image-label"
+          >
             <div
               className="new-raffle__content__container__form__image-label__image-box"
-              style={raffleImageError ? { border: "2px solid rgb(209, 52, 52)" } : {}}>
+              style={
+                raffleImageError ? { border: "2px solid rgb(209, 52, 52)" } : {}
+              }
+            >
               <img
                 src={actualRaffleImageUrl ? actualRaffleImageUrl : DefaultPrize}
                 alt="Perfil"
@@ -270,7 +273,8 @@ const NewRaffleContent = () => {
           <div className="new-raffle__content__container__form__inputs-box">
             <label
               htmlFor="title"
-              className="new-raffle__content__container__form__inputs-box__label">
+              className="new-raffle__content__container__form__inputs-box__label"
+            >
               Título
               <input
                 {...register("title")}
@@ -279,7 +283,9 @@ const NewRaffleContent = () => {
                 id="title"
                 value={title}
                 onChange={setTitle}
-                style={errors.title ? { border: "2px solid rgb(209, 52, 52)" } : {}}
+                style={
+                  errors.title ? { border: "2px solid rgb(209, 52, 52)" } : {}
+                }
                 className="new-raffle__content__container__form__inputs-box__label__input"
               />
             </label>
@@ -287,7 +293,8 @@ const NewRaffleContent = () => {
 
             <label
               htmlFor="subtitle"
-              className="new-raffle__content__container__form__inputs-box__label">
+              className="new-raffle__content__container__form__inputs-box__label"
+            >
               Subtítulo
               <input
                 {...register("subtitle")}
@@ -296,7 +303,11 @@ const NewRaffleContent = () => {
                 id="subtitle"
                 value={subtitle}
                 onChange={setSubtitle}
-                style={errors.subtitle ? { border: "2px solid rgb(209, 52, 52)" } : {}}
+                style={
+                  errors.subtitle
+                    ? { border: "2px solid rgb(209, 52, 52)" }
+                    : {}
+                }
                 className="new-raffle__content__container__form__inputs-box__label__input"
               />
             </label>
@@ -304,7 +315,8 @@ const NewRaffleContent = () => {
 
             <label
               htmlFor="description"
-              className="new-raffle__content__container__form__inputs-box__label">
+              className="new-raffle__content__container__form__inputs-box__label"
+            >
               Descrição
               <textarea
                 {...register("description")}
@@ -312,7 +324,11 @@ const NewRaffleContent = () => {
                 name="description"
                 value={description}
                 onChange={setDescription}
-                style={errors.description ? { border: "2px solid rgb(209, 52, 52)" } : {}}
+                style={
+                  errors.description
+                    ? { border: "2px solid rgb(209, 52, 52)" }
+                    : {}
+                }
                 className="new-raffle__content__container__form__inputs-box__label__textarea"
               />
             </label>
@@ -320,7 +336,8 @@ const NewRaffleContent = () => {
 
             <label
               htmlFor="price"
-              className="new-raffle__content__container__form__inputs-box__label">
+              className="new-raffle__content__container__form__inputs-box__label"
+            >
               Preço por números
               <input
                 {...register("price")}
@@ -329,7 +346,9 @@ const NewRaffleContent = () => {
                 id="price"
                 value={price}
                 onChange={(e) => coinMask(e)}
-                style={errors.price ? { border: "2px solid rgb(209, 52, 52)" } : {}}
+                style={
+                  errors.price ? { border: "2px solid rgb(209, 52, 52)" } : {}
+                }
                 className="new-raffle__content__container__form__inputs-box__label__input"
               />
             </label>
@@ -337,7 +356,8 @@ const NewRaffleContent = () => {
 
             <label
               htmlFor="QuantNumbers"
-              className="new-raffle__content__container__form__inputs-box__label">
+              className="new-raffle__content__container__form__inputs-box__label"
+            >
               Quantidade de Números
               <select
                 {...register("QuantNumbers")}
@@ -345,8 +365,13 @@ const NewRaffleContent = () => {
                 id="QuantNumbers"
                 value={raffleNumbers}
                 onChange={setRaffleNumbers}
-                style={errors.QuantNumbers ? { border: "2px solid rgb(209, 52, 52)" } : {}}
-                className="new-raffle__content__container__form__inputs-box__label__select">
+                style={
+                  errors.QuantNumbers
+                    ? { border: "2px solid rgb(209, 52, 52)" }
+                    : {}
+                }
+                className="new-raffle__content__container__form__inputs-box__label__select"
+              >
                 {numbersOptions.map((numbers, index) => (
                   <option key={`number-${index}`} value={numbers}>
                     {numbers}
@@ -357,7 +382,10 @@ const NewRaffleContent = () => {
             {errors.QuantNumbers && <span>{errors.QuantNumbers.message}</span>}
           </div>
 
-          <button type="submit" className="new-raffle__content__container__form__submit-btn">
+          <button
+            type="submit"
+            className="new-raffle__content__container__form__submit-btn"
+          >
             Salvar
           </button>
         </form>

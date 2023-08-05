@@ -103,24 +103,9 @@ const Home = () => {
                     .then((res) => {
                       console.log(res.data);
 
-                      const raffleSelected = raffles.filter(
-                        (raffle) => raffle._id == raffleToBeDeleted[0].raffleId,
-                      );
-                      let numbersAvailableFromRaffle = [
-                        ...raffleSelected[0]?.NumbersAvailable,
-                        ...res.data.rafflesBuyed,
-                      ];
-                      let numbersBuyedFromRaffle = [
-                        ...raffleSelected[0].BuyedNumbers.filter(
-                          (number) =>
-                            !numbersAvailableFromRaffle.includes(number),
-                        ),
-                      ];
-
                       const body = {
                         raffleId: raffleToBeDeleted[0].raffleId,
-                        numbersAvailableFromRaffle: numbersAvailableFromRaffle,
-                        numbersBuyedFromRaffle: numbersBuyedFromRaffle,
+                        quantToBeRemoved: res.data.quantToBeRemoved,
                       };
 
                       api

@@ -2978,17 +2978,35 @@ body {
   font-size: 1rem;
   opacity: 0.7;
 }
-.edit-raffle__content__container__statistics-wrapper__remaining-numbers {
+.edit-raffle__content__container__statistics-wrapper__numbers-status {
   border: 2px solid #151944;
-  background-color: transparent;
   border-radius: 10px;
   width: 100%;
   height: 150px;
   padding: 10px;
-  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+}
+.edit-raffle__content__container__statistics-wrapper__numbers-status__numbers-quant {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+.edit-raffle__content__container__statistics-wrapper__numbers-status__numbers-quant__quant {
   color: #fff;
-  outline: none;
-  resize: none;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+@media screen and (min-width: 500px) {
+  .edit-raffle__content__container__statistics-wrapper__numbers-status__numbers-quant__quant {
+    font-size: 2rem;
+  }
+}
+.edit-raffle__content__container__statistics-wrapper__numbers-status__numbers-quant__desc {
+  font-size: 1rem;
+  color: #d3d3d3;
 }
 .edit-raffle__content__container__form {
   background-color: #15152a;

@@ -5,6 +5,7 @@ import {
   readPayment,
   deleteCanceledNumbers,
   buyRaffle,
+  getBuyedNumbers,
   login,
   loginAdmin,
   paymentCanceled,
@@ -22,6 +23,7 @@ router.post("/update-password", updatePassword);
 router.post("/raffle-buy", buyRaffle);
 router.post("/login", login);
 router.post("/login-admin", loginAdmin);
+router.post("/get-users-with-raffle-numbers", getBuyedNumbers);
 router.delete("/payment-cancel", paymentCanceled);
 
 export default router;

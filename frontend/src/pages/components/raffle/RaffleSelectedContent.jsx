@@ -21,6 +21,8 @@ import useHeaderStore from "../../../stores/useHeaderStore";
 import useGeneralStore from "../../../stores/useGeneralStore";
 import { toast } from "react-toastify";
 
+// TODO adaptar criação e outras paginas para receber o novo formato da rifa
+
 const RaffleSelectedContent = () => {
   const {
     raffleSelected,
@@ -38,15 +40,7 @@ const RaffleSelectedContent = () => {
     numberQuant,
     incrementNumberQuant,
     decrementNumberQuant,
-    isMessageBoxDisplaying,
-    setToMessageBoxDisplay,
-    setToMessageBoxDontDisplay,
-    setMessageText,
-    isErrorBoxDisplaying,
-    setToErrorBoxDisplay,
-    setToErrorBoxDontDisplay,
     openPaymentModal,
-    closePaymentModal,
     isBuying,
     setToBuy,
     setToNotBuy,
@@ -57,15 +51,7 @@ const RaffleSelectedContent = () => {
       numberQuant: state.numberQuant,
       incrementNumberQuant: state.incrementNumberQuant,
       decrementNumberQuant: state.decrementNumberQuant,
-      isMessageBoxDisplaying: state.isMessageBoxDisplaying,
-      setToMessageBoxDisplay: state.setToMessageBoxDisplay,
-      setToMessageBoxDontDisplay: state.setToMessageBoxDontDisplay,
-      setMessageText: state.setMessageText,
-      isErrorBoxDisplaying: state.isErrorBoxDisplaying,
-      setToErrorBoxDisplay: state.setToErrorBoxDisplay,
-      setToErrorBoxDontDisplay: state.setToErrorBoxDontDisplay,
       openPaymentModal: state.openPaymentModal,
-      closePaymentModal: state.closePaymentModal,
       isBuying: state.isBuying,
       setToBuy: state.setToBuy,
       setToNotBuy: state.setToNotBuy,
@@ -144,20 +130,6 @@ const RaffleSelectedContent = () => {
   }, [raffleSelected]);
 
   useEffect(() => {
-    if (isMessageBoxDisplaying) {
-      setTimeout(() => {
-        setToMessageBoxDontDisplay();
-      }, 4000);
-    }
-
-    if (isErrorBoxDisplaying) {
-      setTimeout(() => {
-        setToErrorBoxDontDisplay();
-      }, 4000);
-    }
-  }, [isMessageBoxDisplaying, isErrorBoxDisplaying]);
-
-  useEffect(() => {
     if (isBuying) {
       document.documentElement.style.overflowY = "hidden";
     } else {
@@ -193,19 +165,14 @@ const RaffleSelectedContent = () => {
       return; // colocar alerta para informar para selecionar um número
     }
 
-    const numbersAvailableToBuy = [...raffleSelected.NumbersAvailable];
-    const numbersBuyed = [];
-
-    if (numberQuant <= numbersAvailableToBuy.length && isUserLogged) {
+    if (
+      numberQuant <=
+        raffleSelected.quantNumbers - raffleSelected.quantBuyedNumbers &&
+      isUserLogged
+    ) {
       setToBuy();
 
       const priceNumber = convertCurrencyToNumber(raffleSelected.price);
-
-      for (let i = 0; i < numberQuant; i++) {
-        const random = Math.floor(Math.random() * numbersAvailableToBuy.length);
-        const chosenNumber = numbersAvailableToBuy.splice(random, 1)[0];
-        numbersBuyed.push(chosenNumber);
-      }
 
       const data = {
         id: user._id,
@@ -224,33 +191,31 @@ const RaffleSelectedContent = () => {
         })
         .then((res) => {
           console.log(res.data.response.response);
-          setQrCodePayment(
-            res.data.response.response.point_of_interaction.transaction_data
-              .qr_code,
-          );
 
-          setPaymentLink(
+          const qrCode =
             res.data.response.response.point_of_interaction.transaction_data
-              .ticket_url,
-          );
-
-          console.log(user._id);
-          console.log(user);
+              .qr_code;
+          const ticketUrl =
+            res.data.response.response.point_of_interaction.transaction_data
+              .ticket_url;
 
           api
             .post("/account/raffle-buy", {
               id: user._id,
               raffleId: raffleSelected._id,
               paymentId: res.data.response.response.id,
-              numbersAvailableToBuy: numbersAvailableToBuy,
-              numbersBuyed: numbersBuyed,
               pricePaid: res.data.response.response.transaction_amount,
               status: res.data.response.response.status,
               numberQuant: numberQuant,
             })
             .then((res) => {
+              setQrCodePayment(qrCode);
+              setPaymentLink(ticketUrl);
+
               openPaymentModal();
+
               setToNotBuy();
+
               setUser(res.data);
             })
             .catch((error) => {
@@ -275,10 +240,22 @@ const RaffleSelectedContent = () => {
             },
           );
         });
-    } else if (numberQuant > numbersAvailableToBuy.length) {
-      setToMessageBoxDisplay();
-      setMessageText(
+    } else if (
+      numberQuant >
+      raffleSelected.quantNumbers - raffleSelected.quantBuyedNumbers
+    ) {
+      toast.error(
         "Selecione a quantidade até " + numbersAvailableToBuy.length,
+        {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        },
       );
     } else {
       openLogin();
