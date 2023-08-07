@@ -5,7 +5,7 @@ const useRaffleStore = create((set) => ({
   setRaffles: (value) => set(() => ({ raffles: value })),
   rafflesImagesUrls: [],
   setRafflesImagesUrls: (urls) => set(() => ({ rafflesImagesUrls: urls })),
-  raffleSelected: {},
+  activeRafflesImagesUrl: {},
   setRaffleSelected: (value) => set(() => ({ raffleSelected: value })),
   raffleSelectedImageUrl: "",
   setRaffleSelectedImageUrl: (url) =>
@@ -40,8 +40,12 @@ const useRaffleStore = create((set) => ({
   resetPageMultiplier: () => set(() => ({ pageMultiplier: 1 })),
   resetSliceBegin: () => set(() => ({ sliceBegin: 0 })),
   resetSliceEnd: () => set(() => ({ sliceEnd: 10 })),
-  rafflesDisplaying: [],
-  setRafflesDisplaying: (value) => set(() => ({ rafflesDisplaying: value })),
+  activeRafflesDisplaying: [],
+  setActiveRafflesDisplaying: (value) =>
+    set(() => ({ activeRafflesDisplaying: value })),
+  concludedRafflesDisplaying: [],
+  setConcludedRafflesDisplaying: (value) =>
+    set(() => ({ concludedRafflesDisplaying: value })),
   isPreviousPageBtnDisplayed: false,
   showPreviousPageBtn: () => set(() => ({ isPreviousPageBtnDisplayed: true })),
   hidePreviousPageBtn: () => set(() => ({ isPreviousPageBtnDisplayed: false })),

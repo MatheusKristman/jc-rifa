@@ -88,7 +88,7 @@ const RaffleSelectedContent = () => {
 
   useEffect(() => {
     const fetchRaffleSelected = () => {
-      if (!raffleSelected.hasOwnProperty("_id")) {
+      if (!raffleSelected?.hasOwnProperty("_id")) {
         setToRaffleLoad();
         console.log(selected);
         api
@@ -214,6 +214,8 @@ const RaffleSelectedContent = () => {
 
               openPaymentModal();
 
+              decrementNumberQuant(numberQuant);
+
               setToNotBuy();
 
               setUser(res.data);
@@ -268,24 +270,23 @@ const RaffleSelectedContent = () => {
         <div className="raffle-selected__raffle-selected-content__container__raffle-displayed">
           <PrizeDisplayed
             image={raffleSelectedImageUrl || null}
-            title={raffleSelected.title}
-            subtitle={raffleSelected.subtitle}
+            title={raffleSelected?.title}
+            subtitle={raffleSelected?.subtitle}
             progress={convertProgress(
-              raffleSelected?.QuantNumbers -
-                raffleSelected?.NumbersAvailable?.length,
-              raffleSelected?.QuantNumbers,
+              raffleSelected?.quantBuyedNumbers,
+              raffleSelected?.quantNumbers,
             )}
             winner={raffleSelected?.isFinished}
           />
         </div>
 
         <span className="raffle-selected__raffle-selected-content__container__price-tag">
-          POR APENAS <strong>{raffleSelected.price}</strong>
+          POR APENAS <strong>{raffleSelected?.price}</strong>
         </span>
 
         <div className="raffle-selected__raffle-selected-content__container__desc-card">
           <p className="raffle-selected__raffle-selected-content__container__desc-card__desc">
-            {raffleSelected.description}
+            {raffleSelected?.description}
           </p>
         </div>
 
@@ -325,7 +326,7 @@ const RaffleSelectedContent = () => {
           <div
             className="raffle-selected__raffle-selected-content__container__buy-numbers-box__buy-numbers-wrapper"
             style={
-              raffleSelected.NumbersAvailable?.length === 0
+              raffleSelected?.quantNumbers === raffleSelected?.quantBuyedNumbers
                 ? { pointerEvents: "none" }
                 : {}
             }
@@ -420,7 +421,7 @@ const RaffleSelectedContent = () => {
           <div
             className="raffle-selected__raffle-selected-content__container__buy-numbers-box__selected-numbers-wrapper"
             style={
-              raffleSelected.NumbersAvailable?.length === 0
+              raffleSelected?.quantNumbers === raffleSelected?.quantBuyedNumbers
                 ? { pointerEvents: "none" }
                 : {}
             }
@@ -465,7 +466,8 @@ const RaffleSelectedContent = () => {
                 }
               : isRaffleLoading
               ? { pointerEvents: "none" }
-              : raffleSelected.NumbersAvailable?.length === 0
+              : raffleSelected?.quantNumbers ===
+                raffleSelected?.quantBuyedNumbers
               ? {
                   filter: "brightness(80%)",
                   pointerEvents: "none",
@@ -485,7 +487,7 @@ const RaffleSelectedContent = () => {
           )}
 
           <span className="raffle-selected__raffle-selected-content__container__buy-btn__price">
-            {calcValues(raffleSelected.price, numberQuant)}
+            {calcValues(raffleSelected?.price, numberQuant)}
           </span>
         </button>
       </div>

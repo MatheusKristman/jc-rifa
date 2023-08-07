@@ -1,272 +1,274 @@
 .query-numbers {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+
+  &__query-numbers-content {
+    flex: 1;
     width: 100%;
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
 
-    &__query-numbers-content {
-        flex: 1;
-        width: 100%;
+    &__container {
+      width: 100%;
+      max-width: 600px;
+      margin: 25px auto;
+      background-color: $dark;
+      border-radius: 10px;
+      padding: 16px 12px;
 
-        &__container {
-            width: 100%;
-            max-width: 600px;
-            margin: 25px auto;
-            background-color: $dark;
-            border-radius: 10px;
-            padding: 16px 12px;
+      &__above {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 10px;
 
-            &__above {
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                margin-bottom: 10px;
-
-                &__title {
-                    color: $white;
-                    font-size: 1.35rem;
-                    font-weight: 600;
-                }
-
-                &__search-btn {
-                    background-color: $blue;
-                    border: none;
-                    border-radius: 4px;
-                    color: $white;
-                    font-size: 0.9rem;
-                    font-weight: 600;
-                    padding: 8px;
-                    display: flex;
-                    align-items: center;
-                    gap: 5px;
-                    cursor: pointer;
-                    outline: none;
-
-                    @include breakpoint(largeScreen) {
-                        transition: filter 0.4s ease;
-
-                        &:hover {
-                            filter: brightness(80%);
-                        }
-                    }
-                }
-            }
-
-            &__raffle-box {
-                background-color: $darkPurple;
-                border-radius: 10px;
-                padding: 10px;
-                display: flex;
-                align-items: center;
-                gap: 30px;
-                margin-bottom: 15px;
-
-                &:last-of-type {
-                    margin-bottom: 0;
-                }
-
-                &__image-box {
-                    width: 100px;
-                    min-width: 100px;
-                    max-width: 100px;
-                    height: 100px;
-                    min-height: 100px;
-                    max-height: 100px;
-                    border-radius: 10px;
-                    overflow: hidden;
-
-                    &__image {
-                        width: 100%;
-                        height: 100%;
-                        object-fit: cover;
-                        object-position: center;
-                    }
-                }
-
-                &__info-box {
-                    display: flex;
-                    flex-direction: column;
-                    gap: 5px;
-
-                    &__title {
-                        font-size: 1.15rem;
-                        text-transform: uppercase;
-                        font-weight: 500;
-                        color: $white;
-                    }
-
-                    &__status {
-                        background-color: $blue;
-                        width: fit-content;
-                        padding: 10px;
-                        border-radius: 6px;
-                        color: $white;
-                        font-size: 1rem;
-                        font-weight: 500;
-                        display: block;
-                    }
-
-                    &__status-finished {
-                        background-color: $dark;
-                        width: fit-content;
-                        padding: 10px;
-                        border-radius: 6px;
-                        color: $white;
-                        font-size: 1rem;
-                        font-weight: 500;
-                        display: block;
-                    }
-
-                    &__numbers-box {
-                        display: flex;
-                        align-items: center;
-                        gap: 10px;
-                        font-size: 1rem;
-                        color: $white;
-
-                        &__numbers {
-                            background-color: $dark;
-                            width: fit-content;
-                            padding: 10px;
-                            border-radius: 6px;
-                            color: $white;
-                            font-size: 1rem;
-                        }
-                    }
-                }
-            }
-
-            &__alert-box {
-                background-color: #fff3cd;
-                border-radius: 4px;
-                padding: 16px;
-                display: flex;
-                align-items: center;
-                gap: 5px;
-
-                button {
-                    background-color: transparent;
-                    border: none;
-                    font-size: 1rem;
-                    color: #000;
-                    text-decoration: underline;
-                    cursor: pointer;
-                    outline: none;
-
-                    @include breakpoint(largeScreen) {
-                        transition: opacity 0.2s ease;
-
-                        &:hover {
-                            opacity: 0.8;
-                        }
-                    }
-                }
-            }
+        &__title {
+          color: $white;
+          font-size: 1.35rem;
+          font-weight: 600;
         }
-    }
 
-    &__query-numbers-modal-overlay {
-        width: 100%;
-        height: 100%;
-        position: fixed;
-        top: 0;
-        left: 0;
-        bottom: 0;
-        right: 0;
-        background-color: rgba(32, 33, 36, 0.5);
-        backdrop-filter: blur(10px);
-        overflow: auto;
-        padding: 40px;
-        z-index: 6;
-        opacity: 0;
-        animation: loginFadeIn 0.4s ease forwards;
+        &__search-btn {
+          background-color: $blue;
+          border: none;
+          border-radius: 4px;
+          color: $white;
+          font-size: 0.9rem;
+          font-weight: 600;
+          padding: 8px;
+          display: flex;
+          align-items: center;
+          gap: 5px;
+          cursor: pointer;
+          outline: none;
 
-        &::before {
-            content: "";
+          @include breakpoint(largeScreen) {
+            transition: filter 0.4s ease;
+
+            &:hover {
+              filter: brightness(80%);
+            }
+          }
+        }
+      }
+
+      &__raffle-box {
+        background-color: $darkPurple;
+        border-radius: 10px;
+        padding: 10px;
+        display: flex;
+        align-items: center;
+        gap: 30px;
+        margin-bottom: 15px;
+
+        &:last-of-type {
+          margin-bottom: 0;
+        }
+
+        &__image-box {
+          width: 100px;
+          min-width: 100px;
+          max-width: 100px;
+          height: 100px;
+          min-height: 100px;
+          max-height: 100px;
+          border-radius: 10px;
+          overflow: hidden;
+
+          &__image {
+            width: 100%;
             height: 100%;
-            display: inline-block;
-            vertical-align: middle;
+            object-fit: cover;
+            object-position: center;
+          }
         }
 
-        &__box {
-            background-color: $white;
-            display: inline-block;
-            width: 100%;
-            height: auto;
-            max-width: 300px;
-            vertical-align: middle;
-            position: relative;
-            left: 50%;
-            transform: translateX(-50%);
-            padding: 16px;
-            border-radius: 10px;
-            z-index: 7;
-            opacity: 0;
-            animation: loginBoxIn 0.4s ease forwards;
+        &__info-box {
+          display: flex;
+          flex-direction: column;
+          gap: 5px;
 
-            &__container {
-                display: flex;
-                flex-direction: column;
-                width: 100%;
+          &__title {
+            font-size: 1.15rem;
+            text-transform: uppercase;
+            font-weight: 500;
+            color: $white;
+          }
 
-                &__title {
-                    font-size: 1.35rem;
-                    font-weight: 500;
-                    color: #333;
-                    margin-bottom: 30px;
-                }
+          &__status {
+            background-color: $blue;
+            width: fit-content;
+            padding: 10px;
+            border-radius: 6px;
+            color: $white;
+            font-size: 1rem;
+            font-weight: 500;
+            display: block;
+          }
 
-                &__form {
-                    display: flex;
-                    flex-direction: column;
-                    align-items: flex-end;
-                    width: 100%;
+          &__status-finished {
+            background-color: $dark;
+            width: fit-content;
+            padding: 10px;
+            border-radius: 6px;
+            color: $white;
+            font-size: 1rem;
+            font-weight: 500;
+            display: block;
+          }
 
-                    &__label {
-                        font-size: 1rem;
-                        color: #333;
+          &__numbers-box {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1rem;
+            color: $white;
 
-                        &__input {
-                            width: 100%;
-                            margin-top: 10px;
-                            margin-bottom: 15px;
-                            padding: 6px 12px;
-                            border-radius: 4px;
-                            border: 1px solid #ced4da;
-                            color: #212529;
-                            outline: none;
-                            transition: box-shadow 0.2s ease;
-
-                            &:focus {
-                                border-color: #86b7fe;
-                                box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
-                            }
-                        }
-                    }
-
-                    &__submit-btn {
-                        width: fit-content;
-                        background-color: $blue;
-                        border: none;
-                        border-radius: 4px;
-                        padding: 10px 15px;
-                        color: $white;
-                        font-size: 1rem;
-                        font-weight: 600;
-                        text-align: center;
-                        outline: none;
-                        cursor: pointer;
-
-                        @include breakpoint(largeScreen) {
-                            transition: filter 0.4s ease;
-
-                            &:hover {
-                                filter: brightness(80%);
-                            }
-                        }
-                    }
-                }
+            &__numbers {
+              background-color: $dark;
+              width: fit-content;
+              padding: 10px;
+              border-radius: 6px;
+              color: $white;
+              font-size: 1rem;
             }
+          }
         }
+      }
+
+      &__alert-box {
+        background-color: #fff3cd;
+        border-radius: 4px;
+        padding: 16px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+
+        button {
+          background-color: transparent;
+          border: none;
+          font-size: 1rem;
+          color: #000;
+          text-decoration: underline;
+          cursor: pointer;
+          outline: none;
+
+          @include breakpoint(largeScreen) {
+            transition: opacity 0.2s ease;
+
+            &:hover {
+              opacity: 0.8;
+            }
+          }
+        }
+      }
     }
+  }
+
+  &__query-numbers-modal-overlay {
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background-color: rgba(32, 33, 36, 0.5);
+    backdrop-filter: blur(10px);
+    overflow: auto;
+    padding: 40px;
+    z-index: 6;
+    opacity: 0;
+    animation: loginFadeIn 0.4s ease forwards;
+
+    &::before {
+      content: "";
+      height: 100%;
+      display: inline-block;
+      vertical-align: middle;
+    }
+
+    &__box {
+      background-color: $white;
+      display: inline-block;
+      width: 100%;
+      height: auto;
+      max-width: 300px;
+      vertical-align: middle;
+      position: relative;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 16px;
+      border-radius: 10px;
+      z-index: 7;
+      opacity: 0;
+      animation: loginBoxIn 0.4s ease forwards;
+
+      &__container {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+
+        &__title {
+          font-size: 1.35rem;
+          font-weight: 500;
+          color: #333;
+          margin-bottom: 30px;
+        }
+
+        &__form {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-end;
+          width: 100%;
+
+          &__label {
+            font-size: 1rem;
+            color: #333;
+
+            &__input {
+              padding: 8px 12px;
+              font-size: 1rem;
+              color: #5a5a5a;
+              margin-top: 10px;
+              margin-bottom: 15px;
+              border-radius: 10px;
+              border: 1px solid #ced4da;
+              outline: none;
+              transition:
+                border 0.4s ease,
+                box-shadow 0.2s ease;
+
+              &:focus {
+                border-color: #86b7fe;
+                box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+              }
+            }
+          }
+
+          &__submit-btn {
+            width: fit-content;
+            background-color: $blue;
+            border: none;
+            border-radius: 4px;
+            padding: 10px 15px;
+            color: $white;
+            font-size: 1rem;
+            font-weight: 600;
+            text-align: center;
+            outline: none;
+            cursor: pointer;
+
+            @include breakpoint(largeScreen) {
+              transition: filter 0.4s ease;
+
+              &:hover {
+                filter: brightness(80%);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
 }

@@ -4,32 +4,33 @@ import api from "../services/api";
 import useUserStore from "../stores/useUserStore";
 
 const useIsUserLogged = () => {
-    const { setUser, userLogged, userNotLogged } = useUserStore((state) => ({
-        setUser: state.setUser,
-        userLogged: state.userLogged,
-        userNotLogged: state.userNotLogged,
-    }));
+  const { setUser, userLogged, userNotLogged } = useUserStore((state) => ({
+    setUser: state.setUser,
+    userLogged: state.userLogged,
+    userNotLogged: state.userNotLogged,
+  }));
 
-    useEffect(() => {
-        const token = localStorage.getItem("userToken") || null;
+  useEffect(() => {
+    const token = localStorage.getItem("userToken") || null;
 
-        if (token) {
-            api.get("/account/is-user-logged", {
-                headers: {
-                    "authorization-token": token,
-                },
-            })
-                .then((res) => {
-                    setUser({ ...res.data });
-                    userLogged();
-                })
-                .catch((error) => {
-                    console.log(error);
-                    userNotLogged();
-                    localStorage.removeItem("userToken");
-                });
-        }
-    }, []);
+    if (token) {
+      api
+        .get("/account/is-user-logged", {
+          headers: {
+            "authorization-token": token,
+          },
+        })
+        .then((res) => {
+          setUser({ ...res.data });
+          userLogged();
+        })
+        .catch((error) => {
+          console.log(error);
+          userNotLogged();
+          localStorage.removeItem("userToken");
+        });
+    }
+  }, []);
 };
 
 export default useIsUserLogged;

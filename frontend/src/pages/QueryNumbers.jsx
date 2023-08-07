@@ -57,6 +57,7 @@ const QueryNumbers = () => {
   useEffect(() => {
     setRaffles([]);
     setUserRafflesBuyed([]);
+
     if (isUserLogged) {
       setToLoad();
       setToAnimateFadeIn();
@@ -65,6 +66,9 @@ const QueryNumbers = () => {
         .get(`/account/get-raffle-numbers/${user.cpf}`)
         .then((res) => {
           setUserRafflesBuyed(res.data);
+
+          console.log(res.data);
+
           api
             .get("raffle/get-all-raffles")
             .then((res) => {
@@ -75,41 +79,53 @@ const QueryNumbers = () => {
                 ),
               );
 
+              console.log(
+                res.data.filter(
+                  (raffle, index) =>
+                    raffle._id === userRafflesBuyed[index]?.raffleId,
+                ),
+              );
+
+              const rafflesBuyed = res.data.filter(
+                (raffle, index) =>
+                  raffle._id === userRafflesBuyed[index]?.raffleId,
+              );
+
               const urls = [];
-              for (let i = 0; i < res.data.length; i++) {
-                if (res.data[i].raffleImage) {
+              for (let i = 0; i < userRafflesBuyed?.length; i++) {
+                for (let j = 0; j < rafflesBuyed.length; j++) {
                   if (
-                    JSON.stringify(import.meta.env.MODE) ===
-                    JSON.stringify("development")
+                    userRafflesBuyed[i].raffleId === rafflesBuyed[j]._id &&
+                    rafflesBuyed[j].raffleImage
                   ) {
-                    urls.push(
-                      `${import.meta.env.VITE_API_KEY_DEV}${
-                        import.meta.env.VITE_API_PORT
-                      }/raffle-uploads/${res.data[i].raffleImage}`,
-                    );
+                    if (
+                      JSON.stringify(import.meta.env.MODE) ===
+                      JSON.stringify("development")
+                    ) {
+                      urls.push(
+                        `${import.meta.env.VITE_API_KEY_DEV}${
+                          import.meta.env.VITE_API_PORT
+                        }/raffle-uploads/${rafflesBuyed[j].raffleImage}`,
+                      );
+                    } else {
+                      urls.push(
+                        `${import.meta.env.VITE_API_KEY}/raffle-uploads/${
+                          rafflesBuyed[j].raffleImage
+                        }`,
+                      );
+                    }
                   } else {
-                    urls.push(
-                      `${import.meta.env.VITE_API_KEY}/raffle-uploads/${
-                        res.data[i].raffleImage
-                      }`,
-                    );
+                    urls.push(null);
                   }
-                } else {
-                  urls.push(null);
                 }
               }
 
               setRafflesImagesUrls(urls);
-
-              setToAnimateFadeOut();
-
-              setTimeout(() => {
-                setNotToLoad();
-              }, 400);
             })
             .catch((error) => {
               console.error(error);
-
+            })
+            .finally(() => {
               setToAnimateFadeOut();
 
               setTimeout(() => {

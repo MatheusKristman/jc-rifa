@@ -8,6 +8,7 @@ import useRaffleStore from "../../../stores/useRaffleStore";
 import _arrayBufferToBase64 from "../../../hooks/useArrayBufferToBase64";
 import Loading from "../Loading";
 import useGeneralStore from "../../../stores/useGeneralStore";
+import useIsUserLogged from "../../../hooks/useIsUserLogged";
 
 const RaffleManagementContent = () => {
   const navigate = useNavigate();
@@ -33,6 +34,8 @@ const RaffleManagementContent = () => {
     setToAnimateFadeIn: state.setToAnimateFadeIn,
     setToAnimateFadeOut: state.setToAnimateFadeOut,
   }));
+
+  useIsUserLogged();
 
   useEffect(() => {
     const fetchRaffles = () => {

@@ -315,12 +315,15 @@ const EditRaffleContent = () => {
   };
 
   useLayoutEffect(() => {
-    const fetchRaffleParticipants = () => {
-      if (raffleSelected.hasOwnProperty("_id") && participants.length === 0) {
+    const fetchRaffleParticipants = (id) => {
+      if (participants.length === 0) {
+        console.log("Carregando participantes");
+
         setToLoadUsersNumberBuyed();
+
         api
           .post("/account/get-users-with-raffle-numbers", {
-            id: raffleSelected._id,
+            id,
           })
           .then((res) => {
             setParticipants(res.data);
@@ -331,19 +334,17 @@ const EditRaffleContent = () => {
           })
           .finally(() => {
             setNotToLoadUsersNumberBuyed();
+            console.log("finalizado carregamento dos participantes");
           });
       }
     };
 
-    function fetchWinner() {
-      if (
-        !winner.hasOwnProperty("_id") &&
-        raffleSelected.hasOwnProperty("_id")
-      ) {
+    function fetchWinner(raffleId) {
+      if (!winner.hasOwnProperty("_id")) {
         setToFetchWinner();
 
         api
-          .post("/winner/get-winner", { raffleId: raffleSelected._id })
+          .post("/winner/get-winner", { raffleId })
           .then((res) => {
             setWinner(res.data);
           })
@@ -406,15 +407,15 @@ const EditRaffleContent = () => {
           setWinner({});
           setFinishNumberFromFetch("");
 
+          fetchWinner(res.data._id);
+          fetchRaffleParticipants(res.data._id);
+
           console.log("peguei os dados");
         })
         .catch((error) => {
           console.log(error);
         })
         .finally(() => {
-          fetchWinner();
-          fetchRaffleParticipants();
-
           setToAnimateFadeOut();
 
           setTimeout(() => {

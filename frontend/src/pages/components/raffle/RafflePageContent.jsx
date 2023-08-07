@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { BsChevronLeft, BsChevronRight } from "react-icons/bs";
 import { Link } from "react-router-dom";
 
@@ -27,8 +27,10 @@ const RafflePageContent = () => {
     setSliceEnd,
     setNextPage,
     setPreviousPage,
-    rafflesDisplaying,
-    setRafflesDisplaying,
+    activeRafflesDisplaying,
+    setActiveRafflesDisplaying,
+    concludedRafflesDisplaying,
+    setConcludedRafflesDisplaying,
     isPreviousPageBtnDisplayed,
     showPreviousPageBtn,
     hidePreviousPageBtn,
@@ -57,8 +59,10 @@ const RafflePageContent = () => {
     setSliceEnd: state.setSliceEnd,
     setNextPage: state.setNextPage,
     setPreviousPage: state.setPreviousPage,
-    rafflesDisplaying: state.rafflesDisplaying,
-    setRafflesDisplaying: state.setRafflesDisplaying,
+    activeRafflesDisplaying: state.activeRafflesDisplaying,
+    setActiveRafflesDisplaying: state.setActiveRafflesDisplaying,
+    concludedRafflesDisplaying: state.concludedRafflesDisplaying,
+    setConcludedRafflesDisplaying: state.setConcludedRafflesDisplaying,
     isPreviousPageBtnDisplayed: state.isPreviousPageBtnDisplayed,
     showPreviousPageBtn: state.showPreviousPageBtn,
     hidePreviousPageBtn: state.hidePreviousPageBtn,
@@ -86,33 +90,37 @@ const RafflePageContent = () => {
     setToAnimateFadeOut: state.setToAnimateFadeOut,
   }));
 
+  const [activeRafflesImagesUrls, setActiveRafflesImagesUrls] = useState([]);
+  const [concludedRafflesImagesUrls, setConcludedRafflesImagesUrls] = useState(
+    [],
+  );
+
   useEffect(() => {
     setRaffles([]);
-    setRafflesDisplaying([]);
+    setActiveRafflesDisplaying([]);
+    setConcludedRafflesDisplaying([]);
   }, []);
 
   useEffect(() => {
     const fetchRaffles = () => {
       setToLoad();
       setToAnimateFadeIn();
+
       api
         .get("/raffle/get-all-raffles")
         .then((res) => {
           setRaffles(res.data);
 
-          if (raffles.length <= sliceEnd) {
-            sliceEndBiggerThanRaffles(raffles.length);
+          console.log(sliceEnd);
+
+          if (res.data.length <= sliceEnd) {
+            sliceEndBiggerThanRaffles(res.data.length);
           }
-
-          setToAnimateFadeOut();
-
-          setTimeout(() => {
-            setNotToLoad();
-          }, 400);
         })
         .catch((error) => {
           console.log(error);
-
+        })
+        .finally(() => {
           setToAnimateFadeOut();
 
           setTimeout(() => {
@@ -127,12 +135,12 @@ const RafflePageContent = () => {
   useEffect(() => {
     const verificationPageBtns = () => {
       console.log(sliceEnd);
-      if (raffles.length > 10 && rafflesDisplaying.length <= 10) {
+      if (raffles.length > 10 && activeRafflesDisplaying.length <= 10) {
         showPreviousPageBtn();
         showNextPageBtn();
       }
 
-      if (sliceBegin === 0 && rafflesDisplaying.length <= 10) {
+      if (sliceBegin === 0 && activeRafflesDisplaying.length <= 10) {
         hidePreviousPageBtn();
         hideNextPageBtn();
       }
@@ -164,13 +172,15 @@ const RafflePageContent = () => {
         }
 
         if (isActiveOn) {
-          setRafflesDisplaying(
+          console.log("sliceBegin: ", sliceBegin);
+          console.log("sliceEnd: ", sliceEnd);
+          setActiveRafflesDisplaying(
             raffles
               .filter(
                 (raffle) =>
                   convertProgress(
-                    raffle?.QuantNumbers - raffle?.NumbersAvailable.length,
-                    raffle?.QuantNumbers,
+                    raffle?.quantBuyedNumbers,
+                    raffle?.quantNumbers,
                   ) < 100 && !raffle?.isFinished,
               )
               .slice(sliceBegin, sliceEnd),
@@ -179,12 +189,12 @@ const RafflePageContent = () => {
         }
 
         if (isConcludedOn) {
-          setRafflesDisplaying(
+          setConcludedRafflesDisplaying(
             raffles.filter(
               (raffle) =>
                 convertProgress(
-                  raffle?.QuantNumbers - raffle?.NumbersAvailable.length,
-                  raffle?.QuantNumbers,
+                  raffle?.quantBuyedNumbers,
+                  raffle?.quantNumbers,
                 ) === 100 || raffle?.isFinished,
             ),
           );
@@ -195,7 +205,8 @@ const RafflePageContent = () => {
     handlePage();
   }, [
     pageMultiplier,
-    setRafflesDisplaying,
+    setActiveRafflesDisplaying,
+    setConcludedRafflesDisplaying,
     showNextPageBtn,
     showPreviousPageBtn,
     hideNextPageBtn,
@@ -206,35 +217,56 @@ const RafflePageContent = () => {
   ]);
 
   useEffect(() => {
-    const urls = [];
-    for (let i = 0; i < rafflesDisplaying.length; i++) {
-      if (rafflesDisplaying[i].raffleImage) {
+    const activeUrls = [];
+    const concludedUrls = [];
+
+    for (let i = 0; i < activeRafflesDisplaying.length; i++) {
+      if (activeRafflesDisplaying[i].raffleImage) {
         if (
           JSON.stringify(import.meta.env.MODE) === JSON.stringify("development")
         ) {
-          urls.push(
+          activeUrls.push(
             `${import.meta.env.VITE_API_KEY_DEV}${
               import.meta.env.VITE_API_PORT
-            }/raffle-uploads/${rafflesDisplaying[i].raffleImage}`,
+            }/raffle-uploads/${activeRafflesDisplaying[i].raffleImage}`,
           );
         } else {
-          urls.push(
+          activeUrls.push(
             `${import.meta.env.VITE_API_KEY}/raffle-uploads/${
-              rafflesDisplaying[i].raffleImage
+              activeRafflesDisplaying[i].raffleImage
             }`,
           );
         }
       } else {
-        urls.push(null);
+        activeUrls.push(null);
       }
     }
 
-    setRafflesImagesUrls(urls);
-  }, [rafflesDisplaying]);
+    for (let i = 0; i < concludedRafflesDisplaying.length; i++) {
+      if (concludedRafflesDisplaying[i].raffleImage) {
+        if (
+          JSON.stringify(import.meta.env.MODE) === JSON.stringify("development")
+        ) {
+          concludedUrls.push(
+            `${import.meta.env.VITE_API_KEY_DEV}${
+              import.meta.env.VITE_API_PORT
+            }/raffle-uploads/${concludedRafflesDisplaying[i].raffleImage}`,
+          );
+        } else {
+          concludedUrls.push(
+            `${import.meta.env.VITE_API_KEY}/raffle-uploads/${
+              concludedRafflesDisplaying[i].raffleImage
+            }`,
+          );
+        }
+      } else {
+        concludedUrls.push(null);
+      }
+    }
 
-  useEffect(() => {
-    console.log(rafflesImagesUrls);
-  }, [rafflesImagesUrls]);
+    setActiveRafflesImagesUrls(activeUrls);
+    setConcludedRafflesImagesUrls(concludedUrls);
+  }, [activeRafflesDisplaying, concludedRafflesDisplaying]);
 
   const handleActiveBtn = () => {
     if (raffles.length <= sliceEnd) {
@@ -318,39 +350,51 @@ const RafflePageContent = () => {
         </div>
 
         <div className="raffle__raffle-content__container__prizes-wrapper">
-          {isActiveOn &&
-            rafflesDisplaying.map((raffle, index) => (
-              <Link to={`/raffles/${raffle._id}`}>
+          {isActiveOn && activeRafflesDisplaying.length !== 0 ? (
+            activeRafflesDisplaying.map((raffle, index) => (
+              <Link key={raffle._id} to={`/raffles/${raffle._id}`}>
                 <Prizes
-                  key={raffle._id}
                   title={raffle.title}
                   subtitle={raffle.subtitle}
-                  image={rafflesImagesUrls[index] || null}
+                  image={activeRafflesImagesUrls[index] || null}
                   progress={convertProgress(
-                    raffle?.QuantNumbers - raffle?.NumbersAvailable.length,
-                    raffle?.QuantNumbers,
+                    raffle?.quantBuyedNumbers,
+                    raffle?.quantNumbers,
                   )}
                   winner={raffle?.isFinished}
                 />
               </Link>
-            ))}
+            ))
+          ) : isActiveOn && activeRafflesDisplaying.length === 0 ? (
+            <div className="raffle__raffle-content__container__prizes-wrapper__no-concluded-raffle-box">
+              <p className="raffle__raffle-content__container__prizes-wrapper__no-concluded-raffle-box__no-concluded-raffle-text">
+                Nenhuma rifa ativa no momento
+              </p>
+            </div>
+          ) : null}
 
-          {isConcludedOn &&
-            rafflesDisplaying.map((raffle, index) => (
-              <Link to={`/raffles/${raffle._id}`}>
+          {isConcludedOn && concludedRafflesDisplaying.length !== 0 ? (
+            concludedRafflesDisplaying.map((raffle, index) => (
+              <Link key={raffle._id} to={`/raffles/${raffle._id}`}>
                 <Prizes
-                  key={raffle._id}
                   title={raffle.title}
                   subtitle={raffle.subtitle}
-                  image={rafflesImagesUrls[index] || null}
+                  image={concludedRafflesImagesUrls[index] || null}
                   progress={convertProgress(
-                    raffle?.QuantNumbers - raffle?.NumbersAvailable.length,
-                    raffle?.QuantNumbers,
+                    raffle?.quantBuyedNumbers,
+                    raffle?.quantNumbers,
                   )}
                   winner={raffle?.isFinished}
                 />
               </Link>
-            ))}
+            ))
+          ) : isConcludedOn && concludedRafflesDisplaying.length === 0 ? (
+            <div className="raffle__raffle-content__container__prizes-wrapper__no-concluded-raffle-box">
+              <p className="raffle__raffle-content__container__prizes-wrapper__no-concluded-raffle-box__no-concluded-raffle-text">
+                Nenhuma rifa concluída no momento
+              </p>
+            </div>
+          ) : null}
         </div>
 
         <div className="raffle__raffle-content__container__pages-btn-wrapper">

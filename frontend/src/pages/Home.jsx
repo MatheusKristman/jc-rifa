@@ -25,10 +25,13 @@ const Home = () => {
     }),
   );
 
-  const { winners, setWinners } = useWinnerStore((state) => ({
-    winners: state.winners,
-    setWinners: state.setWinners,
-  }));
+  const { winners, setWinners, setWinnersImagesUrls } = useWinnerStore(
+    (state) => ({
+      winners: state.winners,
+      setWinners: state.setWinners,
+      setWinnersImagesUrls: state.setWinnersImagesUrls,
+    }),
+  );
 
   const {
     setToRaffleLoad,
@@ -208,13 +211,40 @@ const Home = () => {
         .then((res) => {
           setWinners(res.data);
 
+          const urls = [];
+          for (let i = 0; i < res.data.length; i++) {
+            if (res.data[i].profileImage) {
+              if (
+                JSON.stringify(import.meta.env.MODE) ===
+                JSON.stringify("development")
+              ) {
+                urls.push(
+                  `${import.meta.env.VITE_API_KEY_DEV}${
+                    import.meta.env.VITE_API_PORT
+                  }/user-uploads/${res.data[i].profileImage}`,
+                );
+              } else {
+                urls.push(
+                  `${import.meta.env.VITE_API_KEY}/user-uploads/${
+                    res.data[i].profileImage
+                  }`,
+                );
+              }
+            } else {
+              urls.push(null);
+            }
+          }
+
+          setWinnersImagesUrls(urls);
+        })
+        .catch((error) => console.log(error))
+        .finally(() => {
           setToAnimateFadeOut();
 
           setTimeout(() => {
             setNotToLoad();
           }, 400);
-        })
-        .catch((error) => console.log(error));
+        });
     };
 
     fetchWinners();
