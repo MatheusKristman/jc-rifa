@@ -3,13 +3,13 @@ import mongoose from "mongoose";
 const WinnerSchema = new mongoose.Schema({
   account: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Account",
+    ref: "Accounts",
     required: true,
   },
   raffleNumber: { type: String },
   raffleId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Raffle",
+    ref: "Raffles",
     required: true,
   },
 });

@@ -16,6 +16,7 @@ export const getWinner = async (req, res) => {
     email: winnerExist.account.email,
     profileImage: winnerExist.account.profileImage,
     raffleNumber: winnerExist.raffleNumber,
+    winnerId: winnerExist._id,
   };
 
   return res.json(winner);
@@ -23,7 +24,9 @@ export const getWinner = async (req, res) => {
 
 export const getAllWinners = async (req, res) => {
   try {
-    const getAllWinners = await Winner.find({}).populate("account");
+    const getAllWinners = await Winner.find({})
+      .populate("account")
+      .populate("raffleId");
 
     if (getAllWinners.length === 0) {
       return res.status(404).send("Nenhum ganhado encontrado");
@@ -35,6 +38,8 @@ export const getAllWinners = async (req, res) => {
       email: winner.account.email,
       profileImage: winner.account.profileImage,
       raffleNumber: winner.raffleNumber,
+      raffleTitle: winner.raffleId.title,
+      raffleImage: winner.raffleId.raffleImage,
     }));
 
     res.json(allWinners);

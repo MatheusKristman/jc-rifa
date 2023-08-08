@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { shallow } from "zustand/shallow";
+import { ToastContainer } from "react-toastify";
 
 import { Header, Footer } from "./components";
 import QueryNumbersContent from "./components/query-numbers/QueryNumbersContent";
@@ -16,16 +17,15 @@ const QueryNumbers = () => {
     isQueryNumbersModalOpen,
     openModal,
     setUserRafflesBuyed,
-    userRafflesBuyed,
+    rafflesConcluded,
     setRafflesConcluded,
     setRafflesImagesUrls,
   } = useQueryNumbersStore(
     (state) => ({
       isQueryNumbersModalOpen: state.isQueryNumbersModalOpen,
       openModal: state.openModal,
-      setCpf: state.setCpf,
       setUserRafflesBuyed: state.setUserRafflesBuyed,
-      userRafflesBuyed: state.userRafflesBuyed,
+      rafflesConcluded: state.rafflesConcluded,
       setRafflesConcluded: state.setRafflesConcluded,
       setRafflesImagesUrls: state.setRafflesImagesUrls,
     }),
@@ -67,7 +67,7 @@ const QueryNumbers = () => {
         .then((res) => {
           setUserRafflesBuyed(res.data);
 
-          console.log(res.data);
+          const rafflesFromUser = res.data;
 
           api
             .get("raffle/get-all-raffles")
@@ -75,27 +75,20 @@ const QueryNumbers = () => {
               setRaffles(
                 res.data.filter(
                   (raffle, index) =>
-                    raffle._id === userRafflesBuyed[index]?.raffleId,
-                ),
-              );
-
-              console.log(
-                res.data.filter(
-                  (raffle, index) =>
-                    raffle._id === userRafflesBuyed[index]?.raffleId,
+                    raffle._id === rafflesFromUser[index].raffleId,
                 ),
               );
 
               const rafflesBuyed = res.data.filter(
                 (raffle, index) =>
-                  raffle._id === userRafflesBuyed[index]?.raffleId,
+                  raffle._id === rafflesFromUser[index].raffleId,
               );
 
               const urls = [];
-              for (let i = 0; i < userRafflesBuyed?.length; i++) {
+              for (let i = 0; i < rafflesFromUser.length; i++) {
                 for (let j = 0; j < rafflesBuyed.length; j++) {
                   if (
-                    userRafflesBuyed[i].raffleId === rafflesBuyed[j]._id &&
+                    rafflesFromUser[i].raffleId === rafflesBuyed[j]._id &&
                     rafflesBuyed[j].raffleImage
                   ) {
                     if (
@@ -144,8 +137,13 @@ const QueryNumbers = () => {
     }
   }, [setRaffles, setUserRafflesBuyed]);
 
+  useEffect(() => {
+    console.log("rafflesConcluded", rafflesConcluded);
+  }, [rafflesConcluded]);
+
   return (
     <div className="query-numbers">
+      <ToastContainer />
       <Header />
       <QueryNumbersContent />
       {isQueryNumbersModalOpen && <QueryNumbersModal />}

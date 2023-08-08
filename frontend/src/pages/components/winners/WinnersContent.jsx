@@ -7,10 +7,12 @@ import DefaultPrize from "../../../assets/default-prize.jpg";
 import _arrayBufferToBase64 from "../../../hooks/useArrayBufferToBase64";
 
 const WinnersContent = () => {
-  const { winners, winnersImagesUrls } = useWinnerStore((state) => ({
-    winners: state.winners,
-    winnersImagesUrls: state.winnersImagesUrls,
-  }));
+  const { winners, winnersImagesUrls, winnersRafflesImagesUrls } =
+    useWinnerStore((state) => ({
+      winners: state.winners,
+      winnersImagesUrls: state.winnersImagesUrls,
+      winnersRafflesImagesUrls: state.winnersRafflesImagesUrls,
+    }));
 
   return (
     <div className="winners__winners-content">
@@ -36,15 +38,7 @@ const WinnersContent = () => {
                   name={winner.name}
                   raffleTitle={winner.raffleTitle}
                   raffleNumber={winner.raffleNumber}
-                  raffleImage={
-                    winner.raffleImage?.data
-                      ? `data:${
-                          winner.raffleImage.contentType
-                        };base64,${_arrayBufferToBase64(
-                          winner.raffleImage.data.data,
-                        )}`
-                      : DefaultPrize
-                  }
+                  raffleImage={winnersRafflesImagesUrls[index] || DefaultPrize}
                 />
               ))
           ) : (

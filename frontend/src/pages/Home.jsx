@@ -25,13 +25,12 @@ const Home = () => {
     }),
   );
 
-  const { winners, setWinners, setWinnersImagesUrls } = useWinnerStore(
-    (state) => ({
-      winners: state.winners,
+  const { setWinners, setWinnersImagesUrls, setWinnersRafflesImagesUrls } =
+    useWinnerStore((state) => ({
       setWinners: state.setWinners,
       setWinnersImagesUrls: state.setWinnersImagesUrls,
-    }),
-  );
+      setWinnersRafflesImagesUrls: state.setWinnersRafflesImagesUrls,
+    }));
 
   const {
     setToRaffleLoad,
@@ -163,7 +162,7 @@ const Home = () => {
               res.data.filter(
                 (raffle) =>
                   raffle.isFinished === false &&
-                  raffle.NumbersAvailable?.length !== 0,
+                  raffle.quantBuyedNumbers < raffle.quantNumbers,
               ),
             );
 
@@ -206,36 +205,65 @@ const Home = () => {
     const fetchWinners = () => {
       setToAnimateFadeIn();
       setToLoad();
+
       api
         .get("/winner/get-all-winners")
         .then((res) => {
           setWinners(res.data);
 
-          const urls = [];
-          for (let i = 0; i < res.data.length; i++) {
-            if (res.data[i].profileImage) {
+          const allWinners = res.data;
+
+          console.log("allWinners: ", allWinners);
+
+          const winnersUrls = [];
+          const rafflesUrls = [];
+
+          for (let i = 0; i < allWinners.length; i++) {
+            if (allWinners[i].profileImage) {
               if (
                 JSON.stringify(import.meta.env.MODE) ===
                 JSON.stringify("development")
               ) {
-                urls.push(
+                winnersUrls.push(
                   `${import.meta.env.VITE_API_KEY_DEV}${
                     import.meta.env.VITE_API_PORT
-                  }/user-uploads/${res.data[i].profileImage}`,
+                  }/user-uploads/${allWinners[i].profileImage}`,
                 );
               } else {
-                urls.push(
+                winnersUrls.push(
                   `${import.meta.env.VITE_API_KEY}/user-uploads/${
-                    res.data[i].profileImage
+                    allWinners[i].profileImage
                   }`,
                 );
               }
             } else {
-              urls.push(null);
+              winnersUrls.push(null);
+            }
+
+            if (allWinners[i].raffleImage) {
+              if (
+                JSON.stringify(import.meta.env.MODE) ===
+                JSON.stringify("development")
+              ) {
+                rafflesUrls.push(
+                  `${import.meta.env.VITE_API_KEY_DEV}${
+                    import.meta.env.VITE_API_PORT
+                  }/raffle-uploads/${allWinners[i].raffleImage}`,
+                );
+              } else {
+                rafflesUrls.push(
+                  `${import.meta.env.VITE_API_KEY}/raffle-uploads/${
+                    allWinners[i].raffleImage
+                  }`,
+                );
+              }
+            } else {
+              rafflesUrls.push(null);
             }
           }
 
-          setWinnersImagesUrls(urls);
+          setWinnersImagesUrls(winnersUrls);
+          setWinnersRafflesImagesUrls(rafflesUrls);
         })
         .catch((error) => console.log(error))
         .finally(() => {
@@ -248,7 +276,7 @@ const Home = () => {
     };
 
     fetchWinners();
-  }, [setWinners]);
+  }, [setWinners, raffles]);
 
   return (
     <div className="home">

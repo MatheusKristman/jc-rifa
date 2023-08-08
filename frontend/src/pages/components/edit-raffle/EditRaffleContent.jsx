@@ -46,6 +46,9 @@ const EditRaffleContent = () => {
     isChoosingWinner,
     setToChooseWinner,
     setNotToChooseWinner,
+    isDeletingWinner,
+    setToDeleteWinner,
+    setNotToDeleteWinner,
     isFetchingWinner,
     setToFetchWinner,
     setNotToFetchWinner,
@@ -55,6 +58,10 @@ const EditRaffleContent = () => {
     isDeleteButtonEnabled,
     enableDeleteButton,
     disableDeleteButton,
+    profilesImagesUrls,
+    setProfilesImagesUrls,
+    winnerImageUrl,
+    setWinnerImageUrl,
   } = useRaffleStore(
     (state) => ({
       raffleSelected: state.raffleSelected,
@@ -76,6 +83,9 @@ const EditRaffleContent = () => {
       isChoosingWinner: state.isChoosingWinner,
       setToChooseWinner: state.setToChooseWinner,
       setNotToChooseWinner: state.setNotToChooseWinner,
+      isDeletingWinner: state.isDeletingWinner,
+      setToDeleteWinner: state.setToDeleteWinner,
+      setNotToDeleteWinner: state.setNotToDeleteWinner,
       isFetchingWinner: state.isFetchingWinner,
       setToFetchWinner: state.setToFetchWinner,
       setNotToFetchWinner: state.setNotToFetchWinner,
@@ -86,6 +96,10 @@ const EditRaffleContent = () => {
       isDeleteButtonEnabled: state.isDeleteButtonEnabled,
       enableDeleteButton: state.enableDeleteButton,
       disableDeleteButton: state.disableDeleteButton,
+      profilesImagesUrls: state.profilesImagesUrls,
+      setProfilesImagesUrls: state.setProfilesImagesUrls,
+      winnerImageUrl: state.winnerImageUrl,
+      setWinnerImageUrl: state.setWinnerImageUrl,
     }),
     shallow,
   );
@@ -235,7 +249,31 @@ const EditRaffleContent = () => {
         })
         .then((res) => {
           setWinner(res.data);
+
+          const actualWinner = res.data;
+
           setFinishNumberError("");
+
+          if (actualWinner.profileImage) {
+            if (
+              JSON.stringify(import.meta.env.MODE) ===
+              JSON.stringify("development")
+            ) {
+              setWinnerImageUrl(
+                `${import.meta.env.VITE_API_KEY_DEV}${
+                  import.meta.env.VITE_API_PORT
+                }/user-uploads/${actualWinner.profileImage}`,
+              );
+            } else {
+              setWinnerImageUrl(
+                `${import.meta.env.VITE_API_KEY}/user-uploads/${
+                  actualWinner.profileImage
+                }`,
+              );
+            }
+          } else {
+            setWinnerImageUrl(null);
+          }
         })
         .catch((error) => {
           console.log(error);
@@ -260,8 +298,10 @@ const EditRaffleContent = () => {
   };
 
   const resetWinner = () => {
+    setToDeleteWinner();
+
     api
-      .delete(`/winner/delete-winner/${winner._id}`)
+      .delete(`/winner/delete-winner/${winner.winnerId}`)
       .then((res) => {
         if (res.data) {
           setWinner({});
@@ -295,6 +335,9 @@ const EditRaffleContent = () => {
             theme: "dark",
           },
         );
+      })
+      .finally(() => {
+        setNotToDeleteWinner();
       });
   };
 
@@ -327,6 +370,35 @@ const EditRaffleContent = () => {
           })
           .then((res) => {
             setParticipants(res.data);
+
+            const allParticipants = res.data;
+
+            const profilesUrls = [];
+
+            for (let i = 0; i < allParticipants.length; i++) {
+              if (allParticipants[i].profileImage) {
+                if (
+                  JSON.stringify(import.meta.env.MODE) ===
+                  JSON.stringify("development")
+                ) {
+                  profilesUrls.push(
+                    `${import.meta.env.VITE_API_KEY_DEV}${
+                      import.meta.env.VITE_API_PORT
+                    }/user-uploads/${allParticipants[i].profileImage}`,
+                  );
+                } else {
+                  profilesUrls.push(
+                    `${import.meta.env.VITE_API_KEY}/user-uploads/${
+                      allParticipants[i].profileImage
+                    }`,
+                  );
+                }
+              } else {
+                profilesUrls.push(null);
+              }
+            }
+
+            setProfilesImagesUrls(profilesUrls);
           })
           .catch((error) => {
             console.log(error);
@@ -347,6 +419,31 @@ const EditRaffleContent = () => {
           .post("/winner/get-winner", { raffleId })
           .then((res) => {
             setWinner(res.data);
+
+            const actualWinner = res.data;
+
+            setFinishNumberError("");
+
+            if (actualWinner.profileImage) {
+              if (
+                JSON.stringify(import.meta.env.MODE) ===
+                JSON.stringify("development")
+              ) {
+                setWinnerImageUrl(
+                  `${import.meta.env.VITE_API_KEY_DEV}${
+                    import.meta.env.VITE_API_PORT
+                  }/user-uploads/${actualWinner.profileImage}`,
+                );
+              } else {
+                setWinnerImageUrl(
+                  `${import.meta.env.VITE_API_KEY}/user-uploads/${
+                    actualWinner.profileImage
+                  }`,
+                );
+              }
+            } else {
+              setWinnerImageUrl(null);
+            }
           })
           .catch((error) => {
             console.log(error);
@@ -357,7 +454,7 @@ const EditRaffleContent = () => {
       }
     }
 
-    const fetchRaffleSelected = () => {
+    const fetchRaffleSelected = (id) => {
       setToLoad();
       setToAnimateFadeIn();
       setLoadingMessage("Aguarde um momento");
@@ -424,13 +521,13 @@ const EditRaffleContent = () => {
         });
     };
 
-    fetchRaffleSelected();
+    fetchRaffleSelected(id);
   }, []);
 
   useEffect(() => {
     if (
-      raffleSelected.hasOwnProperty("quantNumbers") &&
-      raffleSelected.hasOwnProperty("quantBuyedNumbers")
+      raffleSelected?.hasOwnProperty("quantNumbers") &&
+      raffleSelected?.hasOwnProperty("quantBuyedNumbers")
     ) {
       setProgress(
         raffleSelected.quantBuyedNumbers,
@@ -515,14 +612,14 @@ const EditRaffleContent = () => {
   }, [isRaffleCreated, submitError]);
 
   useEffect(() => {
-    if (raffleSelected.hasOwnProperty("_id")) {
+    if (raffleSelected?.hasOwnProperty("_id")) {
       enableDeleteButton();
     }
   }, [raffleSelected, participants]);
 
   useEffect(() => {
-    console.log("raffleSelected: ", raffleSelected);
-  }, [raffleSelected]);
+    console.log("winner: ", winner);
+  }, [winner]);
 
   return (
     <div className="edit-raffle__content">
@@ -537,7 +634,7 @@ const EditRaffleContent = () => {
 
           <button
             type="button"
-            onClick={() => handleDeleteButton(raffleSelected._id)}
+            onClick={() => handleDeleteButton(raffleSelected?._id)}
             disabled={!isDeleteButtonEnabled}
             className="edit-raffle__content__container__btns__delete-btn"
           >
@@ -561,23 +658,16 @@ const EditRaffleContent = () => {
             {isUsersNumberBuyedLoading ? (
               <NumberBuyedLoading />
             ) : participants?.length !== 0 ? (
-              participants.map((user) => (
-                <NumberBuyedBox
-                  key={user._id}
-                  image={user.profileImage}
-                  name={user.name}
-                  numbers={
-                    user.rafflesBuyed.filter(
-                      (raffle) => raffle.raffleId === raffleSelected._id,
-                    )[0]?.numbersBuyed
-                  }
-                  raffleImage={
-                    user.rafflesBuyed.filter(
-                      (raffle) => raffle.raffleId === raffleSelected._id,
-                    )[0]?.raffleImage
-                  }
-                />
-              ))
+              participants.map((user, userIndex) => {
+                return user.rafflesBuyed.map((raffle) => (
+                  <NumberBuyedBox
+                    key={user.id}
+                    image={profilesImagesUrls[userIndex]}
+                    name={user.name}
+                    numbers={raffle.numbersBuyed}
+                  />
+                ));
+              })
             ) : (
               <p>Nenhum número comprado no momento</p>
             )}
@@ -586,7 +676,8 @@ const EditRaffleContent = () => {
           <div className="edit-raffle__content__container__statistics-wrapper__numbers-status">
             <div className="edit-raffle__content__container__statistics-wrapper__numbers-status__numbers-quant">
               <h3 className="edit-raffle__content__container__statistics-wrapper__numbers-status__numbers-quant__quant">
-                {raffleSelected.quantNumbers - raffleSelected.quantBuyedNumbers}
+                {raffleSelected?.quantNumbers -
+                  raffleSelected?.quantBuyedNumbers}
               </h3>
               <p className="edit-raffle__content__container__statistics-wrapper__numbers-status__numbers-quant__desc">
                 Disponível
@@ -594,7 +685,7 @@ const EditRaffleContent = () => {
             </div>
             <div className="edit-raffle__content__container__statistics-wrapper__numbers-status__numbers-quant">
               <h3 className="edit-raffle__content__container__statistics-wrapper__numbers-status__numbers-quant__quant">
-                {raffleSelected.quantBuyedNumbers}
+                {raffleSelected?.quantBuyedNumbers}
               </h3>
               <p className="edit-raffle__content__container__statistics-wrapper__numbers-status__numbers-quant__desc">
                 Comprados
@@ -737,7 +828,7 @@ const EditRaffleContent = () => {
 
         <div className="edit-raffle__content__container__finish-raffle-container">
           {isFetchingWinner ? <WinnerLoading /> : null}
-          {winner.hasOwnProperty("_id") ? null : (
+          {winner.hasOwnProperty("winnerId") ? null : (
             <input
               type="text"
               value={finishNumber}
@@ -755,49 +846,36 @@ const EditRaffleContent = () => {
             <span className="finish-number-error">{finishNumberError}</span>
           )}
 
-          {isChoosingWinner ? (
-            <button
-              type="button"
-              className="edit-raffle__content__container__finish-raffle-container__finishing-btn"
-            >
-              Finalizando
-            </button>
-          ) : winner.hasOwnProperty("_id") ? (
+          {winner.hasOwnProperty("winnerId") ? (
             <button
               type="button"
               onClick={resetWinner}
+              disabled={isDeletingWinner}
               className="edit-raffle__content__container__finish-raffle-container__reset-btn"
             >
-              Sortear Novamente
+              {isDeletingWinner ? "Deletando Ganhador" : "Sortear Novamente"}
             </button>
           ) : (
             <button
               type="button"
               onClick={finishRaffle}
+              disabled={isChoosingWinner}
               className="edit-raffle__content__container__finish-raffle-container__finish-btn"
             >
-              Finalizar
+              {isChoosingWinner ? "Finalizando" : "Finalizar"}
             </button>
           )}
 
           <div className="edit-raffle__content__container__finish-raffle-container__winner-display-box">
-            {winner.hasOwnProperty("_id") ? (
+            {winner.hasOwnProperty("winnerId") ? (
               <div
-                key={winner._id}
+                key={winner.name}
                 className="edit-raffle__content__container__finish-raffle-container__winner-display-box__winner-box"
               >
                 <div className="edit-raffle__content__container__finish-raffle-container__winner-display-box__winner-box__image-box">
                   <img
                     className="edit-raffle__content__container__finish-raffle-container__winner-display-box__winner-box__image-box__image"
-                    src={
-                      winner.profileImage.data
-                        ? `data:${
-                            winner.profileImage.contentType
-                          };base64,${_arrayBufferToBase64(
-                            winner.profileImage.data.data,
-                          )}`
-                        : NoUserPhoto
-                    }
+                    src={winnerImageUrl || NoUserPhoto}
                     alt="Ganhador"
                   />
                 </div>
@@ -808,13 +886,36 @@ const EditRaffleContent = () => {
                       {winner.name}
                     </h3>
 
-                    <span>Contato: {winner.tel}</span>
-                    <span>Email: {winner.email}</span>
+                    <div className="edit-raffle__content__container__finish-raffle-container__winner-display-box__winner-box__info-box__contacts__contact-wrapper">
+                      <span className="edit-raffle__content__container__finish-raffle-container__winner-display-box__winner-box__info-box__contacts__contact-wrapper__label">
+                        Contato:{" "}
+                      </span>
+
+                      <span className="edit-raffle__content__container__finish-raffle-container__winner-display-box__winner-box__info-box__contacts__contact-wrapper__value">
+                        {winner.tel}
+                      </span>
+                    </div>
+
+                    <div className="edit-raffle__content__container__finish-raffle-container__winner-display-box__winner-box__info-box__contacts__email-wrapper">
+                      <span className="edit-raffle__content__container__finish-raffle-container__winner-display-box__winner-box__info-box__contacts__email-wrapper__label">
+                        Email:{" "}
+                      </span>
+
+                      <span className="edit-raffle__content__container__finish-raffle-container__winner-display-box__winner-box__info-box__contacts__email-wrapper__value">
+                        {winner.email}
+                      </span>
+                    </div>
                   </div>
 
-                  <span className="edit-raffle__content__container__finish-raffle-container__winner-display-box__winner-box__info-box__winner-number">
-                    Número: {winner.raffleNumber}
-                  </span>
+                  <div className="edit-raffle__content__container__finish-raffle-container__winner-display-box__winner-box__info-box__winner-number-box">
+                    <span className="edit-raffle__content__container__finish-raffle-container__winner-display-box__winner-box__info-box__winner-number-box__label">
+                      Número
+                    </span>
+
+                    <span className="edit-raffle__content__container__finish-raffle-container__winner-display-box__winner-box__info-box__winner-number-box__winner-number">
+                      {winner.raffleNumber}
+                    </span>
+                  </div>
                 </div>
               </div>
             ) : null}

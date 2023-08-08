@@ -1132,7 +1132,8 @@ body {
 .winner-box__winner-wrapper__infos-box {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  justify-content: center;
+  gap: 5px;
 }
 .winner-box__winner-wrapper__infos-box__name {
   color: #fff;
@@ -2096,6 +2097,13 @@ body {
 .query-numbers__query-numbers-modal-overlay__box__container__form__label__input:focus {
   border-color: #86b7fe;
   box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+.query-numbers__query-numbers-modal-overlay__box__container__form__label__error {
+  color: rgb(209, 52, 52);
+  font-size: 0.9rem;
+  margin-top: -10px;
+  display: block;
+  margin-bottom: 15px;
 }
 .query-numbers__query-numbers-modal-overlay__box__container__form__submit-btn {
   width: fit-content;
@@ -3193,11 +3201,13 @@ body {
   cursor: pointer;
   outline: none;
   margin-bottom: 20px;
+  transition: filter 0.4s ease;
+}
+.edit-raffle__content__container__finish-raffle-container__finish-btn:disabled {
+  filter: brightness(80%);
+  cursor: not-allowed;
 }
 @media screen and (min-width: 1024px) {
-  .edit-raffle__content__container__finish-raffle-container__finish-btn {
-    transition: filter 0.4s ease;
-  }
   .edit-raffle__content__container__finish-raffle-container__finish-btn:hover {
     filter: brightness(80%);
   }
@@ -3213,27 +3223,16 @@ body {
   cursor: pointer;
   outline: none;
   margin-bottom: 20px;
+  transition: filter 0.4s ease;
+}
+.edit-raffle__content__container__finish-raffle-container__reset-btn:disabled {
+  filter: brightness(80%);
+  cursor: not-allowed;
 }
 @media screen and (min-width: 1024px) {
-  .edit-raffle__content__container__finish-raffle-container__reset-btn {
-    transition: filter 0.4s ease;
-  }
   .edit-raffle__content__container__finish-raffle-container__reset-btn:hover {
     filter: brightness(80%);
   }
-}
-.edit-raffle__content__container__finish-raffle-container__finishing-btn {
-  background-color: #198754;
-  padding: 10px 15px;
-  border-radius: 6px;
-  border: none;
-  font-size: 1rem;
-  font-weight: 600;
-  color: #fff;
-  pointer-events: none;
-  outline: none;
-  margin-bottom: 20px;
-  filter: brightness(80%);
 }
 .edit-raffle__content__container__finish-raffle-container__winner-display-box {
   width: 100%;
@@ -3244,9 +3243,18 @@ body {
   border-radius: 10px;
   padding: 15px;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 50px;
+  align-items: flex-start;
+  gap: 25px;
+  flex-direction: column;
+}
+@media screen and (min-width: 768px) {
+  .edit-raffle__content__container__finish-raffle-container__winner-display-box__winner-box {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 50px;
+    flex-direction: row;
+  }
 }
 .edit-raffle__content__container__finish-raffle-container__winner-display-box__winner-box__image-box {
   width: 50px;
@@ -3265,11 +3273,22 @@ body {
   object-position: center;
 }
 .edit-raffle__content__container__finish-raffle-container__winner-display-box__winner-box__info-box {
-  width: 90%;
+  width: 100%;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
-  gap: 5px;
+  flex-direction: column;
+  gap: 25px;
+}
+@media screen and (min-width: 768px) {
+  .edit-raffle__content__container__finish-raffle-container__winner-display-box__winner-box__info-box {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-direction: row;
+    gap: 5px;
+    width: 90%;
+  }
 }
 .edit-raffle__content__container__finish-raffle-container__winner-display-box__winner-box__info-box__contacts {
   display: flex;
@@ -3281,12 +3300,47 @@ body {
   font-weight: 600;
   color: #fff;
 }
-.edit-raffle__content__container__finish-raffle-container__winner-display-box__winner-box__info-box__contacts span {
+.edit-raffle__content__container__finish-raffle-container__winner-display-box__winner-box__info-box__contacts__contact-wrapper {
+  display: flex;
+  gap: 5px;
+}
+.edit-raffle__content__container__finish-raffle-container__winner-display-box__winner-box__info-box__contacts__contact-wrapper__label {
+  color: #fff;
   font-size: 1rem;
+  font-weight: 500;
+}
+.edit-raffle__content__container__finish-raffle-container__winner-display-box__winner-box__info-box__contacts__contact-wrapper__value {
+  color: #fff;
+  font-size: 1rem;
+}
+.edit-raffle__content__container__finish-raffle-container__winner-display-box__winner-box__info-box__contacts__email-wrapper {
+  display: flex;
+  gap: 5px;
+}
+.edit-raffle__content__container__finish-raffle-container__winner-display-box__winner-box__info-box__contacts__email-wrapper__label {
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 500;
+}
+.edit-raffle__content__container__finish-raffle-container__winner-display-box__winner-box__info-box__contacts__email-wrapper__value {
+  color: #fff;
+  font-size: 1rem;
+  word-break: break-all;
+}
+.edit-raffle__content__container__finish-raffle-container__winner-display-box__winner-box__info-box__winner-number-box {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 5px;
+}
+.edit-raffle__content__container__finish-raffle-container__winner-display-box__winner-box__info-box__winner-number-box__label {
+  font-size: 1rem;
+  font-weight: 500;
   color: #fff;
 }
-.edit-raffle__content__container__finish-raffle-container__winner-display-box__winner-box__info-box__winner-number {
-  font-size: 1rem;
+.edit-raffle__content__container__finish-raffle-container__winner-display-box__winner-box__info-box__winner-number-box__winner-number {
+  font-size: 1.5rem;
+  font-weight: 600;
   color: #fff;
 }
 .edit-raffle__confirmation-overlay {
@@ -3436,21 +3490,19 @@ body {
   color: #fff;
   opacity: 0.7;
 }
-.numbers-buyed-box__prize-image-box {
-  width: 50px;
-  min-width: 50px;
-  max-width: 50px;
-  height: 50px;
-  min-height: 50px;
-  max-height: 50px;
-  border-radius: 50%;
-  overflow: hidden;
+.numbers-buyed-box__numbers-quant-box {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  flex-direction: column;
 }
-.numbers-buyed-box__prize-image-box__image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center;
+.numbers-buyed-box__numbers-quant-box__quant-title {
+  font-size: 0.8rem;
+  color: #d3d3d3;
+}
+.numbers-buyed-box__numbers-quant-box__quant-value {
+  font-size: 1.5rem;
+  color: #fff;
 }
 
 .request-new-password {

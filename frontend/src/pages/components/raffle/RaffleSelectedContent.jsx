@@ -318,178 +318,184 @@ const RaffleSelectedContent = () => {
           <BsCart /> Ver meus números
         </Link>
 
-        <div className="raffle-selected__raffle-selected-content__container__buy-numbers-box">
-          <span className="raffle-selected__raffle-selected-content__container__buy-numbers-box__desc">
-            Selecione a quantidade de números
-          </span>
+        {!raffleSelected?.isFinished ? (
+          <>
+            <div className="raffle-selected__raffle-selected-content__container__buy-numbers-box">
+              <span className="raffle-selected__raffle-selected-content__container__buy-numbers-box__desc">
+                Selecione a quantidade de números
+              </span>
 
-          <div
-            className="raffle-selected__raffle-selected-content__container__buy-numbers-box__buy-numbers-wrapper"
-            style={
-              raffleSelected?.quantNumbers === raffleSelected?.quantBuyedNumbers
-                ? { pointerEvents: "none" }
-                : {}
-            }
-          >
-            <button
-              onClick={() => incrementNumberQuant(10)}
-              type="button"
-              className="raffle-selected__raffle-selected-content__container__buy-numbers-box__buy-numbers-wrapper__numbers-btn"
-            >
-              <h1 className="raffle-selected__raffle-selected-content__container__buy-numbers-box__buy-numbers-wrapper__numbers-btn__title">
-                <small>+</small>10
-              </h1>
-
-              <p className="raffle-selected__raffle-selected-content__container__buy-numbers-box__buy-numbers-wrapper__numbers-btn__desc">
-                Selecionar
-              </p>
-            </button>
-
-            <button
-              onClick={() => incrementNumberQuant(15)}
-              type="button"
-              className="raffle-selected__raffle-selected-content__container__buy-numbers-box__buy-numbers-wrapper__numbers-btn emphasis"
-            >
-              <span className="emphasis-tag">Mais popular</span>
-
-              <h1 className="raffle-selected__raffle-selected-content__container__buy-numbers-box__buy-numbers-wrapper__numbers-btn__title">
-                <small>+</small>15
-              </h1>
-
-              <p className="raffle-selected__raffle-selected-content__container__buy-numbers-box__buy-numbers-wrapper__numbers-btn__desc">
-                Selecionar
-              </p>
-            </button>
-
-            <button
-              onClick={() => incrementNumberQuant(200)}
-              type="button"
-              className="raffle-selected__raffle-selected-content__container__buy-numbers-box__buy-numbers-wrapper__numbers-btn"
-            >
-              <h1 className="raffle-selected__raffle-selected-content__container__buy-numbers-box__buy-numbers-wrapper__numbers-btn__title">
-                <small>+</small>200
-              </h1>
-
-              <p className="raffle-selected__raffle-selected-content__container__buy-numbers-box__buy-numbers-wrapper__numbers-btn__desc">
-                Selecionar
-              </p>
-            </button>
-
-            <button
-              onClick={() => incrementNumberQuant(250)}
-              type="button"
-              className="raffle-selected__raffle-selected-content__container__buy-numbers-box__buy-numbers-wrapper__numbers-btn"
-            >
-              <h1 className="raffle-selected__raffle-selected-content__container__buy-numbers-box__buy-numbers-wrapper__numbers-btn__title">
-                <small>+</small>250
-              </h1>
-
-              <p className="raffle-selected__raffle-selected-content__container__buy-numbers-box__buy-numbers-wrapper__numbers-btn__desc">
-                Selecionar
-              </p>
-            </button>
-
-            <button
-              onClick={() => incrementNumberQuant(300)}
-              type="button"
-              className="raffle-selected__raffle-selected-content__container__buy-numbers-box__buy-numbers-wrapper__numbers-btn"
-            >
-              <h1 className="raffle-selected__raffle-selected-content__container__buy-numbers-box__buy-numbers-wrapper__numbers-btn__title">
-                <small>+</small>300
-              </h1>
-
-              <p className="raffle-selected__raffle-selected-content__container__buy-numbers-box__buy-numbers-wrapper__numbers-btn__desc">
-                Selecionar
-              </p>
-            </button>
-
-            <button
-              onClick={() => incrementNumberQuant(350)}
-              type="button"
-              className="raffle-selected__raffle-selected-content__container__buy-numbers-box__buy-numbers-wrapper__numbers-btn"
-            >
-              <h1 className="raffle-selected__raffle-selected-content__container__buy-numbers-box__buy-numbers-wrapper__numbers-btn__title">
-                <small>+</small>350
-              </h1>
-
-              <p className="raffle-selected__raffle-selected-content__container__buy-numbers-box__buy-numbers-wrapper__numbers-btn__desc">
-                Selecionar
-              </p>
-            </button>
-          </div>
-
-          <div
-            className="raffle-selected__raffle-selected-content__container__buy-numbers-box__selected-numbers-wrapper"
-            style={
-              raffleSelected?.quantNumbers === raffleSelected?.quantBuyedNumbers
-                ? { pointerEvents: "none" }
-                : {}
-            }
-          >
-            <button
-              onClick={() => {
-                if (numberQuant !== 0) {
-                  decrementNumberQuant(1);
+              <div
+                className="raffle-selected__raffle-selected-content__container__buy-numbers-box__buy-numbers-wrapper"
+                style={
+                  raffleSelected?.quantNumbers ===
+                  raffleSelected?.quantBuyedNumbers
+                    ? { pointerEvents: "none" }
+                    : {}
                 }
-              }}
-              type="button"
-              className="raffle-selected__raffle-selected-content__container__buy-numbers-box__selected-numbers-wrapper__btn"
-            >
-              <CiCircleMinus />
-            </button>
+              >
+                <button
+                  onClick={() => incrementNumberQuant(10)}
+                  type="button"
+                  className="raffle-selected__raffle-selected-content__container__buy-numbers-box__buy-numbers-wrapper__numbers-btn"
+                >
+                  <h1 className="raffle-selected__raffle-selected-content__container__buy-numbers-box__buy-numbers-wrapper__numbers-btn__title">
+                    <small>+</small>10
+                  </h1>
 
-            <div
-              onClick={() => decrementNumberQuant(numberQuant)}
-              className="raffle-selected__raffle-selected-content__container__buy-numbers-box__selected-numbers-wrapper__selected-numbers-display"
-            >
-              {numberQuant}
+                  <p className="raffle-selected__raffle-selected-content__container__buy-numbers-box__buy-numbers-wrapper__numbers-btn__desc">
+                    Selecionar
+                  </p>
+                </button>
+
+                <button
+                  onClick={() => incrementNumberQuant(15)}
+                  type="button"
+                  className="raffle-selected__raffle-selected-content__container__buy-numbers-box__buy-numbers-wrapper__numbers-btn emphasis"
+                >
+                  <span className="emphasis-tag">Mais popular</span>
+
+                  <h1 className="raffle-selected__raffle-selected-content__container__buy-numbers-box__buy-numbers-wrapper__numbers-btn__title">
+                    <small>+</small>15
+                  </h1>
+
+                  <p className="raffle-selected__raffle-selected-content__container__buy-numbers-box__buy-numbers-wrapper__numbers-btn__desc">
+                    Selecionar
+                  </p>
+                </button>
+
+                <button
+                  onClick={() => incrementNumberQuant(200)}
+                  type="button"
+                  className="raffle-selected__raffle-selected-content__container__buy-numbers-box__buy-numbers-wrapper__numbers-btn"
+                >
+                  <h1 className="raffle-selected__raffle-selected-content__container__buy-numbers-box__buy-numbers-wrapper__numbers-btn__title">
+                    <small>+</small>200
+                  </h1>
+
+                  <p className="raffle-selected__raffle-selected-content__container__buy-numbers-box__buy-numbers-wrapper__numbers-btn__desc">
+                    Selecionar
+                  </p>
+                </button>
+
+                <button
+                  onClick={() => incrementNumberQuant(250)}
+                  type="button"
+                  className="raffle-selected__raffle-selected-content__container__buy-numbers-box__buy-numbers-wrapper__numbers-btn"
+                >
+                  <h1 className="raffle-selected__raffle-selected-content__container__buy-numbers-box__buy-numbers-wrapper__numbers-btn__title">
+                    <small>+</small>250
+                  </h1>
+
+                  <p className="raffle-selected__raffle-selected-content__container__buy-numbers-box__buy-numbers-wrapper__numbers-btn__desc">
+                    Selecionar
+                  </p>
+                </button>
+
+                <button
+                  onClick={() => incrementNumberQuant(300)}
+                  type="button"
+                  className="raffle-selected__raffle-selected-content__container__buy-numbers-box__buy-numbers-wrapper__numbers-btn"
+                >
+                  <h1 className="raffle-selected__raffle-selected-content__container__buy-numbers-box__buy-numbers-wrapper__numbers-btn__title">
+                    <small>+</small>300
+                  </h1>
+
+                  <p className="raffle-selected__raffle-selected-content__container__buy-numbers-box__buy-numbers-wrapper__numbers-btn__desc">
+                    Selecionar
+                  </p>
+                </button>
+
+                <button
+                  onClick={() => incrementNumberQuant(350)}
+                  type="button"
+                  className="raffle-selected__raffle-selected-content__container__buy-numbers-box__buy-numbers-wrapper__numbers-btn"
+                >
+                  <h1 className="raffle-selected__raffle-selected-content__container__buy-numbers-box__buy-numbers-wrapper__numbers-btn__title">
+                    <small>+</small>350
+                  </h1>
+
+                  <p className="raffle-selected__raffle-selected-content__container__buy-numbers-box__buy-numbers-wrapper__numbers-btn__desc">
+                    Selecionar
+                  </p>
+                </button>
+              </div>
+
+              <div
+                className="raffle-selected__raffle-selected-content__container__buy-numbers-box__selected-numbers-wrapper"
+                style={
+                  raffleSelected?.quantNumbers ===
+                  raffleSelected?.quantBuyedNumbers
+                    ? { pointerEvents: "none" }
+                    : {}
+                }
+              >
+                <button
+                  onClick={() => {
+                    if (numberQuant !== 0) {
+                      decrementNumberQuant(1);
+                    }
+                  }}
+                  type="button"
+                  className="raffle-selected__raffle-selected-content__container__buy-numbers-box__selected-numbers-wrapper__btn"
+                >
+                  <CiCircleMinus />
+                </button>
+
+                <div
+                  onClick={() => decrementNumberQuant(numberQuant)}
+                  className="raffle-selected__raffle-selected-content__container__buy-numbers-box__selected-numbers-wrapper__selected-numbers-display"
+                >
+                  {numberQuant}
+                </div>
+
+                <button
+                  onClick={() => incrementNumberQuant(1)}
+                  type="button"
+                  className="raffle-selected__raffle-selected-content__container__buy-numbers-box__selected-numbers-wrapper__btn"
+                >
+                  <CiCirclePlus />
+                </button>
+              </div>
             </div>
 
             <button
-              onClick={() => incrementNumberQuant(1)}
+              onClick={handleBuy}
               type="button"
-              className="raffle-selected__raffle-selected-content__container__buy-numbers-box__selected-numbers-wrapper__btn"
+              style={
+                isBuying
+                  ? {
+                      filter: "brightness(80%)",
+                      pointerEvents: "none",
+                    }
+                  : isRaffleLoading
+                  ? { pointerEvents: "none" }
+                  : raffleSelected?.quantNumbers ===
+                    raffleSelected?.quantBuyedNumbers
+                  ? {
+                      filter: "brightness(80%)",
+                      pointerEvents: "none",
+                    }
+                  : {}
+              }
+              className="raffle-selected__raffle-selected-content__container__buy-btn"
             >
-              <CiCirclePlus />
+              {isBuying ? (
+                <span className="raffle-selected__raffle-selected-content__container__buy-btn__desc">
+                  <img src={buyingLoading} alt="Processando..." />
+                </span>
+              ) : (
+                <span className="raffle-selected__raffle-selected-content__container__buy-btn__desc">
+                  <BsCheck2Circle /> Participar do sorteio
+                </span>
+              )}
+
+              <span className="raffle-selected__raffle-selected-content__container__buy-btn__price">
+                {calcValues(raffleSelected?.price, numberQuant)}
+              </span>
             </button>
-          </div>
-        </div>
-
-        <button
-          onClick={handleBuy}
-          type="button"
-          style={
-            isBuying
-              ? {
-                  filter: "brightness(80%)",
-                  pointerEvents: "none",
-                }
-              : isRaffleLoading
-              ? { pointerEvents: "none" }
-              : raffleSelected?.quantNumbers ===
-                raffleSelected?.quantBuyedNumbers
-              ? {
-                  filter: "brightness(80%)",
-                  pointerEvents: "none",
-                }
-              : {}
-          }
-          className="raffle-selected__raffle-selected-content__container__buy-btn"
-        >
-          {isBuying ? (
-            <span className="raffle-selected__raffle-selected-content__container__buy-btn__desc">
-              <img src={buyingLoading} alt="Processando..." />
-            </span>
-          ) : (
-            <span className="raffle-selected__raffle-selected-content__container__buy-btn__desc">
-              <BsCheck2Circle /> Participar do sorteio
-            </span>
-          )}
-
-          <span className="raffle-selected__raffle-selected-content__container__buy-btn__price">
-            {calcValues(raffleSelected?.price, numberQuant)}
-          </span>
-        </button>
+          </>
+        ) : null}
       </div>
     </div>
   );

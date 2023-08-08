@@ -411,10 +411,21 @@ export const getBuyedNumbers = async (req, res) => {
   try {
     const users = await Account.find({
       "rafflesBuyed.raffleId": id,
-      "rafflesBuyed.status": "approved",
+      // "rafflesBuyed.status": "approved", tirar depois dos testes
     });
 
-    res.send(users);
+    const participants = users.map((user) => ({
+      name: user.name,
+      profileImage: user.profileImage,
+      id: user._id,
+      rafflesBuyed: user.rafflesBuyed
+        .filter((raffle) => raffle.raffleId.equals(id))
+        .map((userRaffle) => ({
+          numbersBuyed: userRaffle.numbersBuyed,
+        })),
+    }));
+
+    res.send(participants);
   } catch (error) {
     console.log(error);
     res.status(404).send(error.message);

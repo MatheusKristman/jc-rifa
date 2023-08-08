@@ -244,6 +244,14 @@
                 box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
               }
             }
+
+            &__error {
+              color: rgb(209, 52, 52);
+              font-size: 0.9rem;
+              margin-top: -10px;
+              display: block;
+              margin-bottom: 15px;
+            }
           }
 
           &__submit-btn {

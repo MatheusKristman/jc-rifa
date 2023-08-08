@@ -108,14 +108,20 @@ const PrizesHome = () => {
 };
 
 const WinnersHome = () => {
-  const { winners, winnersImagesUrls } = useWinnerStore((state) => ({
-    winners: state.winners,
-    winnersImagesUrls: state.winnersImagesUrls,
-  }));
+  const { winners, winnersImagesUrls, winnersRafflesImagesUrls } =
+    useWinnerStore((state) => ({
+      winners: state.winners,
+      winnersImagesUrls: state.winnersImagesUrls,
+      winnersRafflesImagesUrls: state.winnersRafflesImagesUrls,
+    }));
 
   const { raffles } = useRaffleStore((state) => ({
     raffles: state.raffles,
   }));
+
+  useEffect(() => {
+    console.log("winnersRafflesImagesUrls", winnersRafflesImagesUrls);
+  }, [winnersRafflesImagesUrls]);
 
   return (
     <div className="hero__container__winners-box">
@@ -138,15 +144,7 @@ const WinnersHome = () => {
               name={winner.name}
               raffleTitle={winner.raffleTitle} // TODO arrumar a forma que recebe os dados da rifa
               raffleNumber={winner.raffleNumber}
-              raffleImage={
-                winner.raffleImage?.data
-                  ? `data:${
-                      winner.raffleImage.contentType
-                    };base64,${_arrayBufferToBase64(
-                      winner.raffleImage.data.data,
-                    )}`
-                  : DefaultPrize
-              }
+              raffleImage={winnersRafflesImagesUrls[index] || DefaultPrize}
             />
           ))
         ) : (

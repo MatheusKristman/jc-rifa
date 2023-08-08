@@ -75,7 +75,9 @@ const QueryNumbersContent = () => {
                 >
                   {raffle.numbersBuyed.includes(
                     rafflesConcluded[index]?.raffleNumber,
-                  ) || raffles[index]?.isFinished
+                  )
+                    ? "Rifa Ganha! Aguarde contato"
+                    : raffles[index]?.isFinished
                     ? "Concluído"
                     : raffle.status === "approved"
                     ? "Aguarde sorteio"

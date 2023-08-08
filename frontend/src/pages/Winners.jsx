@@ -7,10 +7,12 @@ import useGeneralStore from "../stores/useGeneralStore";
 import Loading from "./components/Loading";
 
 const Winners = () => {
-  const { setWinners, setWinnersImagesUrls } = useWinnerStore((state) => ({
-    setWinners: state.setWinners,
-    setWinnersImagesUrls: state.setWinnersImagesUrls,
-  }));
+  const { setWinners, setWinnersImagesUrls, setWinnersRafflesImagesUrls } =
+    useWinnerStore((state) => ({
+      setWinners: state.setWinners,
+      setWinnersImagesUrls: state.setWinnersImagesUrls,
+      setWinnersRafflesImagesUrls: state.setWinnersRafflesImagesUrls,
+    }));
 
   const {
     isLoading,
@@ -30,46 +32,69 @@ const Winners = () => {
     const fetchWinners = () => {
       setToLoad();
       setToAnimateFadeIn();
+
       api
         .get("/winner/get-all-winners")
         .then((res) => {
           setWinners(res.data);
+          const allWinners = res.data;
 
-          const urls = [];
-          for (let i = 0; i < res.data.length; i++) {
-            if (res.data[i].profileImage) {
+          console.log("allWinners: ", allWinners);
+
+          const winnersUrls = [];
+          const rafflesUrls = [];
+
+          for (let i = 0; i < allWinners.length; i++) {
+            if (allWinners[i].profileImage) {
               if (
                 JSON.stringify(import.meta.env.MODE) ===
                 JSON.stringify("development")
               ) {
-                urls.push(
+                winnersUrls.push(
                   `${import.meta.env.VITE_API_KEY_DEV}${
                     import.meta.env.VITE_API_PORT
-                  }/raffle-uploads/${res.data[i].profileImage}`,
+                  }/user-uploads/${allWinners[i].profileImage}`,
                 );
               } else {
-                urls.push(
-                  `${import.meta.env.VITE_API_KEY}/raffle-uploads/${
-                    res.data[i].profileImage
+                winnersUrls.push(
+                  `${import.meta.env.VITE_API_KEY}/user-uploads/${
+                    allWinners[i].profileImage
                   }`,
                 );
               }
             } else {
-              urls.push(null);
+              winnersUrls.push(null);
+            }
+
+            if (allWinners[i].raffleImage) {
+              if (
+                JSON.stringify(import.meta.env.MODE) ===
+                JSON.stringify("development")
+              ) {
+                rafflesUrls.push(
+                  `${import.meta.env.VITE_API_KEY_DEV}${
+                    import.meta.env.VITE_API_PORT
+                  }/raffle-uploads/${allWinners[i].raffleImage}`,
+                );
+              } else {
+                rafflesUrls.push(
+                  `${import.meta.env.VITE_API_KEY}/raffle-uploads/${
+                    allWinners[i].raffleImage
+                  }`,
+                );
+              }
+            } else {
+              rafflesUrls.push(null);
             }
           }
 
-          setWinnersImagesUrls(urls);
-
-          setToAnimateFadeOut();
-
-          setTimeout(() => {
-            setNotToLoad();
-          }, 400);
+          setWinnersImagesUrls(winnersUrls);
+          setWinnersRafflesImagesUrls(rafflesUrls);
         })
         .catch((error) => {
           console.log(error);
-
+        })
+        .finally(() => {
           setToAnimateFadeOut();
 
           setTimeout(() => {

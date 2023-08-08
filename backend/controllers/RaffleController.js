@@ -101,7 +101,7 @@ export const finishRaffle = async (req, res) => {
     const doesWinnerExists = await Account.findOne({
       "rafflesBuyed.raffleId": id,
       "rafflesBuyed.numbersBuyed": number,
-      "rafflesBuyed.status": "approved",
+      // "rafflesBuyed.status": "approved",
     });
 
     console.log(doesWinnerExists);
@@ -137,6 +137,7 @@ export const finishRaffle = async (req, res) => {
       email: newWinner.account.email,
       profileImage: newWinner.account.profileImage,
       raffleNumber: newWinner.raffleNumber,
+      winnerId: newWinner._id,
     };
 
     res.json(winnerCreated);
