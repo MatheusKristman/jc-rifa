@@ -1,5 +1,4 @@
 import React from "react";
-import { ToastContainer } from "react-toastify";
 
 import useIsUserLogged from "../hooks/useIsUserLogged";
 import useGeneralStore from "../stores/useGeneralStore";
@@ -19,7 +18,6 @@ const NewRaffle = () => {
       <Header />
       <NewRaffleContent />
       <Footer />
-      <ToastContainer />
       {isLoading && <Loading>Criando rifa...</Loading>}
     </div>
   );

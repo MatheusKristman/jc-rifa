@@ -1,5 +1,4 @@
 import React from "react";
-import { ToastContainer } from "react-toastify";
 
 import useRaffleStore from "../stores/useRaffleStore";
 import useGeneralStore from "../stores/useGeneralStore";
@@ -25,7 +24,6 @@ const EditRaffle = () => {
       <Header />
       <EditRaffleContent />
       <Footer />
-      <ToastContainer />
       {isDeleteConfirmationOpen && <DeleteConfirmationBox />}
       {isLoading && <Loading>{loadingMessage}</Loading>}
     </div>

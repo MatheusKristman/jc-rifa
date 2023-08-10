@@ -19,7 +19,7 @@ import { shallow } from "zustand/shallow";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 
 import useHeaderStore from "../../stores/useHeaderStore";
 import useUserStore from "../../stores/useUserStore";
@@ -461,7 +461,7 @@ const LogInModal = () => {
 
   const { register, handleSubmit, formState, setValue } = useForm({
     resolver: yupResolver(schema),
-    defaultValues: { username: usernameValue },
+    defaultValues: { username: loginData.username },
   });
 
   const { errors } = formState;
@@ -551,6 +551,13 @@ const LogInModal = () => {
               });
 
               localStorage.setItem("userToken", res.data);
+
+              closeLogin();
+              navigate("/");
+
+              if (window.location.pathname === "/") {
+                window.location.reload(false);
+              }
             })
             .catch((error) => {
               toast.error("Usuário incorreto", {
@@ -579,7 +586,7 @@ const LogInModal = () => {
 
           api
             .post("/account/login", {
-              tel: usernameValue,
+              tel: loginData.username,
             })
             .then((res) => {
               if (res.data.isAdmin) {
@@ -601,6 +608,13 @@ const LogInModal = () => {
               });
 
               localStorage.setItem("userToken", res.data.token);
+
+              closeLogin();
+              navigate("/");
+
+              if (window.location.pathname === "/") {
+                window.location.reload(false);
+              }
             })
             .catch((error) => {
               toast.error("Usuário incorreto", {
@@ -614,15 +628,8 @@ const LogInModal = () => {
                 theme: "colored",
               });
               console.error(error);
-            })
-            .finally(() => {
-              setIsSubmitting(false);
-              navigate("/");
-              closeLogin();
 
-              if (window.location.pathname === "/") {
-                window.location.reload(false);
-              }
+              setIsSubmitting(false);
             });
         };
 
@@ -639,7 +646,6 @@ const LogInModal = () => {
       onClick={handleCloseLoginOverlay}
       className="header__login-modal-overlay"
     >
-      <ToastContainer />
       <div ref={loginModalBoxRef} className="header__login-modal-overlay__box">
         <div className="header__login-modal-overlay__box__content">
           <div className="header__login-modal-overlay__box__content__head">
@@ -687,7 +693,7 @@ const LogInModal = () => {
                 }}
                 onFocus={() => setIsUsernameSelected(true)}
                 onBlur={() =>
-                  usernameValue === ""
+                  loginData.username === ""
                     ? setIsUsernameSelected(false)
                     : setIsUsernameSelected(true)
                 }
@@ -723,9 +729,9 @@ const LogInModal = () => {
                     handleFormChange("password", e.target.value);
                     setValue("password", e.target.value);
                   }}
-                  onFocus={setIsPasswordSelected(true)}
+                  onFocus={() => setIsPasswordSelected(true)}
                   onBlur={() =>
-                    passwordValue === ""
+                    loginData.password === ""
                       ? setIsPasswordSelected(false)
                       : setIsPasswordSelected(true)
                   }
@@ -791,8 +797,6 @@ const Header = () => {
   const navigateToQueryNumbersPage = () => {
     navigate("/query-numbers");
   };
-
-  useIsUserLogged();
 
   useEffect(() => {
     if (isMenuOpen || isLoginModalOpen) {

@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FiAlertTriangle } from "react-icons/fi";
 
 import { WinnerBox } from "..";
 import NoUserPhoto from "../../../assets/no-user-photo.png";
 import DefaultPrize from "../../../assets/default-prize.jpg";
-import useGeneralStore from "../stores/useGeneralStore";
-import api from "../services/api";
+import useGeneralStore from "../../../stores/useGeneralStore";
+import api from "../../../services/api";
 
 const WinnersContent = () => {
   const { setToLoad, setNotToLoad, setToAnimateFadeIn, setToAnimateFadeOut } =

@@ -1,5 +1,4 @@
 import React from "react";
-import { ToastContainer } from "react-toastify";
 
 import { Header, Footer } from "./components";
 import RaffleManagementContent from "./components/raffle-management/RaffleManagementContent";
@@ -10,7 +9,6 @@ const RaffleManagement = () => {
       <Header />
       <RaffleManagementContent />
       <Footer />
-      <ToastContainer />
     </div>
   );
 };

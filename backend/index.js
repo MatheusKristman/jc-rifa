@@ -46,7 +46,6 @@ app.use(
 
 const raffleStorage = multer.diskStorage({
   destination: function (req, file, cb) {
-    console.log(req.url);
     cb(null, "public/data/raffle-uploads");
   },
   filename: function (req, file, cb) {

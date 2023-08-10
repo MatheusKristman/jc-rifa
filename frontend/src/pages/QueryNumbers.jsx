@@ -1,6 +1,5 @@
 import React from "react";
 import { shallow } from "zustand/shallow";
-import { ToastContainer } from "react-toastify";
 
 import { Header, Footer } from "./components";
 import QueryNumbersContent from "./components/query-numbers/QueryNumbersContent";
@@ -20,7 +19,6 @@ const QueryNumbers = () => {
 
   return (
     <div className="query-numbers">
-      <ToastContainer />
       <Header />
       <QueryNumbersContent />
       {isQueryNumbersModalOpen && <QueryNumbersModal />}

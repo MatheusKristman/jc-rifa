@@ -7,7 +7,6 @@ import { toast } from "react-toastify";
 
 import PrizeDisplayed from "../PrizeDisplayed";
 import buyingLoading from "../../../assets/buying-loading.svg";
-import useRaffleStore from "../../../stores/useRaffleStore";
 import api from "../../../services/api";
 import useBuyNumbersStore from "../../../stores/useBuyNumbersStore";
 import useUserStore from "../../../stores/useUserStore";
@@ -15,10 +14,6 @@ import useHeaderStore from "../../../stores/useHeaderStore";
 import useGeneralStore from "../../../stores/useGeneralStore";
 
 const RaffleSelectedContent = () => {
-  const { raffleSelected, setRaffleSelected } = useRaffleStore((state) => ({
-    raffleSelected: state.raffleSelected,
-    setRaffleSelected: state.setRaffleSelected,
-  }));
   const { openPaymentModal, setQrCodePayment, setPaymentLink } =
     useBuyNumbersStore(
       (state) => ({
@@ -43,6 +38,7 @@ const RaffleSelectedContent = () => {
       setToRaffleNotLoad: state.setToRaffleNotLoad,
     }));
 
+  const [raffleSelected, setRaffleSelected] = useState({});
   const [raffleSelectedImageUrl, setRaffleSelectedImageUrl] = useState("");
   const [numberQuant, setNumberQuant] = useState(0);
   const [isBuying, setIsBuying] = useState(false);
@@ -425,8 +421,8 @@ const RaffleSelectedContent = () => {
                   onClick={() => incrementNumberQuant(1)}
                   disabled={
                     numberQuant ===
-                      raffleSelected.quantNumbers -
-                        raffleSelected.quantBuyedNumbers || isBuying
+                      raffleSelected?.quantNumbers -
+                        raffleSelected?.quantBuyedNumbers || isBuying
                   }
                   type="button"
                   className="raffle-selected__raffle-selected-content__container__buy-numbers-box__selected-numbers-wrapper__btn"
@@ -447,8 +443,8 @@ const RaffleSelectedContent = () => {
                     }
                   : isRaffleLoading
                   ? { pointerEvents: "none" }
-                  : raffleSelected.quantNumbers ===
-                    raffleSelected.quantBuyedNumbers
+                  : raffleSelected?.quantNumbers ===
+                    raffleSelected?.quantBuyedNumbers
                   ? {
                       filter: "brightness(80%)",
                       pointerEvents: "none",

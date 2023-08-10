@@ -1,5 +1,4 @@
 import React from "react";
-import { ToastContainer } from "react-toastify";
 
 import { Header, Footer } from "./components";
 import UpdateRegistrationContent from "./components/updateRegistration/UpdateRegistrationContent";
@@ -17,7 +16,6 @@ const UpdateRegistration = () => {
       <UpdateRegistrationContent />
       {user.admin && <UpdatePasswordContent />}
       <Footer />
-      <ToastContainer />
     </div>
   );
 };

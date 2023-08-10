@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import api from "../services/api";
 
 import useUserStore from "../stores/useUserStore";
@@ -9,6 +10,9 @@ const useIsUserLogged = () => {
     userLogged: state.userLogged,
     userNotLogged: state.userNotLogged,
   }));
+
+  const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const token = localStorage.getItem("userToken") || null;
@@ -23,9 +27,13 @@ const useIsUserLogged = () => {
         .then((res) => {
           setUser({ ...res.data });
           userLogged();
+
+          if (location.pathname === "/register") {
+            navigate("/updateRegistration");
+          }
         })
         .catch((error) => {
-          console.log(error);
+          console.error(error);
           userNotLogged();
           localStorage.removeItem("userToken");
         });

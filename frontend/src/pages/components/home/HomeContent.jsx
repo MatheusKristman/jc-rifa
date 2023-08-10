@@ -28,7 +28,7 @@ const PrizesHome = () => {
       shallow,
     );
 
-  const [rafflesImagesUrls, setRafflesImagesUrls] = useState([]);
+  const [rafflesImagesUrls, setRafflesImagesUrls] = useState([null]);
 
   const navigate = useNavigate();
 
@@ -119,7 +119,7 @@ const PrizesHome = () => {
         className="hero__container__prizes-box__prize-displayed-box"
       >
         <PrizeDisplayed
-          image={rafflesImagesUrls[0]}
+          image={rafflesImagesUrls[0] || DefaultPrize}
           title={raffles[0]?.title}
           subtitle={raffles[0]?.subtitle}
           progress={convertProgress(
@@ -139,7 +139,7 @@ const PrizesHome = () => {
           <Prizes
             title={raffle.title}
             subtitle={raffle.subtitle}
-            image={rafflesImagesUrls[index + 1] || null}
+            image={rafflesImagesUrls[index + 1] || DefaultPrize}
             progress={convertProgress(
               raffle?.quantBuyedNumbers,
               raffle?.quantNumbers,
@@ -249,7 +249,7 @@ const WinnersHome = () => {
           setWinnersImagesUrls(winnersUrls);
           setWinnersRafflesImagesUrls(rafflesUrls);
         })
-        .catch((error) => console.log(error))
+        .catch((error) => console.error(error))
         .finally(() => {
           setToAnimateFadeOut();
 

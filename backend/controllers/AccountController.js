@@ -71,8 +71,6 @@ export const updateUser = async (req, res) => {
 
   const user = await Account.findOne({ _id: req.body.id });
 
-  console.log(user);
-
   const userData = {
     profileImage: user.profileImage,
     name: req.body.name,
@@ -300,12 +298,10 @@ export const buyRaffle = async (req, res) => {
 export const getBuyedNumbers = async (req, res) => {
   const { id } = req.body;
 
-  console.log(id);
-
   try {
     const users = await Account.find({
       "rafflesBuyed.raffleId": id,
-      // "rafflesBuyed.status": "approved", tirar depois dos testes
+      "rafflesBuyed.status": "approved",
     });
 
     const participants = users.map((user) => ({
@@ -321,7 +317,8 @@ export const getBuyedNumbers = async (req, res) => {
 
     res.send(participants);
   } catch (error) {
-    console.log(error);
+    console.error(error);
+
     res.status(404).send(error.message);
   }
 };
@@ -332,6 +329,10 @@ export const readUserBuyedNumbers = async (req, res) => {
   const userSelected = await Account.findOne({ cpf }).populate(
     "rafflesBuyed.raffleId",
   );
+
+  if (!userSelected) {
+    return res.status(404).send("CPF não esta cadastrado");
+  }
 
   const userRafflesBuyed = userSelected.rafflesBuyed.map((raffle) => ({
     id: raffle._id,
@@ -388,8 +389,6 @@ export const paymentCanceled = async (req, res) => {
   userToModify = userToModify.rafflesBuyed.filter((raffle) => {
     return !raffle.raffleId.equals(raffleId);
   });
-
-  console.log(userToModify);
 
   if (paymentId && id && quantToBeRemoved) {
     try {

@@ -52,59 +52,40 @@ const QueryNumbersModal = () => {
       setToLoad();
       setToAnimateFadeIn();
 
-      api.get(`/account/get-raffle-numbers/${cpf}`).then((res) => {
-        setUserRafflesBuyed(res.data);
+      api
+        .get(`/account/get-raffle-numbers/${cpf}`)
+        .then((res) => {
+          setUserRafflesBuyed(res.data);
 
-        const rafflesFromUser = res.data;
+          const rafflesFromUser = res.data;
+          const urls = [];
 
-        api
-          .get("/raffle/get-all-raffles")
-          .then((res) => {
-            setRaffles(
-              res.data.filter(
-                (raffle, index) =>
-                  raffle._id === rafflesFromUser[index].raffleId,
-              ),
-            );
-
-            const rafflesBuyed = res.data.filter(
-              (raffle, index) => raffle._id === rafflesFromUser[index].raffleId,
-            );
-            const urls = [];
-
-            for (let i = 0; i < rafflesFromUser.length; i++) {
-              for (let j = 0; j < rafflesBuyed.length; j++) {
-                if (
-                  rafflesFromUser[i].raffleId === rafflesBuyed[j]._id &&
-                  rafflesBuyed[j].raffleImage
-                ) {
-                  if (
-                    JSON.stringify(import.meta.env.MODE) ===
-                    JSON.stringify("development")
-                  ) {
-                    urls.push(
-                      `${import.meta.env.VITE_API_KEY_DEV}${
-                        import.meta.env.VITE_API_PORT
-                      }/raffle-uploads/${rafflesBuyed[j].raffleImage}`,
-                    );
-                  } else {
-                    urls.push(
-                      `${import.meta.env.VITE_API_KEY}/raffle-uploads/${
-                        rafflesBuyed[j].raffleImage
-                      }`,
-                    );
-                  }
-                } else {
-                  urls.push(null);
-                }
+          for (let i = 0; i < rafflesFromUser.length; i++) {
+            if (rafflesFromUser[i].raffleImage) {
+              if (
+                JSON.stringify(import.meta.env.MODE) ===
+                JSON.stringify("development")
+              ) {
+                urls.push(
+                  `${import.meta.env.VITE_API_KEY_DEV}${
+                    import.meta.env.VITE_API_PORT
+                  }/raffle-uploads/${rafflesFromUser[i].raffleImage}`,
+                );
+              } else {
+                urls.push(
+                  `${import.meta.env.VITE_API_KEY}/raffle-uploads/${
+                    rafflesFromUser[i].raffleImage
+                  }`,
+                );
               }
+            } else {
+              urls.push(null);
             }
+          }
 
-            setRafflesImagesUrls(urls);
-          })
-          .catch((error) => {
-            console.error(error);
+          setRafflesImagesUrls(urls);
 
+          if (rafflesFromUser.length === 0) {
             toast.error("Nenhum número encontrado nesse CPF", {
               position: "top-right",
               autoClose: 5000,
@@ -115,20 +96,50 @@ const QueryNumbersModal = () => {
               progress: undefined,
               theme: "colored",
             });
-          })
-          .finally(() => {
-            setToAnimateFadeOut();
+          }
+        })
+        .catch((error) => {
+          console.error(error.response.data);
 
-            overlayRef.current.style.animation =
-              "loginFadeOut 0.4s ease forwards";
-            boxRef.current.style.animation = "loginBoxOut 0.4s ease forwards";
+          if (error.response.data === "CPF não esta cadastrado") {
+            toast.error("CPF não esta cadastrado", {
+              position: "top-right",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "colored",
+            });
+          } else {
+            toast.error(
+              "Ocorreu um erro durante a pesquisa, tente novamente mais tarde",
+              {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+              },
+            );
+          }
+        })
+        .finally(() => {
+          setToAnimateFadeOut();
 
-            setTimeout(() => {
-              closeModal();
-              setNotToLoad();
-            }, 400);
-          });
-      });
+          overlayRef.current.style.animation =
+            "loginFadeOut 0.4s ease forwards";
+          boxRef.current.style.animation = "loginBoxOut 0.4s ease forwards";
+
+          setTimeout(() => {
+            closeModal();
+            setNotToLoad();
+          }, 400);
+        });
     } else {
       setCPFError(true);
     }

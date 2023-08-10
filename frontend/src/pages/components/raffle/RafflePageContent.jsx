@@ -35,78 +35,45 @@ const RafflePageContent = () => {
   const [concludedRafflesDisplaying, setConcludedRafflesDisplaying] = useState(
     [],
   );
-  const [sliceBegin, setSliceBegin] = useState(0);
-  const [sliceEnd, setSliceEnd] = useState(10);
-  const [pageMultiplier, setPageMultiplier] = useState(1);
+  const [page, setPage] = useState(1);
   const [isPreviousPageBtnDisplayed, setIsPreviousPageBtnDisplayed] =
     useState(false);
   const [isNextPageBtnDisplayed, setIsNextPageBtnDisplayed] = useState(false);
-  const [isActiveOn, setIsActiveOn] = useState(false);
+  const [isActiveOn, setIsActiveOn] = useState(true);
   const [isConcludedOn, setIsConcludedOn] = useState(false);
 
-  const sliceEndBiggerThanRaffles = (value) => {
-    setSliceEnd(value);
-  };
+  const rafflesPerPage = 10;
+  const sliceBegin = (page - 1) * rafflesPerPage;
+  const sliceEnd = page * rafflesPerPage;
 
-  const resetSliceEnd = () => {
-    setSliceEnd(10);
-  };
-
-  const resetSliceBegin = () => {
-    setSliceBegin(0);
-  };
-
-  const resetPageMultiplier = () => {
-    setPageMultiplier(1);
-  };
+  // const sliceEndBiggerThanRaffles = (value) => {
+  //   setSliceEnd(value);
+  // };
 
   const setNextPage = () => {
-    setPageMultiplier((prev) => prev + 1);
+    window.scrollTo(0, 0);
+
+    setPage((prev) => prev + 1);
   };
 
   const setPreviousPage = () => {
-    setPageMultiplier((prev) => prev - 1);
+    window.scrollTo(0, 0);
+
+    setPage((prev) => prev - 1);
   };
 
   const handleActiveBtn = () => {
-    if (raffles.length <= sliceEnd) {
-      sliceEndBiggerThanRaffles(raffles.length);
-    } else {
-      resetSliceEnd();
-    }
+    setPage(1);
 
-    resetPageMultiplier();
-    resetSliceBegin();
     setIsActiveOn(true);
     setIsConcludedOn(false);
   };
 
   const handleConcludedBtn = () => {
-    resetPageMultiplier();
-    resetSliceBegin();
-    resetSliceEnd();
+    setPage(1);
+
     setIsConcludedOn(true);
     setIsActiveOn(false);
-  };
-
-  const handleNextBtn = () => {
-    window.scrollTo(0, 0);
-
-    const newPageMultiplier = pageMultiplier + 1;
-
-    setNextPage();
-    setSliceEnd(10 * newPageMultiplier);
-    setSliceBegin((prev) => prev - 10);
-  };
-
-  const handlePreviousBtn = () => {
-    window.scrollTo(0, 0);
-
-    const newPageMultiplier = pageMultiplier - 1;
-
-    setPreviousPage();
-    setSliceEnd(10 * newPageMultiplier);
-    setSliceBegin((prev) => prev - 10);
   };
 
   const convertProgress = (current, total) => {
@@ -128,12 +95,6 @@ const RafflePageContent = () => {
         .get("/raffle/get-all-raffles")
         .then((res) => {
           setRaffles(res.data);
-
-          const allRaffles = res.data;
-
-          if (allRaffles.length <= sliceEnd) {
-            sliceEndBiggerThanRaffles(allRaffles.length);
-          }
         })
         .catch((error) => {
           console.error(error);
@@ -151,42 +112,8 @@ const RafflePageContent = () => {
   }, [setRaffles]);
 
   useEffect(() => {
-    const verificationPageBtns = () => {
-      if (raffles.length > 10 && activeRafflesDisplaying.length <= 10) {
-        setIsPreviousPageBtnDisplayed(true);
-        setIsNextPageBtnDisplayed(true);
-      }
-
-      if (sliceBegin === 0 && activeRafflesDisplaying.length <= 10) {
-        setIsPreviousPageBtnDisplayed(false);
-        setIsNextPageBtnDisplayed(false);
-      }
-
-      if (sliceEnd >= raffles.length) {
-        setIsPreviousPageBtnDisplayed(true);
-        setIsNextPageBtnDisplayed(false);
-      }
-
-      if (sliceEnd <= raffles.length + 1) {
-        setIsPreviousPageBtnDisplayed(false);
-        setIsNextPageBtnDisplayed(false);
-      }
-
-      if (sliceBegin === 0 && raffles.length > 10) {
-        setIsPreviousPageBtnDisplayed(false);
-        setIsNextPageBtnDisplayed(true);
-      }
-    };
-
     const handlePage = () => {
       if (raffles.length !== 0) {
-        verificationPageBtns();
-
-        if (isConcludedOn) {
-          setIsPreviousPageBtnDisplayed(false);
-          setIsNextPageBtnDisplayed(false);
-        }
-
         if (isActiveOn) {
           setActiveRafflesDisplaying(
             raffles
@@ -199,7 +126,6 @@ const RafflePageContent = () => {
               )
               .slice(sliceBegin, sliceEnd),
           );
-          verificationPageBtns();
         }
 
         if (isConcludedOn) {
@@ -218,16 +144,12 @@ const RafflePageContent = () => {
 
     handlePage();
   }, [
-    pageMultiplier,
     setActiveRafflesDisplaying,
     setConcludedRafflesDisplaying,
-    showNextPageBtn,
-    showPreviousPageBtn,
-    hideNextPageBtn,
-    hidePreviousPageBtn,
     isActiveOn,
     isConcludedOn,
     raffles,
+    page,
   ]);
 
   useEffect(() => {
@@ -375,26 +297,16 @@ const RafflePageContent = () => {
 
         <div className="raffle__raffle-content__container__pages-btn-wrapper">
           <button
-            onClick={() => {
-              if (pageMultiplier !== 1) {
-                handlePreviousBtn();
-              }
-            }}
-            className={
-              isPreviousPageBtnDisplayed
-                ? "raffle__raffle-content__container__pages-btn-wrapper__btn"
-                : "raffle__raffle-content__container__pages-btn-wrapper__btn desactive"
-            }
+            onClick={setPreviousPage}
+            disabled={page === 1 || isConcludedOn}
+            className="raffle__raffle-content__container__pages-btn-wrapper__btn"
           >
             <BsChevronLeft /> Anterior
           </button>
           <button
-            onClick={handleNextBtn}
-            className={
-              isNextPageBtnDisplayed
-                ? "raffle__raffle-content__container__pages-btn-wrapper__btn"
-                : "raffle__raffle-content__container__pages-btn-wrapper__btn desactive"
-            }
+            onClick={setNextPage}
+            disabled={sliceEnd >= raffles.length || isConcludedOn}
+            className="raffle__raffle-content__container__pages-btn-wrapper__btn"
           >
             Próximo <BsChevronRight />
           </button>

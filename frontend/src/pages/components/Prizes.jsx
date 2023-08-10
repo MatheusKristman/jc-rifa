@@ -7,11 +7,7 @@ const Prizes = ({ title, subtitle, image, progress, winner }) => {
   return (
     <div className="prizes">
       <div className="prizes__image-box">
-        <img
-          src={image === null ? DefaultImage : image}
-          alt="Prêmio"
-          className="prizes__image-box__image"
-        />
+        <img src={image} alt="Prêmio" className="prizes__image-box__image" />
       </div>
 
       <div className="prizes__infos-box">

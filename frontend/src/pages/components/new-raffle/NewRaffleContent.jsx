@@ -148,6 +148,8 @@ const NewRaffleContent = () => {
                 progress: undefined,
                 theme: "colored",
               });
+
+              navigate("/raffle-management");
             })
             .catch((error) => {
               if (error.response?.data === "Rifa já cadastrada") {
@@ -179,7 +181,6 @@ const NewRaffleContent = () => {
             .finally(() => {
               setNotToLoad();
               setIsSubmitting(false);
-              navigate("/raffle-management");
             });
         };
 
@@ -189,24 +190,6 @@ const NewRaffleContent = () => {
 
     submitData();
   }, [isSubmitting]);
-
-  // useEffect(() => {
-  //   if (isRaffleCreated) {
-  //     setTimeout(() => {
-  //       raffleCreatedCancel();
-  //       submitCancel();
-  //       resetValues();
-  //       navigate("/raffle-management");
-  //     }, 3000);
-  //   }
-  //
-  //   if (submitError) {
-  //     setTimeout(() => {
-  //       errorDontExist();
-  //       submitCancel();
-  //     }, 4000);
-  //   }
-  // }, [isRaffleCreated, submitError]);
 
   return (
     <div className="new-raffle__content">

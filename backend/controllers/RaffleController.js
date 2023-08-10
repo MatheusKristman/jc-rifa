@@ -101,10 +101,8 @@ export const finishRaffle = async (req, res) => {
     const doesWinnerExists = await Account.findOne({
       "rafflesBuyed.raffleId": id,
       "rafflesBuyed.numbersBuyed": number,
-      // "rafflesBuyed.status": "approved", TODO descomentar depois dos testes
+      "rafflesBuyed.status": "approved",
     });
-
-    console.log(doesWinnerExists);
 
     if (!doesWinnerExists) {
       return res

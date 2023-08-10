@@ -71,8 +71,6 @@ const Home = () => {
                       `/account/payment-cancel?id=${body.id}&paymentId=${body.paymentId}&raffleId=${raffleToBeDeleted[0].raffleId}`,
                     )
                     .then((res) => {
-                      console.log(res.data);
-
                       const body = {
                         raffleId: raffleToBeDeleted[0].raffleId,
                         quantToBeRemoved: res.data.quantToBeRemoved,
@@ -94,7 +92,6 @@ const Home = () => {
                   api
                     .post("/account/check-payment-status", body)
                     .then((res) => {
-                      console.log(res.data);
                       setToAnimateFadeOut();
 
                       setTimeout(() => {

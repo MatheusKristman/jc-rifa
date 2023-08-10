@@ -8,6 +8,7 @@ import useRaffleStore from "../../../stores/useRaffleStore";
 import useGeneralStore from "../../../stores/useGeneralStore";
 import useIsUserLogged from "../../../hooks/useIsUserLogged";
 import api from "../../../services/api";
+import DefaultPrize from "../../../assets/default-prize.jpg";
 
 const RaffleManagementContent = () => {
   const { raffles, setRaffles } = useRaffleStore((state) => ({
@@ -28,14 +29,13 @@ const RaffleManagementContent = () => {
     setToAnimateFadeOut: state.setToAnimateFadeOut,
   }));
 
-  const [rafflesImagesUrls, setRafflesImagesUrls] = useState(false);
+  const [rafflesImagesUrls, setRafflesImagesUrls] = useState([null]);
 
   const navigate = useNavigate();
 
   useIsUserLogged();
 
   const convertProgress = (current, total) => {
-    console.log((100 * current) / total); // ver quanto da quando for comprado
     return (100 * current) / total;
   };
 
@@ -128,7 +128,7 @@ const RaffleManagementContent = () => {
                   <Prizes
                     title={raffle.title}
                     subtitle={raffle.subtitle}
-                    image={rafflesImagesUrls[index]}
+                    image={rafflesImagesUrls[index] || DefaultPrize}
                     progress={convertProgress(
                       raffle?.quantBuyedNumbers,
                       raffle?.quantNumbers,

@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect } from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import { shallow } from "zustand/shallow";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -319,24 +319,30 @@ const UpdateRegistrationContent = () => {
   }, []);
 
   useEffect(() => {
-    const ufSelected = ufOptions.filter((option) => option.sigla === uf);
+    if (ufOptions.length > 0) {
+      const ufSelected = ufOptions.filter(
+        (option) => option.sigla === registerData.uf,
+      );
 
-    if (ufSelected.length > 0) {
-      axios
-        .get(
-          `https://servicodados.ibge.gov.br/api/v1/localidades/estados/${ufSelected[0].id}/municipios`,
-        )
-        .then((res) => setCityOptions(res.data))
-        .catch((error) => console.error(error));
-    } else {
-      setCityOptions([]);
+      if (ufSelected.length > 0) {
+        axios
+          .get(
+            `https://servicodados.ibge.gov.br/api/v1/localidades/estados/${ufSelected[0].id}/municipios`,
+          )
+          .then((res) => setCityOptions(res.data))
+          .catch((error) => console.error(error));
+      } else {
+        setCityOptions([]);
+      }
     }
-  }, [uf]);
+  }, [registerData.uf, ufOptions]);
 
   useEffect(() => {
-    if (cep.replace("-", "").length === 8) {
+    if (registerData.cep.replace("-", "").length === 8) {
       axios
-        .get(`https://viacep.com.br/ws/${cep.replace("-", "")}/json/`)
+        .get(
+          `https://viacep.com.br/ws/${registerData.cep.replace("-", "")}/json/`,
+        )
         .then((res) => {
           setRegisterData((prev) => ({
             ...prev,
@@ -352,7 +358,7 @@ const UpdateRegistrationContent = () => {
           setValue("city", res.data.localidade);
         });
     }
-  }, [cep]);
+  }, [registerData.cep]);
 
   useEffect(() => {
     function submitData() {

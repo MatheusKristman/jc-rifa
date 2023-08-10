@@ -5,8 +5,6 @@ mercadopago.configurations.setAccessToken(
 );
 
 export const pay = async (req, res) => {
-  console.log(req.body.fullPrice);
-
   const paymentData = {
     notification_url: "https://eoqhcniy7v8myie.m.pipedream.net",
     external_reference: req.body.id,
@@ -29,5 +27,3 @@ export const pay = async (req, res) => {
     .then((response) => res.status(200).send({ response }))
     .catch((error) => res.status(400).send({ error: error.message }));
 };
-
-// TODO arrumar erro number identification

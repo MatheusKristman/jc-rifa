@@ -192,7 +192,7 @@ const EditRaffleContent = () => {
           }
         })
         .catch((error) => {
-          console.log(error);
+          console.error(error);
           if (
             error?.response.data ===
             "Número não foi comprado, insira outro número"

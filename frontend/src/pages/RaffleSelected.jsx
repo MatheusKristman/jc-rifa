@@ -4,7 +4,6 @@ import { shallow } from "zustand/shallow";
 import { Header, Footer } from "./components";
 import RaffleSelectedContent from "./components/raffle/RaffleSelectedContent";
 import PaymentModal from "./components/raffle/PaymentModal";
-import { ToastContainer } from "react-toastify";
 import useIsUserLogged from "../hooks/useIsUserLogged";
 import useBuyNumbersStore from "../stores/useBuyNumbersStore";
 
@@ -29,7 +28,6 @@ const RaffleSelected = () => {
   return (
     <div className="raffle-selected">
       <Header />
-      <ToastContainer />
       <RaffleSelectedContent />
       {isPaymentModalOpen && <PaymentModal />}
       <Footer />
