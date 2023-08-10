@@ -3,79 +3,16 @@ import { BsChevronLeft, BsChevronRight } from "react-icons/bs";
 import { Link } from "react-router-dom";
 
 import Prizes from "../Prizes";
+import Loading from "../Loading";
 import useRaffleStore from "../../../stores/useRaffleStore";
 import api from "../../../services/api";
-import _arrayBufferToBase64 from "../../../hooks/useArrayBufferToBase64";
 import useGeneralStore from "../../../stores/useGeneralStore";
-import Loading from "../Loading";
 
 const RafflePageContent = () => {
-  const {
-    raffles,
-    setRaffles,
-    isActiveOn,
-    setActiveOn,
-    setActiveOff,
-    isConcludedOn,
-    setConcludedOn,
-    setConcludedOff,
-    sliceBegin,
-    sliceEnd,
-    sliceEndBiggerThanRaffles,
-    pageMultiplier,
-    setSliceBegin,
-    setSliceEnd,
-    setNextPage,
-    setPreviousPage,
-    activeRafflesDisplaying,
-    setActiveRafflesDisplaying,
-    concludedRafflesDisplaying,
-    setConcludedRafflesDisplaying,
-    isPreviousPageBtnDisplayed,
-    showPreviousPageBtn,
-    hidePreviousPageBtn,
-    isNextPageBtnDisplayed,
-    showNextPageBtn,
-    hideNextPageBtn,
-    resetPageMultiplier,
-    resetSliceBegin,
-    resetSliceEnd,
-    rafflesImagesUrls,
-    setRafflesImagesUrls,
-  } = useRaffleStore((state) => ({
+  const { raffles, setRaffles } = useRaffleStore((state) => ({
     raffles: state.raffles,
     setRaffles: state.setRaffles,
-    isActiveOn: state.isActiveOn,
-    setActiveOn: state.setActiveOn,
-    setActiveOff: state.setActiveOff,
-    isConcludedOn: state.isConcludedOn,
-    setConcludedOn: state.setConcludedOn,
-    setConcludedOff: state.setConcludedOff,
-    sliceBegin: state.sliceBegin,
-    sliceEnd: state.sliceEnd,
-    sliceEndBiggerThanRaffles: state.sliceEndBiggerThanRaffles,
-    pageMultiplier: state.pageMultiplier,
-    setSliceBegin: state.setSliceBegin,
-    setSliceEnd: state.setSliceEnd,
-    setNextPage: state.setNextPage,
-    setPreviousPage: state.setPreviousPage,
-    activeRafflesDisplaying: state.activeRafflesDisplaying,
-    setActiveRafflesDisplaying: state.setActiveRafflesDisplaying,
-    concludedRafflesDisplaying: state.concludedRafflesDisplaying,
-    setConcludedRafflesDisplaying: state.setConcludedRafflesDisplaying,
-    isPreviousPageBtnDisplayed: state.isPreviousPageBtnDisplayed,
-    showPreviousPageBtn: state.showPreviousPageBtn,
-    hidePreviousPageBtn: state.hidePreviousPageBtn,
-    isNextPageBtnDisplayed: state.isNextPageBtnDisplayed,
-    showNextPageBtn: state.showNextPageBtn,
-    hideNextPageBtn: state.hideNextPageBtn,
-    resetPageMultiplier: state.resetPageMultiplier,
-    resetSliceBegin: state.resetSliceBegin,
-    resetSliceEnd: state.resetSliceEnd,
-    rafflesImagesUrls: state.rafflesImagesUrls,
-    setRafflesImagesUrls: state.setRafflesImagesUrls,
   }));
-
   const {
     isLoading,
     setToLoad,
@@ -94,6 +31,87 @@ const RafflePageContent = () => {
   const [concludedRafflesImagesUrls, setConcludedRafflesImagesUrls] = useState(
     [],
   );
+  const [activeRafflesDisplaying, setActiveRafflesDisplaying] = useState([]);
+  const [concludedRafflesDisplaying, setConcludedRafflesDisplaying] = useState(
+    [],
+  );
+  const [sliceBegin, setSliceBegin] = useState(0);
+  const [sliceEnd, setSliceEnd] = useState(10);
+  const [pageMultiplier, setPageMultiplier] = useState(1);
+  const [isPreviousPageBtnDisplayed, setIsPreviousPageBtnDisplayed] =
+    useState(false);
+  const [isNextPageBtnDisplayed, setIsNextPageBtnDisplayed] = useState(false);
+  const [isActiveOn, setIsActiveOn] = useState(false);
+  const [isConcludedOn, setIsConcludedOn] = useState(false);
+
+  const sliceEndBiggerThanRaffles = (value) => {
+    setSliceEnd(value);
+  };
+
+  const resetSliceEnd = () => {
+    setSliceEnd(10);
+  };
+
+  const resetSliceBegin = () => {
+    setSliceBegin(0);
+  };
+
+  const resetPageMultiplier = () => {
+    setPageMultiplier(1);
+  };
+
+  const setNextPage = () => {
+    setPageMultiplier((prev) => prev + 1);
+  };
+
+  const setPreviousPage = () => {
+    setPageMultiplier((prev) => prev - 1);
+  };
+
+  const handleActiveBtn = () => {
+    if (raffles.length <= sliceEnd) {
+      sliceEndBiggerThanRaffles(raffles.length);
+    } else {
+      resetSliceEnd();
+    }
+
+    resetPageMultiplier();
+    resetSliceBegin();
+    setIsActiveOn(true);
+    setIsConcludedOn(false);
+  };
+
+  const handleConcludedBtn = () => {
+    resetPageMultiplier();
+    resetSliceBegin();
+    resetSliceEnd();
+    setIsConcludedOn(true);
+    setIsActiveOn(false);
+  };
+
+  const handleNextBtn = () => {
+    window.scrollTo(0, 0);
+
+    const newPageMultiplier = pageMultiplier + 1;
+
+    setNextPage();
+    setSliceEnd(10 * newPageMultiplier);
+    setSliceBegin((prev) => prev - 10);
+  };
+
+  const handlePreviousBtn = () => {
+    window.scrollTo(0, 0);
+
+    const newPageMultiplier = pageMultiplier - 1;
+
+    setPreviousPage();
+    setSliceEnd(10 * newPageMultiplier);
+    setSliceBegin((prev) => prev - 10);
+  };
+
+  const convertProgress = (current, total) => {
+    return (100 * current) / total;
+  };
 
   useEffect(() => {
     setRaffles([]);
@@ -111,14 +129,14 @@ const RafflePageContent = () => {
         .then((res) => {
           setRaffles(res.data);
 
-          console.log(sliceEnd);
+          const allRaffles = res.data;
 
-          if (res.data.length <= sliceEnd) {
-            sliceEndBiggerThanRaffles(res.data.length);
+          if (allRaffles.length <= sliceEnd) {
+            sliceEndBiggerThanRaffles(allRaffles.length);
           }
         })
         .catch((error) => {
-          console.log(error);
+          console.error(error);
         })
         .finally(() => {
           setToAnimateFadeOut();
@@ -134,31 +152,29 @@ const RafflePageContent = () => {
 
   useEffect(() => {
     const verificationPageBtns = () => {
-      console.log(sliceEnd);
       if (raffles.length > 10 && activeRafflesDisplaying.length <= 10) {
-        showPreviousPageBtn();
-        showNextPageBtn();
+        setIsPreviousPageBtnDisplayed(true);
+        setIsNextPageBtnDisplayed(true);
       }
 
       if (sliceBegin === 0 && activeRafflesDisplaying.length <= 10) {
-        hidePreviousPageBtn();
-        hideNextPageBtn();
+        setIsPreviousPageBtnDisplayed(false);
+        setIsNextPageBtnDisplayed(false);
       }
 
       if (sliceEnd >= raffles.length) {
-        showPreviousPageBtn();
-        hideNextPageBtn();
+        setIsPreviousPageBtnDisplayed(true);
+        setIsNextPageBtnDisplayed(false);
       }
 
-      // roda somente em caso de não ter proximo e nem anterior
       if (sliceEnd <= raffles.length + 1) {
-        hidePreviousPageBtn();
-        hideNextPageBtn();
+        setIsPreviousPageBtnDisplayed(false);
+        setIsNextPageBtnDisplayed(false);
       }
 
       if (sliceBegin === 0 && raffles.length > 10) {
-        hidePreviousPageBtn();
-        showNextPageBtn();
+        setIsPreviousPageBtnDisplayed(false);
+        setIsNextPageBtnDisplayed(true);
       }
     };
 
@@ -167,13 +183,11 @@ const RafflePageContent = () => {
         verificationPageBtns();
 
         if (isConcludedOn) {
-          hideNextPageBtn();
-          hidePreviousPageBtn();
+          setIsPreviousPageBtnDisplayed(false);
+          setIsNextPageBtnDisplayed(false);
         }
 
         if (isActiveOn) {
-          console.log("sliceBegin: ", sliceBegin);
-          console.log("sliceEnd: ", sliceEnd);
           setActiveRafflesDisplaying(
             raffles
               .filter(
@@ -267,44 +281,6 @@ const RafflePageContent = () => {
     setActiveRafflesImagesUrls(activeUrls);
     setConcludedRafflesImagesUrls(concludedUrls);
   }, [activeRafflesDisplaying, concludedRafflesDisplaying]);
-
-  const handleActiveBtn = () => {
-    if (raffles.length <= sliceEnd) {
-      sliceEndBiggerThanRaffles(raffles.length);
-    } else {
-      resetSliceEnd();
-    }
-    resetPageMultiplier();
-    resetSliceBegin();
-    setActiveOn();
-    setConcludedOff();
-  };
-
-  const handleConcludedBtn = () => {
-    resetPageMultiplier();
-    resetSliceBegin();
-    resetSliceEnd();
-    setConcludedOn();
-    setActiveOff();
-  };
-
-  const handleNextBtn = () => {
-    window.scrollTo(0, 0);
-    setNextPage();
-    setSliceEnd();
-    setSliceBegin();
-  };
-
-  const handlePreviousBtn = () => {
-    window.scrollTo(0, 0);
-    setPreviousPage();
-    setSliceEnd();
-    setSliceBegin();
-  };
-
-  const convertProgress = (current, total) => {
-    return (100 * current) / total;
-  };
 
   return (
     <div className="raffle__raffle-content">

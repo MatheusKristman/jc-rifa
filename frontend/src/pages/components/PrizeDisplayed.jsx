@@ -1,8 +1,7 @@
-import React, { useEffect } from "react";
-import defaultPrize from "../../assets/default-prize.jpg";
+import React from "react";
 
-import _arrayBufferToBase64 from "../../hooks/useArrayBufferToBase64";
 import useGeneralStore from "../../stores/useGeneralStore";
+import defaultPrize from "../../assets/default-prize.jpg";
 
 const PrizeDisplayed = ({ image, title, subtitle, progress, winner }) => {
   const { isRaffleLoading } = useGeneralStore((state) => ({

@@ -1,13 +1,11 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import {
   BsCartCheck,
   BsCardList,
-  BsLightningCharge,
   BsTrophy,
   BsFacebook,
   BsInstagram,
   BsWhatsapp,
-  BsFillKeyFill,
 } from "react-icons/bs";
 import { BiHome, BiListCheck, BiBarChartAlt2 } from "react-icons/bi";
 import { IoEnterOutline } from "react-icons/io5";
@@ -17,17 +15,24 @@ import { HiOutlineMail, HiUserCircle } from "react-icons/hi";
 import { RxExit } from "react-icons/rx";
 import { HiOutlineBars3BottomRight } from "react-icons/hi2";
 import { Link, useNavigate } from "react-router-dom";
-import useHeaderStore from "../../stores/useHeaderStore";
 import { shallow } from "zustand/shallow";
-import useUserStore from "../../stores/useUserStore";
-import noUserPhoto from "../../assets/no-user-photo.png";
-import _arrayBufferToBase64 from "../../hooks/useArrayBufferToBase64";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
+import { toast, ToastContainer } from "react-toastify";
+
+import useHeaderStore from "../../stores/useHeaderStore";
+import useUserStore from "../../stores/useUserStore";
+import noUserPhoto from "../../assets/no-user-photo.png";
 import api from "../../services/api";
 import useIsUserLogged from "../../hooks/useIsUserLogged";
-import AlertBox from "./AlertBox";
+
+const schema = Yup.object().shape({
+  username: Yup.string()
+    .min(15, "Insira acima de 15 caracteres")
+    .required("Usuário é obrigatório"),
+  password: Yup.string(),
+});
 
 const HeaderMenu = () => {
   const { closeMenu, openLogin } = useHeaderStore(
@@ -175,17 +180,23 @@ const LogoutConfirmationBox = () => {
     setToLogoutBoxDontAppear,
     setToNotConfirmLogout,
     closeMenu,
-  } = useHeaderStore((state) => ({
-    logoutBoxAppears: state.logoutBoxAppears,
-    setToLogoutBoxDontAppear: state.setToLogoutBoxDontAppear,
-    setToNotConfirmLogout: state.setToNotConfirmLogout,
-    closeMenu: state.closeMenu,
-  }));
+  } = useHeaderStore(
+    (state) => ({
+      logoutBoxAppears: state.logoutBoxAppears,
+      setToLogoutBoxDontAppear: state.setToLogoutBoxDontAppear,
+      setToNotConfirmLogout: state.setToNotConfirmLogout,
+      closeMenu: state.closeMenu,
+    }),
+    shallow,
+  );
 
-  const { userNotLogged, setUser } = useUserStore((state) => ({
-    userNotLogged: state.userNotLogged,
-    setUser: state.setUser,
-  }));
+  const { userNotLogged, setUser } = useUserStore(
+    (state) => ({
+      userNotLogged: state.userNotLogged,
+      setUser: state.setUser,
+    }),
+    shallow,
+  );
 
   const navigate = useNavigate();
 
@@ -249,19 +260,17 @@ const HeaderMenuLogged = () => {
     logoutConfirmation,
     setToConfirmLogout,
     setToLogoutBoxAppear,
-    profileImageUrl,
-    setProfileImageUrl,
   } = useHeaderStore(
     (state) => ({
       closeMenu: state.closeMenu,
       logoutConfirmation: state.logoutConfirmation,
       setToConfirmLogout: state.setToConfirmLogout,
       setToLogoutBoxAppear: state.setToLogoutBoxAppear,
-      profileImageUrl: state.profileImageUrl,
-      setProfileImageUrl: state.setProfileImageUrl,
     }),
     shallow,
   );
+
+  const [profileImageUrl, setProfileImageUrl] = useState("");
 
   const { user } = useUserStore((state) => ({ user: state.user }));
 
@@ -299,10 +308,6 @@ const HeaderMenuLogged = () => {
       setProfileImageUrl(null);
     }
   }, []);
-
-  useEffect(() => {
-    console.log(user);
-  }, [user]);
 
   return (
     <div ref={menuRef} className="header__menu">
@@ -437,97 +442,66 @@ const HeaderMenuLogged = () => {
   );
 };
 
-const LoginMessageBox = () => {
-  const { submitError, doesLoginHappened, loginMessage } = useHeaderStore(
-    (state) => ({
-      submitError: state.submitError,
-      doesLoginHappened: state.doesLoginHappened,
-      loginMessage: state.loginMessage,
-    }),
-  );
-
-  return (
-    <div
-      style={submitError ? { backgroundColor: "rgb(209, 52, 52)" } : {}}
-      className={
-        doesLoginHappened || submitError
-          ? "register-message-box"
-          : "register-message-box desactive"
-      }
-    >
-      <div className="register-message-box__container">
-        <span className={"register-message-box__container__message"}>
-          {loginMessage}
-        </span>
-      </div>
-    </div>
-  );
-};
-
 const LogInModal = () => {
-  const {
-    usernameValue,
-    handleUsernameValue,
-    passwordValue,
-    handlePasswordValue,
-    isUsernameSelected,
-    selectUsername,
-    unselectUsername,
-    isPasswordSelected,
-    selectPassword,
-    unselectPassword,
-    closeLogin,
-    submitting,
-    isSubmitting,
-    errorExist,
-    doesLoginHappened,
-    submitError,
-    loginFailed,
-    notSubmitting,
-    errorDontExist,
-    setLoginMessage,
-    loginSuccess,
-    loginMessage,
-    isAdmin,
-    userIsAdmin,
-    userIsNotAdmin,
-  } = useHeaderStore(
+  const { closeLogin } = useHeaderStore(
     (state) => ({
-      usernameValue: state.usernameValue,
-      handleUsernameValue: state.handleUsernameValue,
-      passwordValue: state.passwordValue,
-      handlePasswordValue: state.handlePasswordValue,
-      isUsernameSelected: state.isUsernameSelected,
-      selectUsername: state.selectUsername,
-      unselectUsername: state.unselectUsername,
-      isPasswordSelected: state.isPasswordSelected,
-      selectPassword: state.selectPassword,
-      unselectPassword: state.unselectPassword,
       closeLogin: state.closeLogin,
-      submitting: state.submitting,
-      isSubmitting: state.isSubmitting,
-      errorExist: state.errorExist,
-      doesLoginHappened: state.doesLoginHappened,
-      submitError: state.submitError,
-      loginFailed: state.loginFailed,
-      notSubmitting: state.notSubmitting,
-      errorDontExist: state.errorDontExist,
-      setLoginMessage: state.setLoginMessage,
-      loginSuccess: state.loginSuccess,
-      loginMessage: state.loginMessage,
-      isAdmin: state.isAdmin,
-      userIsAdmin: state.userIsAdmin,
-      userIsNotAdmin: state.userIsNotAdmin,
     }),
     shallow,
   );
 
+  const [loginData, setLoginData] = useState({
+    username: "",
+    password: "",
+  });
+  const [isUsernameSelected, setIsUsernameSelected] = useState(false);
+  const [isPasswordSelected, setIsPasswordSelected] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  const { register, handleSubmit, formState, setValue } = useForm({
+    resolver: yupResolver(schema),
+    defaultValues: { username: usernameValue },
+  });
+
+  const { errors } = formState;
+
   useEffect(() => {
-    userIsNotAdmin();
+    setIsAdmin(false);
   }, []);
 
   const loginModalOverlayRef = useRef(null);
   const loginModalBoxRef = useRef(null);
+
+  const navigate = useNavigate();
+
+  const handleFormChange = (option, value) => {
+    if (option === "username") {
+      const phoneNumber = value
+        .replace(/\D/g, "")
+        .replace(/(\d{2})(\d)/, "($1) $2")
+        .replace(/(\d{5})(\d)/, "$1-$2")
+        .replace(/(-\d{4})\d+?$/, "$1");
+
+      setLoginData((prev) => ({ ...prev, username: phoneNumber }));
+
+      return;
+    }
+
+    setLoginData((prev) => ({ ...prev, [option]: value }));
+  };
+
+  const handleTelChange = (event) => {
+    const { value } = event.target;
+
+    const phoneNumber = value
+      .replace(/\D/g, "")
+      .replace(/(\d{2})(\d)/, "($1) $2")
+      .replace(/(\d{5})(\d)/, "$1-$2")
+      .replace(/(-\d{4})\d+?$/, "$1");
+
+    return phoneNumber;
+  };
 
   const handleCloseLogin = () => {
     if (!isSubmitting) {
@@ -551,33 +525,9 @@ const LogInModal = () => {
     }
   };
 
-  const handleTelChange = (e) => {
-    const { value } = e.target;
-
-    const phoneNumber = value
-      .replace(/\D/g, "")
-      .replace(/(\d{2})(\d)/, "($1) $2")
-      .replace(/(\d{5})(\d)/, "$1-$2")
-      .replace(/(-\d{4})\d+?$/, "$1");
-
-    return phoneNumber;
+  const onSubmit = (data) => {
+    setIsSubmitting(true);
   };
-
-  const navigate = useNavigate();
-
-  const schema = Yup.object().shape({
-    username: Yup.string()
-      .min(15, "Insira acima de 15 caracteres")
-      .required("Usuário é obrigatório"),
-    password: Yup.string(),
-  });
-
-  const { register, handleSubmit, formState, getValues, setValue } = useForm({
-    resolver: yupResolver(schema),
-    defaultValues: { username: usernameValue },
-  });
-
-  const { errors } = formState;
 
   useEffect(() => {
     const submitData = () => {
@@ -585,24 +535,44 @@ const LogInModal = () => {
         const sendAdminDataToDB = () => {
           api
             .post("/account/login-admin", {
-              tel: usernameValue,
-              password: passwordValue,
+              tel: loginData.username,
+              password: loginData.password,
             })
             .then((res) => {
-              loginSuccess();
-              setLoginMessage("Conectado com sucesso");
+              toast.success("Conectado com sucesso", {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+              });
+
               localStorage.setItem("userToken", res.data);
             })
             .catch((error) => {
-              errorExist();
-              setLoginMessage("Usuário incorreto");
-              console.log(error);
+              toast.error("Usuário incorreto", {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+              });
+
+              console.error(error);
+            })
+            .finally(() => {
+              setIsSubmitting(false);
             });
         };
 
         const sendDataToDB = () => {
           if (isAdmin) {
-            console.log("is admin");
             sendAdminDataToDB();
             return;
           }
@@ -613,19 +583,46 @@ const LogInModal = () => {
             })
             .then((res) => {
               if (res.data.isAdmin) {
-                userIsAdmin();
-                notSubmitting();
+                setIsAdmin(true);
+                setIsSubmitting(false);
+
                 return;
               }
-              loginSuccess();
-              setLoginMessage("Conectado com sucesso");
+
+              toast.success("Conectado com sucesso", {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+              });
+
               localStorage.setItem("userToken", res.data.token);
-              console.log(res.data.token);
             })
             .catch((error) => {
-              errorExist();
-              setLoginMessage("Usuário incorreto");
-              console.log(error);
+              toast.error("Usuário incorreto", {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+              });
+              console.error(error);
+            })
+            .finally(() => {
+              setIsSubmitting(false);
+              navigate("/");
+              closeLogin();
+
+              if (window.location.pathname === "/") {
+                window.location.reload(false);
+              }
             });
         };
 
@@ -636,52 +633,13 @@ const LogInModal = () => {
     submitData();
   }, [isSubmitting]);
 
-  useEffect(() => {
-    if (doesLoginHappened) {
-      setTimeout(() => {
-        loginFailed();
-        notSubmitting();
-        closeLogin();
-        navigate("/");
-
-        if (window.location.pathname === "/") {
-          window.location.reload(false);
-        }
-      }, 3000);
-    }
-
-    if (submitError) {
-      setTimeout(() => {
-        errorDontExist();
-        notSubmitting();
-      }, 4000);
-    }
-  }, [doesLoginHappened, submitError]);
-
-  const onSubmit = (data) => {
-    submitting();
-  };
-
   return (
     <div
       ref={loginModalOverlayRef}
       onClick={handleCloseLoginOverlay}
       className="header__login-modal-overlay"
     >
-      {doesLoginHappened && (
-        <AlertBox
-          success={doesLoginHappened}
-          error={submitError}
-          message={loginMessage}
-        />
-      )}
-      {submitError && (
-        <AlertBox
-          success={doesLoginHappened}
-          error={submitError}
-          message={loginMessage}
-        />
-      )}
+      <ToastContainer />
       <div ref={loginModalBoxRef} className="header__login-modal-overlay__box">
         <div className="header__login-modal-overlay__box__content">
           <div className="header__login-modal-overlay__box__content__head">
@@ -722,14 +680,16 @@ const LogInModal = () => {
                 type="text"
                 name="username"
                 id="username"
-                value={usernameValue}
+                value={loginData.username}
                 onChange={(e) => {
-                  handleUsernameValue(handleTelChange(e));
+                  handleFormChange("username", e.target.value);
                   setValue("username", handleTelChange(e));
                 }}
-                onFocus={selectUsername}
+                onFocus={() => setIsUsernameSelected(true)}
                 onBlur={() =>
-                  usernameValue === "" ? unselectUsername() : selectUsername()
+                  usernameValue === ""
+                    ? setIsUsernameSelected(false)
+                    : setIsUsernameSelected(true)
                 }
                 autoComplete="off"
                 autoCorrect="off"
@@ -755,17 +715,19 @@ const LogInModal = () => {
                 </label>
                 <input
                   {...register("password")}
-                  type="text"
+                  type="password"
                   name="password"
                   id="password"
-                  value={passwordValue}
+                  value={loginData.password}
                   onChange={(e) => {
-                    handlePasswordValue(e);
+                    handleFormChange("password", e.target.value);
                     setValue("password", e.target.value);
                   }}
-                  onFocus={selectPassword}
+                  onFocus={setIsPasswordSelected(true)}
                   onBlur={() =>
-                    passwordValue === "" ? unselectPassword() : selectPassword()
+                    passwordValue === ""
+                      ? setIsPasswordSelected(false)
+                      : setIsPasswordSelected(true)
                   }
                   autoComplete="off"
                   autoCorrect="off"
@@ -784,6 +746,7 @@ const LogInModal = () => {
 
             <button
               type="submit"
+              disabled={isSubmitting}
               className={
                 isSubmitting
                   ? "header__login-modal-overlay__box__content__form__submit-btn-sending"
@@ -816,15 +779,20 @@ const Header = () => {
     shallow,
   );
 
-  const { isUserLogged } = useUserStore((state) => ({
-    isUserLogged: state.isUserLogged,
-  }));
+  const { isUserLogged } = useUserStore(
+    (state) => ({
+      isUserLogged: state.isUserLogged,
+    }),
+    shallow,
+  );
 
   const navigate = useNavigate();
 
   const navigateToQueryNumbersPage = () => {
     navigate("/query-numbers");
   };
+
+  useIsUserLogged();
 
   useEffect(() => {
     if (isMenuOpen || isLoginModalOpen) {

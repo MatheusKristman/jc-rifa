@@ -1,26 +1,19 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { AiOutlinePlus } from "react-icons/ai";
 import { Link, useNavigate } from "react-router-dom";
-import api from "../../../services/api";
 
 import Prizes from "../Prizes";
-import useRaffleStore from "../../../stores/useRaffleStore";
-import _arrayBufferToBase64 from "../../../hooks/useArrayBufferToBase64";
 import Loading from "../Loading";
+import useRaffleStore from "../../../stores/useRaffleStore";
 import useGeneralStore from "../../../stores/useGeneralStore";
 import useIsUserLogged from "../../../hooks/useIsUserLogged";
+import api from "../../../services/api";
 
 const RaffleManagementContent = () => {
-  const navigate = useNavigate();
-
-  const { raffles, setRaffles, rafflesImagesUrls, setRafflesImagesUrls } =
-    useRaffleStore((state) => ({
-      raffles: state.raffles,
-      setRaffles: state.setRaffles,
-      rafflesImagesUrls: state.rafflesImagesUrls,
-      setRafflesImagesUrls: state.setRafflesImagesUrls,
-    }));
-
+  const { raffles, setRaffles } = useRaffleStore((state) => ({
+    raffles: state.raffles,
+    setRaffles: state.setRaffles,
+  }));
   const {
     isLoading,
     setToLoad,
@@ -35,7 +28,16 @@ const RaffleManagementContent = () => {
     setToAnimateFadeOut: state.setToAnimateFadeOut,
   }));
 
+  const [rafflesImagesUrls, setRafflesImagesUrls] = useState(false);
+
+  const navigate = useNavigate();
+
   useIsUserLogged();
+
+  const convertProgress = (current, total) => {
+    console.log((100 * current) / total); // ver quanto da quando for comprado
+    return (100 * current) / total;
+  };
 
   useEffect(() => {
     const fetchRaffles = () => {
@@ -46,11 +48,12 @@ const RaffleManagementContent = () => {
         .get("/raffle/get-all-raffles")
         .then((res) => {
           setRaffles(res.data);
-          console.log(res.data);
 
+          const allRaffles = res.data;
           const urls = [];
-          for (let i = 0; i < res.data.length; i++) {
-            if (res.data[i].raffleImage) {
+
+          for (let i = 0; i < allRaffles.length; i++) {
+            if (allRaffles[i].raffleImage) {
               if (
                 JSON.stringify(import.meta.env.MODE) ===
                 JSON.stringify("development")
@@ -58,12 +61,12 @@ const RaffleManagementContent = () => {
                 urls.push(
                   `${import.meta.env.VITE_API_KEY_DEV}${
                     import.meta.env.VITE_API_PORT
-                  }/raffle-uploads/${res.data[i].raffleImage}`,
+                  }/raffle-uploads/${allRaffles[i].raffleImage}`,
                 );
               } else {
                 urls.push(
                   `${import.meta.env.VITE_API_KEY}/raffle-uploads/${
-                    res.data[i].raffleImage
+                    allRaffles[i].raffleImage
                   }`,
                 );
               }
@@ -73,7 +76,6 @@ const RaffleManagementContent = () => {
           }
 
           setRafflesImagesUrls(urls);
-
           setToAnimateFadeOut();
 
           setTimeout(() => {
@@ -81,7 +83,7 @@ const RaffleManagementContent = () => {
           }, 400);
         })
         .catch((error) => {
-          console.log(error);
+          console.error(error);
 
           setToAnimateFadeOut();
 
@@ -93,11 +95,6 @@ const RaffleManagementContent = () => {
 
     fetchRaffles();
   }, [setRaffles]);
-
-  const convertProgress = (current, total) => {
-    console.log((100 * current) / total); // ver quanto da quando for comprado
-    return (100 * current) / total;
-  };
 
   return (
     <div className="raffle-management__content">

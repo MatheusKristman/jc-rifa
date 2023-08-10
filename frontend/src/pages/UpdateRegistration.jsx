@@ -1,39 +1,22 @@
 import React from "react";
-import useRegisterStore from "../stores/useRegisterStore";
+import { ToastContainer } from "react-toastify";
+
 import { Header, Footer } from "./components";
 import UpdateRegistrationContent from "./components/updateRegistration/UpdateRegistrationContent";
 import UpdatePasswordContent from "./components/updateRegistration/UpdatePasswordContent";
-import AlertBox from "./components/AlertBox";
-import { ToastContainer } from "react-toastify";
+import useUserStore from "../stores/useUserStore";
 
 const UpdateRegistration = () => {
-  const { isRegisterCompleted, errorSubmitting, registerMessage } =
-    useRegisterStore((state) => ({
-      isRegisterCompleted: state.isRegisterCompleted,
-      errorSubmitting: state.errorSubmitting,
-      registerMessage: state.registerMessage,
-    }));
+  const { user } = useUserStore((state) => ({
+    user: state.user,
+  }));
 
   return (
     <div className="register">
       <Header />
       <UpdateRegistrationContent />
-      <UpdatePasswordContent />
+      {user.admin && <UpdatePasswordContent />}
       <Footer />
-      {isRegisterCompleted && (
-        <AlertBox
-          success={isRegisterCompleted}
-          error={errorSubmitting}
-          message={registerMessage}
-        />
-      )}
-      {errorSubmitting && (
-        <AlertBox
-          success={isRegisterCompleted}
-          error={errorSubmitting}
-          message={registerMessage}
-        />
-      )}
       <ToastContainer />
     </div>
   );

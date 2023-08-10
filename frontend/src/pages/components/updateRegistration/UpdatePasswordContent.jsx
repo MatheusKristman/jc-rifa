@@ -1,10 +1,11 @@
+import * as yup from "yup";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
+import { toast } from "react-toastify";
+
 import useUserStore from "../../../stores/useUserStore";
 import api from "../../../services/api";
-import { toast } from "react-toastify";
 
 const passwordSchema = yup.object().shape({
   actualPassword: yup.string().required("Campo Senha Atual é obrigatório"),
@@ -37,15 +38,15 @@ const UpdatePasswordContent = () => {
   });
   const { errors } = formState;
 
-  const onSubmit = (data) => {
-    setIsSubmittingPassword(true);
-  };
-
   const isSubmitEnabled =
     actualPassword.length === 0 ||
     newPassword.length < 6 ||
     newPasswordConfirm.length < 6 ||
     isSubmittingPassword;
+
+  const onSubmit = (data) => {
+    setIsSubmittingPassword(true);
+  };
 
   useEffect(() => {
     const updatePassword = () => {
@@ -54,8 +55,6 @@ const UpdatePasswordContent = () => {
         actualPassword,
         newPassword,
       };
-
-      console.log(data);
 
       api
         .post("/account/update-password", data)
@@ -70,7 +69,7 @@ const UpdatePasswordContent = () => {
             pauseOnHover: true,
             draggable: true,
             progress: undefined,
-            theme: "light",
+            theme: "colored",
           });
 
           setActualPassword("");
@@ -82,7 +81,7 @@ const UpdatePasswordContent = () => {
           setValue("newPasswordConfirm", "");
         })
         .catch((error) => {
-          console.log(error);
+          console.error(error);
           toast.error(error.response.data.message, {
             position: "top-right",
             autoClose: 5000,
@@ -91,7 +90,7 @@ const UpdatePasswordContent = () => {
             pauseOnHover: true,
             draggable: true,
             progress: undefined,
-            theme: "dark",
+            theme: "colored",
           });
         })
         .finally(() => {

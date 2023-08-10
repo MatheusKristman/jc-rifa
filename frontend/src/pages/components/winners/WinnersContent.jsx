@@ -1,18 +1,100 @@
-import React from "react";
+import React, { useState } from "react";
 import { FiAlertTriangle } from "react-icons/fi";
+
 import { WinnerBox } from "..";
-import useWinnerStore from "../../../stores/useWinnerStore";
 import NoUserPhoto from "../../../assets/no-user-photo.png";
 import DefaultPrize from "../../../assets/default-prize.jpg";
-import _arrayBufferToBase64 from "../../../hooks/useArrayBufferToBase64";
+import useGeneralStore from "../stores/useGeneralStore";
+import api from "../services/api";
 
 const WinnersContent = () => {
-  const { winners, winnersImagesUrls, winnersRafflesImagesUrls } =
-    useWinnerStore((state) => ({
-      winners: state.winners,
-      winnersImagesUrls: state.winnersImagesUrls,
-      winnersRafflesImagesUrls: state.winnersRafflesImagesUrls,
+  const { setToLoad, setNotToLoad, setToAnimateFadeIn, setToAnimateFadeOut } =
+    useGeneralStore((state) => ({
+      setToLoad: state.setToLoad,
+      setNotToLoad: state.setNotToLoad,
+      setToAnimateFadeIn: state.setToAnimateFadeIn,
+      setToAnimateFadeOut: state.setToAnimateFadeOut,
     }));
+
+  const [winners, setWinners] = useState([]);
+  const [winnersImagesUrls, setWinnersImagesUrls] = useState([]);
+  const [winnersRafflesImagesUrls, setWinnersRafflesImagesUrls] = useState([]);
+
+  useEffect(() => {
+    const fetchWinners = () => {
+      setToLoad();
+      setToAnimateFadeIn();
+
+      api
+        .get("/winner/get-all-winners")
+        .then((res) => {
+          setWinners(res.data);
+
+          const allWinners = res.data;
+          const winnersUrls = [];
+          const rafflesUrls = [];
+
+          for (let i = 0; i < allWinners.length; i++) {
+            if (allWinners[i].profileImage) {
+              if (
+                JSON.stringify(import.meta.env.MODE) ===
+                JSON.stringify("development")
+              ) {
+                winnersUrls.push(
+                  `${import.meta.env.VITE_API_KEY_DEV}${
+                    import.meta.env.VITE_API_PORT
+                  }/user-uploads/${allWinners[i].profileImage}`,
+                );
+              } else {
+                winnersUrls.push(
+                  `${import.meta.env.VITE_API_KEY}/user-uploads/${
+                    allWinners[i].profileImage
+                  }`,
+                );
+              }
+            } else {
+              winnersUrls.push(null);
+            }
+
+            if (allWinners[i].raffleImage) {
+              if (
+                JSON.stringify(import.meta.env.MODE) ===
+                JSON.stringify("development")
+              ) {
+                rafflesUrls.push(
+                  `${import.meta.env.VITE_API_KEY_DEV}${
+                    import.meta.env.VITE_API_PORT
+                  }/raffle-uploads/${allWinners[i].raffleImage}`,
+                );
+              } else {
+                rafflesUrls.push(
+                  `${import.meta.env.VITE_API_KEY}/raffle-uploads/${
+                    allWinners[i].raffleImage
+                  }`,
+                );
+              }
+            } else {
+              rafflesUrls.push(null);
+            }
+          }
+
+          setWinnersImagesUrls(winnersUrls);
+          setWinnersRafflesImagesUrls(rafflesUrls);
+        })
+        .catch((error) => {
+          console.error(error);
+        })
+        .finally(() => {
+          setToAnimateFadeOut();
+
+          setTimeout(() => {
+            setNotToLoad();
+          }, 400);
+        });
+    };
+
+    fetchWinners();
+  }, [setWinners]);
 
   return (
     <div className="winners__winners-content">

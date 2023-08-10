@@ -1,20 +1,18 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import * as Yup from "yup";
 import { shallow } from "zustand/shallow";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import * as Yup from "yup";
-import api from "../../../services/api";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import { toast } from "react-toastify";
 
+import Loading from "../Loading";
 import noUserPhoto from "../../../assets/no-user-photo.png";
-import useRegisterStore from "../../../stores/useRegisterStore";
 import useUserStore from "../../../stores/useUserStore";
 import useIsUserLogged from "../../../hooks/useIsUserLogged";
 import useGeneralStore from "../../../stores/useGeneralStore";
-import Loading from "../Loading";
 import useHeaderStore from "../../../stores/useHeaderStore";
+import api from "../../../services/api";
 
 const schema = Yup.object().shape({
   profileImage: Yup.mixed(),
@@ -37,61 +35,6 @@ const schema = Yup.object().shape({
 
 const RegisterContent = () => {
   const {
-    profileImage,
-    setProfileImage,
-    name,
-    setName,
-    cpf,
-    setCpfFromFetch,
-    email,
-    setEmail,
-    tel,
-    setTelFromFetch,
-    confirmTel,
-    setConfirmTelFromFetch,
-    isSubmitting,
-    submitting,
-    notSubmitting,
-    isRegisterCompleted,
-    registerComplete,
-    registerNotComplete,
-    errorSubmitting,
-    errorExist,
-    errorDontExist,
-    setRegisterMessage,
-    actualProfilePhoto,
-    setActualProfilePhoto,
-  } = useRegisterStore(
-    (state) => ({
-      profileImage: state.profileImage,
-      setProfileImage: state.setProfileImage,
-      name: state.name,
-      setName: state.setName,
-      cpf: state.cpf,
-      setCpfFromFetch: state.setCpfFromFetch,
-      email: state.email,
-      setEmail: state.setEmail,
-      tel: state.tel,
-      setTelFromFetch: state.setTelFromFetch,
-      confirmTel: state.confirmTel,
-      setConfirmTelFromFetch: state.setConfirmTelFromFetch,
-      isSubmitting: state.isSubmitting,
-      submitting: state.submitting,
-      notSubmitting: state.notSubmitting,
-      isRegisterCompleted: state.isRegisterCompleted,
-      registerComplete: state.registerComplete,
-      registerNotComplete: state.registerNotComplete,
-      errorSubmitting: state.errorSubmitting,
-      errorExist: state.errorExist,
-      errorDontExist: state.errorDontExist,
-      setRegisterMessage: state.setRegisterMessage,
-      actualProfilePhoto: state.actualProfilePhoto,
-      setActualProfilePhoto: state.setActualProfilePhoto,
-    }),
-    shallow,
-  );
-
-  const {
     isLoading,
     setToLoad,
     setNotToLoad,
@@ -104,20 +47,63 @@ const RegisterContent = () => {
     setToAnimateFadeIn: state.setToAnimateFadeIn,
     setToAnimateFadeOut: state.setToAnimateFadeOut,
   }));
-
   const { closeLogin } = useHeaderStore(
     (state) => ({ closeLogin: state.closeLogin }),
     shallow,
   );
-
   const { user } = useUserStore((state) => ({
     user: state.user,
   }));
 
+  const [registerData, setRegisterData] = useState({
+    profileImage: null,
+    name: "",
+    cpf: "",
+    email: "",
+    tel: "",
+    confirmTel: "",
+  });
+  const [actualProfilePhoto, setActualProfilePhoto] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const navigate = useNavigate();
+
+  const { register, handleSubmit, formState } = useForm({
+    resolver: yupResolver(schema),
+  });
+  const { errors } = formState;
 
   // TODO: se estiver logado, redirecionar para update register
   useIsUserLogged();
+
+  const handleFormChange = (option, value) => {
+    if (option === "tel" || option === "confirmTel") {
+      const phoneNumber = value
+        .replace(/\D/g, "")
+        .replace(/(\d{2})(\d)/, "($1) $2")
+        .replace(/(\d{5})(\d)/, "$1-$2")
+        .replace(/(-\d{4})\d+?$/, "$1");
+
+      setRegisterData((prev) => ({ ...prev, [option]: phoneNumber }));
+
+      return;
+    }
+
+    if (option === "cpf") {
+      const cpf = value
+        .replace(/\D/g, "")
+        .replace(/(\d{3})(\d)/, "$1.$2")
+        .replace(/(\d{3})(\d)/, "$1.$2")
+        .replace(/(\d{3})(\d)/, "$1-$2")
+        .replace(/(-\d{2})\d+?$/, "$1");
+
+      setRegisterData((prev) => ({ ...prev, [option]: cpf }));
+
+      return;
+    }
+
+    setRegisterData((prev) => ({ ...prev, [option]: value }));
+  };
 
   const handleFileChange = async (e) => {
     const file = await e.target.files[0];
@@ -128,7 +114,7 @@ const RegisterContent = () => {
 
     if (file && file.type.startsWith("image/")) {
       setActualProfilePhoto(URL.createObjectURL(file));
-      setProfileImage(file);
+      setRegisterData((prev) => ({ ...prev, profileImage: file }));
     } else {
       toast.error("O arquivo selecionado não é uma imagem válida", {
         position: "top-right",
@@ -138,43 +124,13 @@ const RegisterContent = () => {
         pauseOnHover: true,
         draggable: true,
         progress: undefined,
-        theme: "dark",
+        theme: "colored",
       });
     }
   };
 
-  const handleTelChange = (e) => {
-    const { value } = e.target;
-
-    const phoneNumber = value
-      .replace(/\D/g, "")
-      .replace(/(\d{2})(\d)/, "($1) $2")
-      .replace(/(\d{5})(\d)/, "$1-$2")
-      .replace(/(-\d{4})\d+?$/, "$1");
-
-    return phoneNumber;
-  };
-
-  const handleCpfChange = (e) => {
-    const { value } = e.target;
-
-    const cpf = value
-      .replace(/\D/g, "")
-      .replace(/(\d{3})(\d)/, "$1.$2")
-      .replace(/(\d{3})(\d)/, "$1.$2")
-      .replace(/(\d{3})(\d)/, "$1-$2")
-      .replace(/(-\d{2})\d+?$/, "$1");
-
-    return cpf;
-  };
-
-  const { register, handleSubmit, formState } = useForm({
-    resolver: yupResolver(schema),
-  });
-  const { errors } = formState;
-
   const onSubmit = (data) => {
-    submitting();
+    setIsSubmitting(true);
   };
 
   useEffect(() => {
@@ -188,14 +144,12 @@ const RegisterContent = () => {
           setToLoad();
           setToAnimateFadeIn();
 
-          console.log(profileImage);
-
           const formData = new FormData();
-          formData.append("profileImage", profileImage);
-          formData.append("name", name);
-          formData.append("cpf", cpf);
-          formData.append("email", email);
-          formData.append("tel", tel);
+          formData.append("profileImage", registerData.profileImage);
+          formData.append("name", registerData.name);
+          formData.append("cpf", registerData.cpf);
+          formData.append("email", registerData.email);
+          formData.append("tel", registerData.tel);
 
           api
             .post("/account/register-account", formData, {
@@ -204,8 +158,17 @@ const RegisterContent = () => {
               },
             })
             .then((res) => {
-              registerComplete();
-              setRegisterMessage("Cadastro realizado com sucesso");
+              toast.success("Cadastro realizado com sucesso", {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+              });
+
               localStorage.setItem("userToken", res.data);
 
               setToAnimateFadeOut();
@@ -216,19 +179,42 @@ const RegisterContent = () => {
             })
             .catch((error) => {
               window.scrollTo(0, 0);
+
               if (error.response.data === "Telefone Já cadastrado") {
-                setRegisterMessage("Cadastro já registrado no sistema");
+                toast.error("Cadastro já registrado no sistema", {
+                  position: "top-right",
+                  autoClose: 5000,
+                  hideProgressBar: false,
+                  closeOnClick: true,
+                  pauseOnHover: true,
+                  draggable: true,
+                  progress: undefined,
+                  theme: "colored",
+                });
               } else {
-                setRegisterMessage("Ocorreu um erro no cadastro");
+                toast.error("Ocorreu um erro no cadastro", {
+                  position: "top-right",
+                  autoClose: 5000,
+                  hideProgressBar: false,
+                  closeOnClick: true,
+                  pauseOnHover: true,
+                  draggable: true,
+                  progress: undefined,
+                  theme: "colored",
+                });
               }
-              errorExist();
-              console.log(error);
+
+              console.error(error);
 
               setToAnimateFadeOut();
 
               setTimeout(() => {
                 setNotToLoad();
               }, 400);
+            })
+            .finally(() => {
+              setIsSubmitting(false);
+              navigate("/");
             });
         };
         sendToDB();
@@ -237,23 +223,6 @@ const RegisterContent = () => {
 
     submitData();
   }, [isSubmitting]);
-
-  useEffect(() => {
-    if (isRegisterCompleted) {
-      setTimeout(() => {
-        registerNotComplete();
-        notSubmitting();
-        navigate("/");
-      }, 3000);
-    }
-
-    if (errorSubmitting) {
-      setTimeout(() => {
-        errorDontExist();
-        notSubmitting();
-      }, 4000);
-    }
-  }, [isRegisterCompleted, errorSubmitting]);
 
   return (
     <div className="register__register-content">
@@ -300,8 +269,8 @@ const RegisterContent = () => {
               autoComplete="off"
               name="name"
               id="name"
-              value={name}
-              onChange={setName}
+              value={registerData.name}
+              onChange={(event) => handleFormChange("name", event.target.value)}
               style={
                 errors.name ? { border: "2px solid rgb(209, 52, 52)" } : {}
               }
@@ -322,8 +291,8 @@ const RegisterContent = () => {
               autoComplete="off"
               name="cpf"
               id="cpf"
-              value={cpf}
-              onChange={(e) => setCpfFromFetch(handleCpfChange(e))}
+              value={registerData.cpf}
+              onChange={(event) => handleFormChange("cpf", event.target.value)}
               style={errors.cpf ? { border: "2px solid rgb(209, 52, 52)" } : {}}
               className="register__register-content__form__profile-data-box__label__input"
             />
@@ -342,8 +311,10 @@ const RegisterContent = () => {
               autoComplete="off"
               name="email"
               id="email"
-              value={email}
-              onChange={setEmail}
+              value={registerData.email}
+              onChange={(event) =>
+                handleFormChange("email", event.target.value)
+              }
               style={
                 errors.email ? { border: "2px solid rgb(209, 52, 52)" } : {}
               }
@@ -364,8 +335,8 @@ const RegisterContent = () => {
               autoComplete="off"
               name="tel"
               id="tel"
-              value={tel}
-              onChange={(e) => setTelFromFetch(handleTelChange(e))}
+              value={registerData.tel}
+              onChange={(event) => handleFormChange("tel", event.target.value)}
               placeholder="(__) _____-____"
               style={errors.tel ? { border: "2px solid rgb(209, 52, 52)" } : {}}
               className="register__register-content__form__profile-data-box__label__input"
@@ -385,8 +356,10 @@ const RegisterContent = () => {
               autoComplete="off"
               name="confirmTel"
               id="confirmTel"
-              value={confirmTel}
-              onChange={(e) => setConfirmTelFromFetch(handleTelChange(e))}
+              value={registerData.confirmTel}
+              onChange={(event) =>
+                handleFormChange("confirmTel", event.target.value)
+              }
               placeholder="(__) _____-____"
               style={
                 errors.confirmTel
@@ -401,6 +374,7 @@ const RegisterContent = () => {
 
         <button
           type="submit"
+          disabled={isSubmitting}
           className="register__register-content__form__save-btn"
         >
           Salvar

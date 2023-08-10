@@ -1,6 +1,6 @@
 import React from "react";
 import { BsChevronCompactRight } from "react-icons/bs";
-import prize1 from "../../assets/prize-1.jpg";
+
 import DefaultImage from "../../assets/default-prize.jpg";
 
 const Prizes = ({ title, subtitle, image, progress, winner }) => {

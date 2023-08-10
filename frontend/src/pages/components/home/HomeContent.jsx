@@ -1,42 +1,106 @@
-import React, { useRef, useEffect, useLayoutEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { shallow } from "zustand/shallow";
 import { useNavigate } from "react-router-dom";
 
-import {
-  PrizeDisplayed,
-  Prizes,
-  WinnerBox,
-  FaqsQuestion,
-} from "../../components";
-import useHomeFaqStore from "../../../stores/useHomeFaqStore";
-import useRaffleStore from "../../../stores/useRaffleStore";
-import useWinnerStore from "../../../stores/useWinnerStore";
+import { PrizeDisplayed, Prizes, WinnerBox } from "../../components";
 import NoUserPhoto from "../../../assets/no-user-photo.png";
 import DefaultPrize from "../../../assets/default-prize.jpg";
-import _arrayBufferToBase64 from "../../../hooks/useArrayBufferToBase64";
 import useGeneralStore from "../../../stores/useGeneralStore";
+import useRaffleStore from "../../../stores/useRaffleStore";
+import api from "../../../services/api";
 
 const PrizesHome = () => {
-  const { raffles, rafflesImagesUrls } = useRaffleStore(
+  const { raffles, setRaffles } = useRaffleStore(
     (state) => ({
       raffles: state.raffles,
-      rafflesImagesUrls: state.rafflesImagesUrls,
+      setRaffles: state.setRaffles,
     }),
     shallow,
   );
+  const { setToRaffleLoad, setToRaffleNotLoad, setToAnimateFadeIn, setToLoad } =
+    useGeneralStore(
+      (state) => ({
+        setToRaffleLoad: state.setToRaffleLoad,
+        setToRaffleNotLoad: state.setToRaffleNotLoad,
+        setToAnimateFadeIn: state.setToAnimateFadeIn,
+        setToLoad: state.setToLoad,
+      }),
+      shallow,
+    );
 
-  const { isRaffleLoading } = useGeneralStore(
-    (state) => ({
-      isRaffleLoading: state.isRaffleLoading,
-    }),
-    shallow,
-  );
+  const [rafflesImagesUrls, setRafflesImagesUrls] = useState([]);
 
   const navigate = useNavigate();
 
   const convertProgress = (current, total) => {
     return (100 * current) / total;
   };
+
+  useEffect(() => {
+    setRaffles([]);
+
+    setToAnimateFadeIn();
+    setToLoad();
+  }, []);
+
+  useEffect(() => {
+    const fetchRaffles = () => {
+      if (raffles.length === 0) {
+        setToRaffleLoad();
+
+        api
+          .get("/raffle/get-all-raffles")
+          .then((res) => {
+            setRaffles(
+              res.data.filter(
+                (raffle) =>
+                  raffle.isFinished === false &&
+                  raffle.quantBuyedNumbers < raffle.quantNumbers,
+              ),
+            );
+
+            const rafflesToImages = res.data.filter(
+              (raffle) =>
+                !raffle.isFinished &&
+                raffle.quantBuyedNumbers < raffle.quantNumbers,
+            );
+
+            const urls = [];
+            for (let i = 0; i < rafflesToImages.length; i++) {
+              if (
+                rafflesToImages[i].raffleImage &&
+                !rafflesToImages[i].isFinished
+              ) {
+                if (
+                  JSON.stringify(import.meta.env.MODE) ===
+                  JSON.stringify("development")
+                ) {
+                  urls.push(
+                    `${import.meta.env.VITE_API_KEY_DEV}${
+                      import.meta.env.VITE_API_PORT
+                    }/raffle-uploads/${rafflesToImages[i].raffleImage}`,
+                  );
+                } else {
+                  urls.push(
+                    `${import.meta.env.VITE_API_KEY}/raffle-uploads/${
+                      rafflesToImages[i].raffleImage
+                    }`,
+                  );
+                }
+              } else {
+                urls.push(null);
+              }
+            }
+
+            setRafflesImagesUrls(urls);
+            setToRaffleNotLoad();
+          })
+          .catch((error) => console.error(error));
+      }
+    };
+
+    fetchRaffles();
+  }, [raffles, setRaffles]);
 
   return (
     <div className="hero__container__prizes-box">
@@ -108,20 +172,95 @@ const PrizesHome = () => {
 };
 
 const WinnersHome = () => {
-  const { winners, winnersImagesUrls, winnersRafflesImagesUrls } =
-    useWinnerStore((state) => ({
-      winners: state.winners,
-      winnersImagesUrls: state.winnersImagesUrls,
-      winnersRafflesImagesUrls: state.winnersRafflesImagesUrls,
-    }));
-
   const { raffles } = useRaffleStore((state) => ({
     raffles: state.raffles,
   }));
+  const { setToAnimateFadeIn, setToAnimateFadeOut, setToLoad, setNotToLoad } =
+    useGeneralStore((state) => ({
+      setToAnimateFadeIn: state.setToAnimateFadeIn,
+      setToAnimateFadeOut: state.setToAnimateFadeOut,
+      setToLoad: state.setToLoad,
+      setNotToLoad: state.setNotToLoad,
+    }));
+
+  const [winners, setWinners] = useState([]);
+  const [winnersImagesUrls, setWinnersImagesUrls] = useState([]);
+  const [winnersRafflesImagesUrls, setWinnersRafflesImagesUrls] = useState([]);
 
   useEffect(() => {
-    console.log("winnersRafflesImagesUrls", winnersRafflesImagesUrls);
-  }, [winnersRafflesImagesUrls]);
+    const fetchWinners = () => {
+      setToAnimateFadeIn();
+      setToLoad();
+
+      api
+        .get("/winner/get-all-winners")
+        .then((res) => {
+          setWinners(res.data);
+
+          const allWinners = res.data;
+
+          const winnersUrls = [];
+          const rafflesUrls = [];
+
+          for (let i = 0; i < allWinners.length; i++) {
+            if (allWinners[i].profileImage) {
+              if (
+                JSON.stringify(import.meta.env.MODE) ===
+                JSON.stringify("development")
+              ) {
+                winnersUrls.push(
+                  `${import.meta.env.VITE_API_KEY_DEV}${
+                    import.meta.env.VITE_API_PORT
+                  }/user-uploads/${allWinners[i].profileImage}`,
+                );
+              } else {
+                winnersUrls.push(
+                  `${import.meta.env.VITE_API_KEY}/user-uploads/${
+                    allWinners[i].profileImage
+                  }`,
+                );
+              }
+            } else {
+              winnersUrls.push(null);
+            }
+
+            if (allWinners[i].raffleImage) {
+              if (
+                JSON.stringify(import.meta.env.MODE) ===
+                JSON.stringify("development")
+              ) {
+                rafflesUrls.push(
+                  `${import.meta.env.VITE_API_KEY_DEV}${
+                    import.meta.env.VITE_API_PORT
+                  }/raffle-uploads/${allWinners[i].raffleImage}`,
+                );
+              } else {
+                rafflesUrls.push(
+                  `${import.meta.env.VITE_API_KEY}/raffle-uploads/${
+                    allWinners[i].raffleImage
+                  }`,
+                );
+              }
+            } else {
+              rafflesUrls.push(null);
+            }
+          }
+
+          setWinnersImagesUrls(winnersUrls);
+          setWinnersRafflesImagesUrls(rafflesUrls);
+        })
+        .catch((error) => console.log(error))
+        .finally(() => {
+          setToAnimateFadeOut();
+
+          setTimeout(() => {
+            setNotToLoad();
+          }, 400);
+        });
+    };
+
+    fetchWinners();
+  }, [setWinners, raffles]);
 
   return (
     <div className="hero__container__winners-box">
@@ -139,10 +278,10 @@ const WinnersHome = () => {
         {winners.length !== 0 ? (
           winners.map((winner, index) => (
             <WinnerBox
-              key={winner._id}
+              key={winner.tel}
               profileImage={winnersImagesUrls[index] || NoUserPhoto}
               name={winner.name}
-              raffleTitle={winner.raffleTitle} // TODO arrumar a forma que recebe os dados da rifa
+              raffleTitle={winner.raffleTitle}
               raffleNumber={winner.raffleNumber}
               raffleImage={winnersRafflesImagesUrls[index] || DefaultPrize}
             />

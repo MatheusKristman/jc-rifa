@@ -20,7 +20,7 @@ const AccountSchema = new mongoose.Schema({
       paymentId: { type: String },
       raffleId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Raffle",
+        ref: "Raffles",
         required: true,
       },
       pricePaid: { type: Number },

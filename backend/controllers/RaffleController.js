@@ -101,7 +101,7 @@ export const finishRaffle = async (req, res) => {
     const doesWinnerExists = await Account.findOne({
       "rafflesBuyed.raffleId": id,
       "rafflesBuyed.numbersBuyed": number,
-      // "rafflesBuyed.status": "approved",
+      // "rafflesBuyed.status": "approved", TODO descomentar depois dos testes
     });
 
     console.log(doesWinnerExists);
@@ -150,6 +150,17 @@ export const deleteRaffle = async (req, res) => {
   const { id } = req.params;
 
   try {
+    const accountsWithRaffle = await Account.find();
+
+    accountsWithRaffle.forEach((account) => {
+      account.rafflesBuyed = account.rafflesBuyed.filter(
+        (raffle) => !raffle.raffleId.equals(id),
+      );
+
+      account.save();
+    });
+
+    await Winner.deleteMany({ raffleId: id });
     await Raffle.deleteOne({ _id: id });
 
     const raffles = await Raffle.find();

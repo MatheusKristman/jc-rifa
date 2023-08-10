@@ -1,20 +1,13 @@
 import React from "react";
-import useIsUserLogged from "../hooks/useIsUserLogged";
+import { ToastContainer } from "react-toastify";
 
-import NewRaffleContent from "./components/new-raffle/NewRaffleContent";
-import useNewRaffleStore from "../stores/useNewRaffleStore";
+import useIsUserLogged from "../hooks/useIsUserLogged";
 import useGeneralStore from "../stores/useGeneralStore";
+import NewRaffleContent from "./components/new-raffle/NewRaffleContent";
 import { Header, Footer } from "./components";
-import AlertBox from "./components/AlertBox";
 import Loading from "./components/Loading";
 
 const NewRaffle = () => {
-  const { isRaffleCreated, submitError, raffleCreatedMessage } =
-    useNewRaffleStore((state) => ({
-      isRaffleCreated: state.isRaffleCreated,
-      submitError: state.submitError,
-      raffleCreatedMessage: state.raffleCreatedMessage,
-    }));
   const { isLoading } = useGeneralStore((state) => ({
     isLoading: state.isLoading,
   }));
@@ -26,20 +19,7 @@ const NewRaffle = () => {
       <Header />
       <NewRaffleContent />
       <Footer />
-      {isRaffleCreated && (
-        <AlertBox
-          success={isRaffleCreated}
-          error={submitError}
-          message={raffleCreatedMessage}
-        />
-      )}
-      {submitError && (
-        <AlertBox
-          success={isRaffleCreated}
-          error={submitError}
-          message={raffleCreatedMessage}
-        />
-      )}
+      <ToastContainer />
       {isLoading && <Loading>Criando rifa...</Loading>}
     </div>
   );

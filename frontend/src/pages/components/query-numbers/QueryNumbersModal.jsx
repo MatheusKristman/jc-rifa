@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState } from "react";
 import useQueryNumbersStore from "../../../stores/useQueryNumbersStore";
 import useGeneralStore from "../../../stores/useGeneralStore";
 import useRaffleStore from "../../../stores/useRaffleStore";
@@ -14,17 +14,12 @@ const QueryNumbersModal = () => {
       setToAnimateFadeOut: state.setToAnimateFadeOut,
     }));
 
-  const {
-    closeModal,
-    setUserRafflesBuyed,
-    setRafflesImagesUrls,
-    rafflesImagesUrls,
-  } = useQueryNumbersStore((state) => ({
-    closeModal: state.closeModal,
-    setUserRafflesBuyed: state.setUserRafflesBuyed,
-    setRafflesImagesUrls: state.setRafflesImagesUrls,
-    rafflesImagesUrls: state.rafflesImagesUrls,
-  }));
+  const { closeModal, setUserRafflesBuyed, setRafflesImagesUrls } =
+    useQueryNumbersStore((state) => ({
+      closeModal: state.closeModal,
+      setUserRafflesBuyed: state.setUserRafflesBuyed,
+      setRafflesImagesUrls: state.setRafflesImagesUrls,
+    }));
 
   const { setRaffles } = useRaffleStore((state) => ({
     setRaffles: state.setRaffles,
@@ -35,8 +30,6 @@ const QueryNumbersModal = () => {
 
   const overlayRef = useRef();
   const boxRef = useRef();
-
-  // TODO create search function on api
 
   const handleCpfChange = (e) => {
     const { value } = e.target;
@@ -77,8 +70,8 @@ const QueryNumbersModal = () => {
             const rafflesBuyed = res.data.filter(
               (raffle, index) => raffle._id === rafflesFromUser[index].raffleId,
             );
-
             const urls = [];
+
             for (let i = 0; i < rafflesFromUser.length; i++) {
               for (let j = 0; j < rafflesBuyed.length; j++) {
                 if (
@@ -110,7 +103,8 @@ const QueryNumbersModal = () => {
             setRafflesImagesUrls(urls);
           })
           .catch((error) => {
-            console.log(error);
+            console.error(error);
+
             toast.error("Nenhum número encontrado nesse CPF", {
               position: "top-right",
               autoClose: 5000,
@@ -119,7 +113,7 @@ const QueryNumbersModal = () => {
               pauseOnHover: true,
               draggable: true,
               progress: undefined,
-              theme: "dark",
+              theme: "colored",
             });
           })
           .finally(() => {
@@ -152,10 +146,6 @@ const QueryNumbersModal = () => {
       }, 400);
     }
   };
-
-  useEffect(() => {
-    console.log(cpf.length);
-  }, [cpf]);
 
   return (
     <div

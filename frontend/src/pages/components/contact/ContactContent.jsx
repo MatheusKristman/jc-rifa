@@ -1,9 +1,6 @@
-import React, { useRef, useEffect, useState } from "react";
-import { shallow } from "zustand/shallow";
+import React, { useEffect, useState } from "react";
 import { BsArrowRight } from "react-icons/bs";
 
-import FaqsQuestion from "../FaqsQuestion";
-import useHomeFaqStore from "../../../stores/useHomeFaqStore";
 import useRaffleStore from "../../../stores/useRaffleStore";
 import useGeneralStore from "../../../stores/useGeneralStore";
 import api from "../../../services/api";
@@ -66,14 +63,10 @@ const ContactContent = () => {
       handleError("subject", "");
     }
 
-    if (contactData.message.length <= 20) {
-      handleError("message", "Mensagem precisa ter mais de 20 caracteres");
-    } else {
-      handleError("message", "");
-    }
-
-    if (contactData.message === "") {
+    if (contactData.message.length === 0) {
       handleError("message", "Mensagem é obrigatória");
+    } else if (contactData.message.length <= 20) {
+      handleError("message", "Mensagem precisa ter mais de 20 caracteres");
     } else {
       handleError("message", "");
     }
@@ -134,10 +127,6 @@ const ContactContent = () => {
     }
   }, [isSubmitting]);
 
-  useEffect(() => {
-    console.log(contactData);
-  }, [contactData]);
-
   return (
     <div className="contact__contact-content">
       <div className="contact__contact-content__container">
@@ -197,13 +186,12 @@ const ContactContent = () => {
               >
                 <option disabled value="">
                   Deseja falar sobre um sorteio?
-                </option>{" "}
+                </option>
                 {raffles.map((raffle) => (
                   <option key={raffle._id} value={raffle.title}>
                     {raffle.title}
                   </option>
                 ))}
-                {/* value com o id do sorteio em um array */}
               </select>
               {error.raffle && (
                 <span className="contact-error-message">{error.raffle}</span>
@@ -244,7 +232,6 @@ const ContactContent = () => {
               <textarea
                 name="message"
                 id="message"
-                minLength={20}
                 value={contactData.message}
                 onChange={(event) =>
                   handleContactChange("message", event.target.value)

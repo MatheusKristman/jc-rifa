@@ -11,9 +11,9 @@ const useQueryNumbersStore = create((set) => ({
   rafflesConcluded: [],
   setRafflesConcluded: (value) => set(() => ({ rafflesConcluded: value })),
   rafflesImagesUrls: [],
-  setRafflesImagesUrls: (url) => set(() => ({ rafflesImagesUrls: url })),
+  setRafflesImagesUrls: (urls) => set(() => ({ rafflesImagesUrls: urls })),
   profilesImagesUrls: [],
-  setProfilesImagesUrls: (url) => set(() => ({ profilesImagesUrls: url })),
+  setProfilesImagesUrls: (urls) => set(() => ({ profilesImagesUrls: urls })),
 }));
 
 export default useQueryNumbersStore;

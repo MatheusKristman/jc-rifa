@@ -1,37 +1,15 @@
 import React from "react";
-import { Header, Footer } from "./components";
-import RegisterContent from "./components/register/RegisterContent";
-import useRegisterStore from "../stores/useRegisterStore";
-import AlertBox from "./components/AlertBox";
 import { ToastContainer } from "react-toastify";
 
-const Register = () => {
-  const { isRegisterCompleted, errorSubmitting, registerMessage } =
-    useRegisterStore((state) => ({
-      isRegisterCompleted: state.isRegisterCompleted,
-      errorSubmitting: state.errorSubmitting,
-      registerMessage: state.registerMessage,
-    }));
+import { Header, Footer } from "./components";
+import RegisterContent from "./components/register/RegisterContent";
 
+const Register = () => {
   return (
     <div className="register">
       <Header />
       <RegisterContent />
       <Footer />
-      {isRegisterCompleted && (
-        <AlertBox
-          success={isRegisterCompleted}
-          error={errorSubmitting}
-          message={registerMessage}
-        />
-      )}
-      {errorSubmitting && (
-        <AlertBox
-          success={isRegisterCompleted}
-          error={errorSubmitting}
-          message={registerMessage}
-        />
-      )}
       <ToastContainer />
     </div>
   );

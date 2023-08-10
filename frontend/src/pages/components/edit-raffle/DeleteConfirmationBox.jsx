@@ -10,20 +10,23 @@ const DeleteConfirmationBox = () => {
     closeDeleteConfirmation,
     isDeleteConfirmationAnimated,
     deactivateDeleteConfirmationAnimation,
-    raffleSelected,
+    idSelected,
     setRaffles,
   } = useRaffleStore((state) => ({
     closeDeleteConfirmation: state.closeDeleteConfirmation,
     isDeleteConfirmationAnimated: state.isDeleteConfirmationAnimated,
-    deactivateDeleteConfirmationAnimation: state.deactivateDeleteConfirmationAnimation,
-    raffleSelected: state.raffleSelected,
+    deactivateDeleteConfirmationAnimation:
+      state.deactivateDeleteConfirmationAnimation,
+    idSelected: state.idSelected,
     setRaffles: state.setRaffles,
   }));
-  const { setToLoad, setNotToLoad, setLoadingMessage } = useGeneralStore((state) => ({
-    setToLoad: state.setToLoad,
-    setNotToLoad: state.setNotToLoad,
-    setLoadingMessage: state.setLoadingMessage,
-  }));
+  const { setToLoad, setNotToLoad, setLoadingMessage } = useGeneralStore(
+    (state) => ({
+      setToLoad: state.setToLoad,
+      setNotToLoad: state.setNotToLoad,
+      setLoadingMessage: state.setLoadingMessage,
+    }),
+  );
   const navigate = useNavigate();
 
   const closeModal = () => {
@@ -42,7 +45,7 @@ const DeleteConfirmationBox = () => {
     setToLoad();
     setLoadingMessage("Excluindo rifa, aguarde um momento");
     api
-      .delete(`/raffle/delete-raffle/${raffleSelected._id}`)
+      .delete(`/raffle/delete-raffle/${idSelected}`)
       .then((res) => {
         setRaffles(res.data);
         toast.success("Rifa deletada com sucesso", {
@@ -53,7 +56,7 @@ const DeleteConfirmationBox = () => {
           pauseOnHover: true,
           draggable: true,
           progress: undefined,
-          theme: "dark",
+          theme: "colored",
         });
       })
       .catch((error) => {
@@ -65,7 +68,7 @@ const DeleteConfirmationBox = () => {
           pauseOnHover: true,
           draggable: true,
           progress: undefined,
-          theme: "dark",
+          theme: "colored",
         });
         console.error(error);
       })
@@ -82,31 +85,35 @@ const DeleteConfirmationBox = () => {
         isDeleteConfirmationAnimated
           ? "animate__animated animate__fadeIn edit-raffle__confirmation-overlay"
           : "animate__animated animate__fadeOut edit-raffle__confirmation-overlay"
-      }>
+      }
+    >
       <div
         className={
           isDeleteConfirmationAnimated
             ? "animate__animated animate__fadeInDown edit-raffle__confirmation-overlay__box"
             : "animate__animated animate__fadeOutUp edit-raffle__confirmation-overlay__box"
-        }>
+        }
+      >
         <h3 className="edit-raffle__confirmation-overlay__box__confirmation-title">
           Você tem certeza que quer excluir essa rifa?
         </h3>
 
         <p className="edit-raffle__confirmation-overlay__box__confirmation-desc">
-          A rifa possui clientes cadastrados
+          A rifa já foi finalizada
         </p>
 
         <div className="edit-raffle__confirmation-overlay__box__button-wrapper">
           <button
             onClick={handleConfirm}
-            className="edit-raffle__confirmation-overlay__box__button-wrapper__confirm-button">
+            className="edit-raffle__confirmation-overlay__box__button-wrapper__confirm-button"
+          >
             Confirmar
           </button>
           <button
             type="button"
             onClick={handleCancel}
-            className="edit-raffle__confirmation-overlay__box__button-wrapper__cancel-button">
+            className="edit-raffle__confirmation-overlay__box__button-wrapper__cancel-button"
+          >
             Cancelar
           </button>
         </div>

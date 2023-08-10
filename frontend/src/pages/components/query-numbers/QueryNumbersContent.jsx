@@ -1,32 +1,124 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { HiOutlineSearch } from "react-icons/hi";
 import { FiAlertTriangle } from "react-icons/fi";
 import { shallow } from "zustand/shallow";
 
 import DefaultPrize from "../../../assets/default-prize.jpg";
-import useQueryNumbersStore from "../../../stores/useQueryNumbersStore";
-import _arrayBufferToBase64 from "../../../hooks/useArrayBufferToBase64";
-import useRaffleStore from "../../../stores/useRaffleStore";
 import Loading from "../Loading";
+import useQueryNumbersStore from "../../../stores/useQueryNumbersStore";
+import useRaffleStore from "../../../stores/useRaffleStore";
 import useGeneralStore from "../../../stores/useGeneralStore";
+import useUserStore from "../../../stores/useUserStore";
+import api from "../../../services/api";
 
 const QueryNumbersContent = () => {
-  const { openModal, userRafflesBuyed, rafflesConcluded, rafflesImagesUrls } =
-    useQueryNumbersStore(
-      (state) => ({
-        openModal: state.openModal,
-        userRafflesBuyed: state.userRafflesBuyed,
-        rafflesConcluded: state.rafflesConcluded,
-        rafflesImagesUrls: state.rafflesImagesUrls,
-      }),
-      shallow,
-    );
+  const {
+    openModal,
+    userRafflesBuyed,
+    setUserRafflesBuyed,
+    rafflesImagesUrls,
+    setRafflesImagesUrls,
+  } = useQueryNumbersStore(
+    (state) => ({
+      openModal: state.openModal,
+      userRafflesBuyed: state.userRafflesBuyed,
+      setUserRafflesBuyed: state.setUserRafflesBuyed,
+      rafflesImagesUrls: state.rafflesImagesUrls,
+      setRafflesImagesUrls: state.setRafflesImagesUrls,
+    }),
+    shallow,
+  );
+  const {
+    isLoading,
+    setToLoad,
+    setNotToLoad,
+    setToAnimateFadeIn,
+    setToAnimateFadeOut,
+  } = useGeneralStore(
+    (state) => ({
+      isLoading: state.isLoading,
+      setToLoad: state.setToLoad,
+      setNotToLoad: state.setNotToLoad,
+      setToAnimateFadeIn: state.setToAnimateFadeIn,
+      setToAnimateFadeOut: state.setToAnimateFadeOut,
+    }),
+    shallow,
+  );
+  const { isUserLogged, user } = useUserStore(
+    (state) => ({
+      isUserLogged: state.isUserLogged,
+      user: state.user,
+    }),
+    shallow,
+  );
+  const { raffles, setRaffles } = useRaffleStore(
+    (state) => ({
+      raffles: state.raffles,
+      setRaffles: state.setRaffles,
+    }),
+    shallow,
+  );
 
-  const { isLoading } = useGeneralStore((state) => ({
-    isLoading: state.isLoading,
-  }));
+  const [rafflesConcluded, setRafflesConcluded] = useState([]);
 
-  const { raffles } = useRaffleStore((state) => ({ raffles: state.raffles }));
+  useEffect(() => {
+    setRaffles([]);
+    setUserRafflesBuyed([]);
+
+    if (isUserLogged) {
+      setToLoad();
+      setToAnimateFadeIn();
+
+      api
+        .get(`/account/get-raffle-numbers/${user.cpf}`)
+        .then((res) => {
+          setUserRafflesBuyed(res.data);
+
+          const rafflesFromUser = res.data;
+          const urls = [];
+
+          for (let i = 0; i < rafflesFromUser.length; i++) {
+            if (rafflesFromUser[i].raffleImage) {
+              if (
+                JSON.stringify(import.meta.env.MODE) ===
+                JSON.stringify("development")
+              ) {
+                urls.push(
+                  `${import.meta.env.VITE_API_KEY_DEV}${
+                    import.meta.env.VITE_API_PORT
+                  }/raffle-uploads/${rafflesFromUser[i].raffleImage}`,
+                );
+              } else {
+                urls.push(
+                  `${import.meta.env.VITE_API_KEY}/raffle-uploads/${
+                    rafflesFromUser[i].raffleImage
+                  }`,
+                );
+              }
+            } else {
+              urls.push(null);
+            }
+          }
+
+          setRafflesImagesUrls(urls);
+        })
+        .catch((error) => console.error(error))
+        .finally(() => {
+          setToAnimateFadeOut();
+
+          setTimeout(() => {
+            setNotToLoad();
+          }, 400);
+        });
+
+      api
+        .get(`winner/get-all-winners`)
+        .then((res) => setRafflesConcluded(res.data))
+        .catch((error) => console.error(error));
+    } else {
+      openModal();
+    }
+  }, [setRaffles, setUserRafflesBuyed]);
 
   return (
     <div className="query-numbers__query-numbers-content">
@@ -48,7 +140,7 @@ const QueryNumbersContent = () => {
         {userRafflesBuyed.length !== 0 ? (
           userRafflesBuyed.map((raffle, index) => (
             <div
-              key={raffle._id}
+              key={raffle.id}
               className="query-numbers__query-numbers-content__container__raffle-box"
             >
               <div className="query-numbers__query-numbers-content__container__raffle-box__image-box">

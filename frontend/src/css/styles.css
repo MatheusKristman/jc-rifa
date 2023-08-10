@@ -2929,7 +2929,7 @@ body {
 }
 @media screen and (min-width: 1024px) {
   .edit-raffle__content__container__btns__delete-btn:hover {
-    filter: brightness(80%);
+    filter: brightness(60%);
   }
 }
 .edit-raffle__content__container__title {
@@ -3010,6 +3010,24 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-evenly;
+}
+.edit-raffle__content__container__statistics-wrapper__numbers-status .number-buyed-loading {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.edit-raffle__content__container__statistics-wrapper__numbers-status .number-buyed-loading__box {
+  width: 60px;
+  height: 60px;
+  overflow: hidden;
+}
+.edit-raffle__content__container__statistics-wrapper__numbers-status .number-buyed-loading__box__loading-animation {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
 }
 .edit-raffle__content__container__statistics-wrapper__numbers-status__numbers-quant {
   display: flex;
@@ -3133,6 +3151,16 @@ body {
   color: #fff;
   cursor: pointer;
   outline: none;
+  transition: filter 0.3s ease;
+}
+.edit-raffle__content__container__form__submit-btn:disabled {
+  filter: brightness(80%);
+  cursor: not-allowed;
+}
+@media screen and (min-width: 768px) {
+  .edit-raffle__content__container__form__submit-btn:hover {
+    filter: brightness(80%);
+  }
 }
 .edit-raffle__content__container__finish-raffle-container {
   width: 100%;

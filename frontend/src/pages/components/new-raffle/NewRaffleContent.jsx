@@ -1,16 +1,15 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import * as Yup from "yup";
 import { shallow } from "zustand/shallow";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import * as Yup from "yup";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 import useNewRaffleStore from "../../../stores/useNewRaffleStore";
 import useGeneralStore from "../../../stores/useGeneralStore";
-import DefaultPrize from "../../../assets/default-prize.jpg";
-import useRaffleStore from "../../../stores/useRaffleStore";
 import api from "../../../services/api";
-import { toast } from "react-toastify";
+import DefaultPrize from "../../../assets/default-prize.jpg";
 
 const schema = Yup.object().shape({
   raffleImage: Yup.mixed(),
@@ -22,76 +21,42 @@ const schema = Yup.object().shape({
 });
 
 const NewRaffleContent = () => {
-  const {
-    numbersOptions,
-    raffleImage,
-    setRaffleImage,
-    title,
-    setTitle,
-    subtitle,
-    setSubtitle,
-    description,
-    setDescription,
-    price,
-    setPrice,
-    raffleNumbers,
-    setRaffleNumbers,
-    isSubmitting,
-    submitConfirm,
-    submitCancel,
-    isRaffleCreated,
-    raffleCreatedSuccess,
-    raffleCreatedCancel,
-    submitError,
-    errorExist,
-    errorDontExist,
-    setRaffleCreatedMessage,
-    resetValues,
-    actualRaffleImageUrl,
-    setActualRaffleImageUrl,
-    raffleImageError,
-    setRaffleImageError,
-  } = useNewRaffleStore(
+  const { resetValues } = useNewRaffleStore(
     (state) => ({
-      numbersOptions: state.numbersOptions,
-      raffleImage: state.raffleImage,
-      setRaffleImage: state.setRaffleImage,
-      title: state.title,
-      setTitle: state.setTitle,
-      subtitle: state.subtitle,
-      setSubtitle: state.setSubtitle,
-      description: state.description,
-      setDescription: state.setDescription,
-      price: state.price,
-      setPrice: state.setPrice,
-      raffleNumbers: state.raffleNumbers,
-      setRaffleNumbers: state.setRaffleNumbers,
-      isSubmitting: state.isSubmitting,
-      submitConfirm: state.submitConfirm,
-      submitCancel: state.submitCancel,
-      isRaffleCreated: state.isRaffleCreated,
-      raffleCreatedSuccess: state.raffleCreatedSuccess,
-      raffleCreatedCancel: state.raffleCreatedCancel,
-      submitError: state.submitError,
-      errorExist: state.errorExist,
-      errorDontExist: state.errorDontExist,
-      setRaffleCreatedMessage: state.setRaffleCreatedMessage,
       resetValues: state.resetValues,
-      actualRaffleImageUrl: state.actualRaffleImageUrl,
-      setActualRaffleImageUrl: state.setActualRaffleImageUrl,
-      raffleImageError: state.raffleImageError,
-      setRaffleImageError: state.setRaffleImageError,
     }),
-    shallow,
-  );
-  const { setRaffles } = useRaffleStore(
-    (state) => ({ setRaffles: state.setRaffles }),
     shallow,
   );
   const { setToLoad, setNotToLoad } = useGeneralStore((state) => ({
     setToLoad: state.setToLoad,
     setNotToLoad: state.setNotToLoad,
   }));
+
+  const [newRaffleData, setNewRaffleData] = useState({
+    raffleImage: null,
+    title: "",
+    subtitle: "",
+    description: "",
+    price: "",
+    raffleNumbers: 25,
+  });
+  const [actualRaffleImageUrl, setActualRaffleImageUrl] = useState("");
+  const [raffleImageError, setRaffleImageError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [numbersOptions, setNumbersOptions] = useState([
+    25, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650, 700,
+    750, 800, 850, 900, 950, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000,
+    9000, 10000, 20000, 30000, 40000, 50000, 60000, 70000, 80000, 90000, 100000,
+    1000000,
+  ]);
+
+  const { register, handleSubmit, formState } = useForm({
+    resolver: yupResolver(schema),
+  });
+
+  const { errors } = formState;
+
+  const navigate = useNavigate();
 
   const handleFileChange = async (e) => {
     const file = await e.target.files[0];
@@ -102,7 +67,7 @@ const NewRaffleContent = () => {
 
     if (file && file.type.startsWith("image/")) {
       setActualRaffleImageUrl(URL.createObjectURL(file));
-      setRaffleImage(file);
+      setNewRaffleData((prev) => ({ ...prev, raffleImage: file }));
     } else {
       toast.error("O arquivo selecionado não é uma imagem válida", {
         position: "top-right",
@@ -112,18 +77,14 @@ const NewRaffleContent = () => {
         pauseOnHover: true,
         draggable: true,
         progress: undefined,
-        theme: "dark",
+        theme: "colored",
       });
     }
   };
 
-  const { register, handleSubmit, formState, reset } = useForm({
-    resolver: yupResolver(schema),
-  });
-
-  const { errors } = formState;
-
-  const navigate = useNavigate();
+  const handleFormChange = (option, value) => {
+    setNewRaffleData((prev) => ({ ...prev, [option]: value }));
+  };
 
   function coinMask(event) {
     const onlyDigits = event.target.value
@@ -141,25 +102,20 @@ const NewRaffleContent = () => {
       currency,
     }).format(valor);
 
-    setPrice(valueConverted);
+    setNewRaffleData((prev) => ({ ...prev, price: valueConverted }));
 
     return valueConverted;
   }
 
   const onSubmit = (data) => {
-    console.log(raffleImage);
-
-    if (!raffleImage) {
+    if (!newRaffleData.raffleImage) {
       setRaffleImageError("Imagem é obrigatória");
       return;
     }
 
     setRaffleImageError("");
-
-    submitConfirm();
+    setIsSubmitting(true);
   };
-
-  // TODO fazer teste criando 1000000 de números na rifa
 
   useEffect(() => {
     const submitData = () => {
@@ -168,16 +124,12 @@ const NewRaffleContent = () => {
           setToLoad();
           const formData = new FormData();
 
-          console.log(raffleImage);
-
-          formData.append("raffleImage", raffleImage);
-          formData.append("title", title);
-          formData.append("subtitle", subtitle);
-          formData.append("description", description);
-          formData.append("price", price);
-          formData.append("quantNumbers", raffleNumbers);
-
-          console.log(formData);
+          formData.append("raffleImage", newRaffleData.raffleImage);
+          formData.append("title", newRaffleData.title);
+          formData.append("subtitle", newRaffleData.subtitle);
+          formData.append("description", newRaffleData.description);
+          formData.append("price", newRaffleData.price);
+          formData.append("quantNumbers", newRaffleData.raffleNumbers);
 
           api
             .post("/raffle/create-raffle", formData, {
@@ -186,22 +138,48 @@ const NewRaffleContent = () => {
               },
             })
             .then(() => {
-              raffleCreatedSuccess();
-              setRaffleCreatedMessage("Rifa criada com sucesso");
+              toast.success("Rifa criada com sucesso", {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+              });
             })
             .catch((error) => {
               if (error.response?.data === "Rifa já cadastrada") {
-                setRaffleCreatedMessage("Rifa já cadastrada");
+                toast.error("Rifa já cadastrada", {
+                  position: "top-right",
+                  autoClose: 5000,
+                  hideProgressBar: false,
+                  closeOnClick: true,
+                  pauseOnHover: true,
+                  draggable: true,
+                  progress: undefined,
+                  theme: "colored",
+                });
               } else {
-                setRaffleCreatedMessage("Ocorreu um erro na criação da rifa");
+                toast.error("Ocorreu um erro na criação da rifa", {
+                  position: "top-right",
+                  autoClose: 5000,
+                  hideProgressBar: false,
+                  closeOnClick: true,
+                  pauseOnHover: true,
+                  draggable: true,
+                  progress: undefined,
+                  theme: "colored",
+                });
               }
 
-              errorExist();
-              console.log(error);
+              console.error(error);
             })
             .finally(() => {
-              console.log("terminei o load");
               setNotToLoad();
+              setIsSubmitting(false);
+              navigate("/raffle-management");
             });
         };
 
@@ -212,23 +190,23 @@ const NewRaffleContent = () => {
     submitData();
   }, [isSubmitting]);
 
-  useEffect(() => {
-    if (isRaffleCreated) {
-      setTimeout(() => {
-        raffleCreatedCancel();
-        submitCancel();
-        resetValues();
-        navigate("/raffle-management");
-      }, 3000);
-    }
-
-    if (submitError) {
-      setTimeout(() => {
-        errorDontExist();
-        submitCancel();
-      }, 4000);
-    }
-  }, [isRaffleCreated, submitError]);
+  // useEffect(() => {
+  //   if (isRaffleCreated) {
+  //     setTimeout(() => {
+  //       raffleCreatedCancel();
+  //       submitCancel();
+  //       resetValues();
+  //       navigate("/raffle-management");
+  //     }, 3000);
+  //   }
+  //
+  //   if (submitError) {
+  //     setTimeout(() => {
+  //       errorDontExist();
+  //       submitCancel();
+  //     }, 4000);
+  //   }
+  // }, [isRaffleCreated, submitError]);
 
   return (
     <div className="new-raffle__content">
@@ -281,8 +259,10 @@ const NewRaffleContent = () => {
                 type="text"
                 name="title"
                 id="title"
-                value={title}
-                onChange={setTitle}
+                value={newRaffleData.title}
+                onChange={(event) =>
+                  handleFormChange("title", event.target.value)
+                }
                 style={
                   errors.title ? { border: "2px solid rgb(209, 52, 52)" } : {}
                 }
@@ -301,8 +281,10 @@ const NewRaffleContent = () => {
                 type="text"
                 name="subtitle"
                 id="subtitle"
-                value={subtitle}
-                onChange={setSubtitle}
+                value={newRaffleData.subtitle}
+                onChange={(event) =>
+                  handleFormChange("subtitle", event.target.value)
+                }
                 style={
                   errors.subtitle
                     ? { border: "2px solid rgb(209, 52, 52)" }
@@ -322,8 +304,10 @@ const NewRaffleContent = () => {
                 {...register("description")}
                 id="description"
                 name="description"
-                value={description}
-                onChange={setDescription}
+                value={newRaffleData.description}
+                onChange={(event) =>
+                  handleFormChange("description", event.target.value)
+                }
                 style={
                   errors.description
                     ? { border: "2px solid rgb(209, 52, 52)" }
@@ -344,8 +328,8 @@ const NewRaffleContent = () => {
                 type="text"
                 name="price"
                 id="price"
-                value={price}
-                onChange={(e) => coinMask(e)}
+                value={newRaffleData.price}
+                onChange={(event) => coinMask(event)}
                 style={
                   errors.price ? { border: "2px solid rgb(209, 52, 52)" } : {}
                 }
@@ -363,8 +347,10 @@ const NewRaffleContent = () => {
                 {...register("QuantNumbers")}
                 name="QuantNumbers"
                 id="QuantNumbers"
-                value={raffleNumbers}
-                onChange={setRaffleNumbers}
+                value={newRaffleData.raffleNumbers}
+                onChange={(event) =>
+                  handleFormChange("raffleNumbers", event.target.value)
+                }
                 style={
                   errors.QuantNumbers
                     ? { border: "2px solid rgb(209, 52, 52)" }
@@ -384,6 +370,7 @@ const NewRaffleContent = () => {
 
           <button
             type="submit"
+            disabled={isSubmitting}
             className="new-raffle__content__container__form__submit-btn"
           >
             Salvar

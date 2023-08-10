@@ -1,141 +1,53 @@
-import React, { useEffect } from "react";
-import {
-  BsFacebook,
-  BsTelegram,
-  BsTwitter,
-  BsWhatsapp,
-  BsCart,
-  BsCheck2Circle,
-} from "react-icons/bs";
+import React, { useEffect, useState } from "react";
+import { BsWhatsapp, BsCart, BsCheck2Circle } from "react-icons/bs";
 import { CiCircleMinus, CiCirclePlus } from "react-icons/ci";
 import { Link, useParams } from "react-router-dom";
 import { shallow } from "zustand/shallow";
+import { toast } from "react-toastify";
 
-import buyingLoading from "../../../assets/buying-loading.svg";
 import PrizeDisplayed from "../PrizeDisplayed";
+import buyingLoading from "../../../assets/buying-loading.svg";
 import useRaffleStore from "../../../stores/useRaffleStore";
 import api from "../../../services/api";
 import useBuyNumbersStore from "../../../stores/useBuyNumbersStore";
 import useUserStore from "../../../stores/useUserStore";
 import useHeaderStore from "../../../stores/useHeaderStore";
 import useGeneralStore from "../../../stores/useGeneralStore";
-import { toast } from "react-toastify";
-
-// TODO adaptar criação e outras paginas para receber o novo formato da rifa
 
 const RaffleSelectedContent = () => {
-  const {
-    raffleSelected,
-    setRaffleSelected,
-    raffleSelectedImageUrl,
-    setRaffleSelectedImageUrl,
-  } = useRaffleStore((state) => ({
+  const { raffleSelected, setRaffleSelected } = useRaffleStore((state) => ({
     raffleSelected: state.raffleSelected,
     setRaffleSelected: state.setRaffleSelected,
-    raffleSelectedImageUrl: state.raffleSelectedImageUrl,
-    setRaffleSelectedImageUrl: state.setRaffleSelectedImageUrl,
   }));
-
-  const {
-    numberQuant,
-    incrementNumberQuant,
-    decrementNumberQuant,
-    openPaymentModal,
-    isBuying,
-    setToBuy,
-    setToNotBuy,
-    setQrCodePayment,
-    setPaymentLink,
-  } = useBuyNumbersStore(
-    (state) => ({
-      numberQuant: state.numberQuant,
-      incrementNumberQuant: state.incrementNumberQuant,
-      decrementNumberQuant: state.decrementNumberQuant,
-      openPaymentModal: state.openPaymentModal,
-      isBuying: state.isBuying,
-      setToBuy: state.setToBuy,
-      setToNotBuy: state.setToNotBuy,
-      setQrCodePayment: state.setQrCodePayment,
-      setPaymentLink: state.setPaymentLink,
-    }),
-    shallow,
-  );
-
+  const { openPaymentModal, setQrCodePayment, setPaymentLink } =
+    useBuyNumbersStore(
+      (state) => ({
+        openPaymentModal: state.openPaymentModal,
+        setQrCodePayment: state.setQrCodePayment,
+        setPaymentLink: state.setPaymentLink,
+      }),
+      shallow,
+    );
   const { openLogin } = useHeaderStore((state) => ({
     openLogin: state.openLogin,
   }));
-
   const { user, isUserLogged, setUser } = useUserStore((state) => ({
     user: state.user,
     isUserLogged: state.isUserLogged,
     setUser: state.setUser,
   }));
-
   const { isRaffleLoading, setToRaffleLoad, setToRaffleNotLoad } =
     useGeneralStore((state) => ({
       isRaffleLoading: state.isRaffleLoading,
       setToRaffleLoad: state.setToRaffleLoad,
       setToRaffleNotLoad: state.setToRaffleNotLoad,
     }));
+
+  const [raffleSelectedImageUrl, setRaffleSelectedImageUrl] = useState("");
+  const [numberQuant, setNumberQuant] = useState(0);
+  const [isBuying, setIsBuying] = useState(false);
+
   const { selected } = useParams();
-
-  useEffect(() => {
-    setRaffleSelected({});
-    setQrCodePayment("");
-    setPaymentLink("");
-    setToNotBuy();
-  }, []);
-
-  useEffect(() => {
-    const fetchRaffleSelected = () => {
-      if (!raffleSelected?.hasOwnProperty("_id")) {
-        setToRaffleLoad();
-        console.log(selected);
-        api
-          .get(`/raffle/get-raffle-selected/${selected}`)
-          .then((res) => {
-            setRaffleSelected(res.data);
-
-            let url = "";
-            if (res.data.raffleImage) {
-              if (
-                JSON.stringify(import.meta.env.MODE) ===
-                JSON.stringify("development")
-              ) {
-                url = `${import.meta.env.VITE_API_KEY_DEV}${
-                  import.meta.env.VITE_API_PORT
-                }/raffle-uploads/${res.data.raffleImage}`;
-              } else {
-                url = `${import.meta.env.VITE_API_KEY}/raffle-uploads/${
-                  res.data.raffleImage
-                }`;
-              }
-            } else {
-              url = null;
-            }
-
-            setRaffleSelectedImageUrl(url);
-
-            setToRaffleNotLoad();
-          })
-          .catch((error) => console.log(error));
-      }
-    };
-
-    fetchRaffleSelected();
-  }, [setRaffleSelected, raffleSelected]);
-
-  useEffect(() => {
-    console.log(raffleSelected);
-  }, [raffleSelected]);
-
-  useEffect(() => {
-    if (isBuying) {
-      document.documentElement.style.overflowY = "hidden";
-    } else {
-      document.documentElement.style.overflowY = "unset";
-    }
-  }, [isBuying]);
 
   function calcValues(value, factor) {
     const valueFormated = convertCurrencyToNumber(value);
@@ -160,9 +72,28 @@ const RaffleSelectedContent = () => {
     return (100 * current) / total;
   };
 
+  const incrementNumberQuant = (quant) => {
+    if (
+      numberQuant >=
+      raffleSelected.quantNumbers - raffleSelected.quantBuyedNumbers
+    ) {
+      return;
+    }
+
+    setNumberQuant((prev) => prev + quant);
+  };
+
+  const decrementNumberQuant = (quant) => {
+    if (numberQuant === 0) {
+      return;
+    }
+
+    setNumberQuant((prev) => prev - quant);
+  };
+
   const handleBuy = () => {
     if (numberQuant === 0 || raffleSelected.isFinished) {
-      return; // colocar alerta para informar para selecionar um número
+      return;
     }
 
     if (
@@ -170,10 +101,9 @@ const RaffleSelectedContent = () => {
         raffleSelected.quantNumbers - raffleSelected.quantBuyedNumbers &&
       isUserLogged
     ) {
-      setToBuy();
+      setIsBuying(true);
 
       const priceNumber = convertCurrencyToNumber(raffleSelected.price);
-
       const data = {
         id: user._id,
         fullPrice: priceNumber * numberQuant,
@@ -183,6 +113,7 @@ const RaffleSelectedContent = () => {
         lastName: user.name.split(" ").slice(1).join(" "),
         cpf: user.cpf,
       };
+
       api
         .post(`/payment/payment-management`, data, {
           headers: {
@@ -190,8 +121,6 @@ const RaffleSelectedContent = () => {
           },
         })
         .then((res) => {
-          console.log(res.data.response.response);
-
           const qrCode =
             res.data.response.response.point_of_interaction.transaction_data
               .qr_code;
@@ -211,22 +140,21 @@ const RaffleSelectedContent = () => {
             .then((res) => {
               setQrCodePayment(qrCode);
               setPaymentLink(ticketUrl);
-
               openPaymentModal();
 
               decrementNumberQuant(numberQuant);
 
-              setToNotBuy();
-
+              setIsBuying(false);
               setUser(res.data);
             })
             .catch((error) => {
-              console.log(error);
+              console.error(error);
             });
         })
         .catch((error) => {
           console.error(error);
-          setToNotBuy();
+
+          setIsBuying(false);
 
           toast.error(
             "Ocorreu um erro durante a compra, tente novamente mais tarde",
@@ -238,7 +166,7 @@ const RaffleSelectedContent = () => {
               pauseOnHover: true,
               draggable: true,
               progress: undefined,
-              theme: "dark",
+              theme: "colored",
             },
           );
         });
@@ -247,7 +175,9 @@ const RaffleSelectedContent = () => {
       raffleSelected.quantNumbers - raffleSelected.quantBuyedNumbers
     ) {
       toast.error(
-        "Selecione a quantidade até " + numbersAvailableToBuy.length,
+        `Selecione a quantidade até ${
+          raffleSelected.quantNumbers - raffleSelected.quantBuyedNumbers
+        }`,
         {
           position: "top-right",
           autoClose: 5000,
@@ -256,13 +186,69 @@ const RaffleSelectedContent = () => {
           pauseOnHover: true,
           draggable: true,
           progress: undefined,
-          theme: "dark",
+          theme: "colored",
         },
       );
     } else {
       openLogin();
     }
   };
+
+  useEffect(() => {
+    setRaffleSelected({});
+    setQrCodePayment("");
+    setPaymentLink("");
+    // setIsBuying(false);
+  }, []);
+
+  useEffect(() => {
+    const fetchRaffleSelected = () => {
+      if (!raffleSelected?.hasOwnProperty("_id")) {
+        setToRaffleLoad();
+
+        api
+          .get(`/raffle/get-raffle-selected/${selected}`)
+          .then((res) => {
+            setRaffleSelected(res.data);
+
+            let url = "";
+            const raffle = res.data;
+
+            if (raffle.raffleImage) {
+              if (
+                JSON.stringify(import.meta.env.MODE) ===
+                JSON.stringify("development")
+              ) {
+                url = `${import.meta.env.VITE_API_KEY_DEV}${
+                  import.meta.env.VITE_API_PORT
+                }/raffle-uploads/${raffle.raffleImage}`;
+              } else {
+                url = `${import.meta.env.VITE_API_KEY}/raffle-uploads/${
+                  raffle.raffleImage
+                }`;
+              }
+            } else {
+              url = null;
+            }
+
+            setRaffleSelectedImageUrl(url);
+
+            setToRaffleNotLoad();
+          })
+          .catch((error) => console.error(error));
+      }
+    };
+
+    fetchRaffleSelected();
+  }, [setRaffleSelected, raffleSelected]);
+
+  useEffect(() => {
+    if (isBuying) {
+      document.documentElement.style.overflowY = "hidden";
+    } else {
+      document.documentElement.style.overflowY = "unset";
+    }
+  }, [isBuying]);
 
   return (
     <div className="raffle-selected__raffle-selected-content">
@@ -318,22 +304,15 @@ const RaffleSelectedContent = () => {
           <BsCart /> Ver meus números
         </Link>
 
-        {!raffleSelected?.isFinished ? (
+        {!raffleSelected?.isFinished ||
+        raffleSelected?.quantBuyedNumbers < raffleSelected?.quantNumbers ? (
           <>
             <div className="raffle-selected__raffle-selected-content__container__buy-numbers-box">
               <span className="raffle-selected__raffle-selected-content__container__buy-numbers-box__desc">
                 Selecione a quantidade de números
               </span>
 
-              <div
-                className="raffle-selected__raffle-selected-content__container__buy-numbers-box__buy-numbers-wrapper"
-                style={
-                  raffleSelected?.quantNumbers ===
-                  raffleSelected?.quantBuyedNumbers
-                    ? { pointerEvents: "none" }
-                    : {}
-                }
-              >
+              <div className="raffle-selected__raffle-selected-content__container__buy-numbers-box__buy-numbers-wrapper">
                 <button
                   onClick={() => incrementNumberQuant(10)}
                   type="button"
@@ -421,21 +400,14 @@ const RaffleSelectedContent = () => {
                 </button>
               </div>
 
-              <div
-                className="raffle-selected__raffle-selected-content__container__buy-numbers-box__selected-numbers-wrapper"
-                style={
-                  raffleSelected?.quantNumbers ===
-                  raffleSelected?.quantBuyedNumbers
-                    ? { pointerEvents: "none" }
-                    : {}
-                }
-              >
+              <div className="raffle-selected__raffle-selected-content__container__buy-numbers-box__selected-numbers-wrapper">
                 <button
                   onClick={() => {
                     if (numberQuant !== 0) {
                       decrementNumberQuant(1);
                     }
                   }}
+                  disabled={numberQuant === 0 || isBuying}
                   type="button"
                   className="raffle-selected__raffle-selected-content__container__buy-numbers-box__selected-numbers-wrapper__btn"
                 >
@@ -451,6 +423,11 @@ const RaffleSelectedContent = () => {
 
                 <button
                   onClick={() => incrementNumberQuant(1)}
+                  disabled={
+                    numberQuant ===
+                      raffleSelected.quantNumbers -
+                        raffleSelected.quantBuyedNumbers || isBuying
+                  }
                   type="button"
                   className="raffle-selected__raffle-selected-content__container__buy-numbers-box__selected-numbers-wrapper__btn"
                 >
@@ -470,8 +447,8 @@ const RaffleSelectedContent = () => {
                     }
                   : isRaffleLoading
                   ? { pointerEvents: "none" }
-                  : raffleSelected?.quantNumbers ===
-                    raffleSelected?.quantBuyedNumbers
+                  : raffleSelected.quantNumbers ===
+                    raffleSelected.quantBuyedNumbers
                   ? {
                       filter: "brightness(80%)",
                       pointerEvents: "none",
