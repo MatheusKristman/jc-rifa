@@ -244,6 +244,9 @@ body {
 .header__container__logo-box a {
   text-decoration: none;
   color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .header__container__menu-box {
   display: flex;
@@ -1547,8 +1550,13 @@ body {
 .raffle-selected__raffle-selected-content__container__buy-numbers-box {
   background-color: #15152a;
   border-radius: 10px;
-  padding: 20px 60px;
+  padding: 20px;
   margin-bottom: 10px;
+}
+@media screen and (min-width: 500px) {
+  .raffle-selected__raffle-selected-content__container__buy-numbers-box {
+    padding: 20px 60px;
+  }
 }
 .raffle-selected__raffle-selected-content__container__buy-numbers-box__desc {
   font-size: 0.9rem;
@@ -1648,30 +1656,47 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: 5px;
-  padding: 10px 25px;
+  padding: 10px;
   background-color: #198754;
   border-radius: 4px;
   border: none;
   cursor: pointer;
   outline: none;
 }
+@media screen and (min-width: 500px) {
+  .raffle-selected__raffle-selected-content__container__buy-btn {
+    padding: 10px 25px;
+  }
+}
 .raffle-selected__raffle-selected-content__container__buy-btn__desc {
   font-size: 1rem;
   font-weight: 600;
   color: #fff;
-  width: 85%;
+  width: 70%;
   text-align: center;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+@media screen and (min-width: 500px) {
+  .raffle-selected__raffle-selected-content__container__buy-btn__desc {
+    width: 85%;
+  }
 }
 .raffle-selected__raffle-selected-content__container__buy-btn__desc img {
   width: 15px;
-  transform: translateY(1px) scale(1.7);
 }
 .raffle-selected__raffle-selected-content__container__buy-btn__price {
   font-size: 1rem;
   font-weight: 600;
   color: #fff;
-  width: 15%;
+  width: 30%;
   text-align: center;
+}
+@media screen and (min-width: 500px) {
+  .raffle-selected__raffle-selected-content__container__buy-btn__price {
+    width: 15%;
+  }
 }
 @media screen and (min-width: 1024px) {
   .raffle-selected__raffle-selected-content__container__buy-btn {
@@ -1932,9 +1957,14 @@ body {
   border-radius: 10px;
   padding: 10px;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 30px;
   margin-bottom: 15px;
+}
+@media screen and (min-width: 500px) {
+  .query-numbers__query-numbers-content__container__raffle-box {
+    aling-items: center;
+  }
 }
 .query-numbers__query-numbers-content__container__raffle-box:last-of-type {
   margin-bottom: 0;
@@ -1975,6 +2005,7 @@ body {
   font-size: 1rem;
   font-weight: 500;
   display: block;
+  margin-bottom: 10px;
 }
 .query-numbers__query-numbers-content__container__raffle-box__info-box__status-finished {
   background-color: #080812;
@@ -1985,13 +2016,21 @@ body {
   font-size: 1rem;
   font-weight: 500;
   display: block;
+  margin-bottom: 10px;
 }
 .query-numbers__query-numbers-content__container__raffle-box__info-box__numbers-box {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
+  flex-direction: column;
   gap: 10px;
   font-size: 1rem;
   color: #fff;
+}
+@media screen and (min-width: 500px) {
+  .query-numbers__query-numbers-content__container__raffle-box__info-box__numbers-box {
+    flex-direction: row;
+    align-items: center;
+  }
 }
 .query-numbers__query-numbers-content__container__raffle-box__info-box__numbers-box__numbers {
   background-color: #080812;
@@ -2084,6 +2123,7 @@ body {
 .query-numbers__query-numbers-modal-overlay__box__container__form__label {
   font-size: 1rem;
   color: #333;
+  width: 100%;
 }
 .query-numbers__query-numbers-modal-overlay__box__container__form__label__input {
   padding: 8px 12px;
@@ -2094,6 +2134,7 @@ body {
   border-radius: 10px;
   border: 1px solid #ced4da;
   outline: none;
+  width: 100%;
   transition: border 0.4s ease, box-shadow 0.2s ease;
 }
 .query-numbers__query-numbers-modal-overlay__box__container__form__label__input:focus {

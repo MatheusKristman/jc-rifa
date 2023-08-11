@@ -577,7 +577,7 @@ const EditRaffleContent = () => {
                 ));
               })
             ) : (
-              <p>Nenhum número comprado no momento</p>
+              <p>Nenhum número com compra aprovada no momento</p>
             )}
           </div>
 

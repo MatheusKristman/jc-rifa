@@ -126,8 +126,12 @@
       &__buy-numbers-box {
         background-color: $darkPurple;
         border-radius: 10px;
-        padding: 20px 60px;
+        padding: 20px;
         margin-bottom: 10px;
+
+        @include breakpoint(tablet) {
+          padding: 20px 60px;
+        }
 
         &__desc {
           font-size: 0.9rem;
@@ -239,23 +243,33 @@
         align-items: center;
         justify-content: space-between;
         gap: 5px;
-        padding: 10px 25px;
+        padding: 10px;
         background-color: $green;
         border-radius: 4px;
         border: none;
         cursor: pointer;
         outline: none;
 
+        @include breakpoint(tablet) {
+          padding: 10px 25px;
+        }
+
         &__desc {
           font-size: 1rem;
           font-weight: 600;
           color: $white;
-          width: 85%;
+          width: 70%;
           text-align: center;
+          display: flex;
+          align-items: center;
+          gap: 5px;
+
+          @include breakpoint(tablet) {
+            width: 85%;
+          }
 
           img {
             width: 15px;
-            transform: translateY(1px) scale(1.7);
           }
         }
 
@@ -263,8 +277,12 @@
           font-size: 1rem;
           font-weight: 600;
           color: $white;
-          width: 15%;
+          width: 30%;
           text-align: center;
+
+          @include breakpoint(tablet) {
+            width: 15%;
+          }
         }
 
         @include breakpoint(largeScreen) {

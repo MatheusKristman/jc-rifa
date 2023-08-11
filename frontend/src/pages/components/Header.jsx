@@ -24,8 +24,8 @@ import { toast } from "react-toastify";
 import useHeaderStore from "../../stores/useHeaderStore";
 import useUserStore from "../../stores/useUserStore";
 import noUserPhoto from "../../assets/no-user-photo.png";
+import logo from "../../assets/logo.svg";
 import api from "../../services/api";
-import useIsUserLogged from "../../hooks/useIsUserLogged";
 
 const schema = Yup.object().shape({
   username: Yup.string()
@@ -66,7 +66,13 @@ const HeaderMenu = () => {
     <div ref={menuRef} className="header__menu">
       <div className="header__menu__above">
         <div className="header__menu__above__container">
-          <div className="header__menu__above__container__logo-box">LOGO</div>
+          <div className="header__menu__above__container__logo-box">
+            <img
+              src={logo}
+              alt="jc-rifa"
+              className="header__menu__above__container__logo-box__logo"
+            />
+          </div>
 
           <button
             type="button"
@@ -132,43 +138,6 @@ const HeaderMenu = () => {
             <IoEnterOutline /> Entrar
           </button>
         </nav>
-      </div>
-
-      <div className="header__menu__bottom">
-        <div className="header__menu__bottom__container">
-          <span className="header__menu__bottom__container__desc">
-            COMPARTILHE
-          </span>
-
-          <ul className="header__menu__bottom__container__socials-list">
-            <li className="header__menu__bottom__container__socials-list__socials-items">
-              <a
-                href="#"
-                className="header__menu__bottom__container__socials-list__socials-items__facebook"
-              >
-                <BsFacebook />
-              </a>
-            </li>
-
-            <li className="header__menu__bottom__container__socials-list__socials-items">
-              <a
-                href="#"
-                className="header__menu__bottom__container__socials-list__socials-items__instagram"
-              >
-                <BsInstagram />
-              </a>
-            </li>
-
-            <li className="header__menu__bottom__container__socials-list__socials-items">
-              <a
-                href="#"
-                className="header__menu__bottom__container__socials-list__socials-items__whatsapp"
-              >
-                <BsWhatsapp />
-              </a>
-            </li>
-          </ul>
-        </div>
       </div>
     </div>
   );
@@ -314,7 +283,13 @@ const HeaderMenuLogged = () => {
       {logoutConfirmation && <LogoutConfirmationBox />}
       <div className="header__menu__above">
         <div className="header__menu__above__container">
-          <div className="header__menu__above__container__logo-box">LOGO</div>
+          <div className="header__menu__above__container__logo-box">
+            <img
+              src={logo}
+              alt="jc-rifa"
+              className="header__menu__above__container__logo-box__logo"
+            />
+          </div>
 
           <button
             type="button"
@@ -400,43 +375,6 @@ const HeaderMenuLogged = () => {
             </li>
           </ul>
         </nav>
-      </div>
-
-      <div className="header__menu__bottom">
-        <div className="header__menu__bottom__container">
-          <span className="header__menu__bottom__container__desc">
-            COMPARTILHE
-          </span>
-
-          <ul className="header__menu__bottom__container__socials-list">
-            <li className="header__menu__bottom__container__socials-list__socials-items">
-              <a
-                href="#"
-                className="header__menu__bottom__container__socials-list__socials-items__facebook"
-              >
-                <BsFacebook />
-              </a>
-            </li>
-
-            <li className="header__menu__bottom__container__socials-list__socials-items">
-              <a
-                href="#"
-                className="header__menu__bottom__container__socials-list__socials-items__instagram"
-              >
-                <BsInstagram />
-              </a>
-            </li>
-
-            <li className="header__menu__bottom__container__socials-list__socials-items">
-              <a
-                href="#"
-                className="header__menu__bottom__container__socials-list__socials-items__whatsapp"
-              >
-                <BsWhatsapp />
-              </a>
-            </li>
-          </ul>
-        </div>
       </div>
     </div>
   );
@@ -810,7 +748,13 @@ const Header = () => {
     <header className="header">
       <div className="header__container">
         <div className="header__container__logo-box">
-          <Link to="/">LOGO</Link>
+          <Link to="/">
+            <img
+              src={logo}
+              alt="jc-rifa"
+              className="header__container__logo-box__logo"
+            />
+          </Link>
         </div>
 
         <div className="header__container__menu-box">

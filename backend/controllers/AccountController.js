@@ -261,15 +261,6 @@ export const buyRaffle = async (req, res) => {
       numbersBuyed.push(chosenNumber);
     }
 
-    await Raffle.findOneAndUpdate(
-      { _id: raffleId },
-      {
-        $inc: {
-          quantBuyedNumbers: numberQuant,
-        },
-      },
-    );
-
     const userUpdated = await Account.findOneAndUpdate(
       { _id: id },
       {
@@ -351,7 +342,7 @@ export const readPayment = async (req, res) => {
 
   if (paymentId && id) {
     try {
-      const userSelected = await Account.findOneAndUpdate(
+      let userSelected = await Account.findOneAndUpdate(
         { _id: id },
         {
           $set: {
@@ -367,6 +358,21 @@ export const readPayment = async (req, res) => {
           new: true,
         },
       );
+
+      userSelected = userSelected.rafflesBuyed.filter(
+        (raffle) => raffle.paymentId === paymentId,
+      )[0];
+
+      if (status === "approved") {
+        await Raffle.findOneAndUpdate(
+          { _id: userSelected.raffleId },
+          {
+            $inc: {
+              quantBuyedNumbers: userSelected.numberQuant,
+            },
+          },
+        );
+      }
 
       return res.send(userSelected);
     } catch (error) {

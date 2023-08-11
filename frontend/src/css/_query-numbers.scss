@@ -57,9 +57,13 @@
         border-radius: 10px;
         padding: 10px;
         display: flex;
-        align-items: center;
+        align-items: flex-start;
         gap: 30px;
         margin-bottom: 15px;
+
+        @include breakpoint(tablet) {
+          aling-items: center;
+        }
 
         &:last-of-type {
           margin-bottom: 0;
@@ -104,6 +108,7 @@
             font-size: 1rem;
             font-weight: 500;
             display: block;
+            margin-bottom: 10px;
           }
 
           &__status-finished {
@@ -115,14 +120,21 @@
             font-size: 1rem;
             font-weight: 500;
             display: block;
+            margin-bottom: 10px;
           }
 
           &__numbers-box {
             display: flex;
-            align-items: center;
+            align-items: flex-start;
+            flex-direction: column;
             gap: 10px;
             font-size: 1rem;
             color: $white;
+
+            @include breakpoint(tablet) {
+              flex-direction: row;
+              align-items: center;
+            }
 
             &__numbers {
               background-color: $dark;
@@ -225,6 +237,7 @@
           &__label {
             font-size: 1rem;
             color: #333;
+            width: 100%;
 
             &__input {
               padding: 8px 12px;
@@ -235,6 +248,7 @@
               border-radius: 10px;
               border: 1px solid #ced4da;
               outline: none;
+              width: 100%;
               transition:
                 border 0.4s ease,
                 box-shadow 0.2s ease;
