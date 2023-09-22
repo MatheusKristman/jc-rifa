@@ -10,18 +10,20 @@ import Contact from './Contact';
 import RaffleManagement from './RaffleManagement';
 import NewRaffle from './NewRaffle';
 import EditRaffle from './EditRaffle';
+import BuyedRaffle from './BuyedRaffle';
 
 export {
-    Home,
-    Raffle,
-    RaffleSelected,
-    QueryNumbers,
-    Winners,
-    Register,
-    UpdateRegistration,
-    Terms,
-    Contact,
-    RaffleManagement,
-    NewRaffle,
-    EditRaffle,
+  Home,
+  Raffle,
+  RaffleSelected,
+  QueryNumbers,
+  Winners,
+  Register,
+  UpdateRegistration,
+  Terms,
+  Contact,
+  RaffleManagement,
+  NewRaffle,
+  EditRaffle,
+  BuyedRaffle,
 };

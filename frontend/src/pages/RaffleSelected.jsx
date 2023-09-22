@@ -4,6 +4,7 @@ import { shallow } from "zustand/shallow";
 import { Header, Footer } from "./components";
 import RaffleSelectedContent from "./components/raffle/RaffleSelectedContent";
 import PaymentModal from "./components/raffle/PaymentModal";
+import Checkout from "./components/raffle/Checkout";
 import useIsUserLogged from "../hooks/useIsUserLogged";
 import useBuyNumbersStore from "../stores/useBuyNumbersStore";
 
@@ -29,7 +30,8 @@ const RaffleSelected = () => {
     <div className="raffle-selected">
       <Header />
       <RaffleSelectedContent />
-      {isPaymentModalOpen && <PaymentModal />}
+      {/* <PaymentModal /> */}
+      {isPaymentModalOpen && <Checkout />}
       <Footer />
     </div>
   );

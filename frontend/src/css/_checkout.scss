@@ -1,0 +1,297 @@
+.checkout-overlay {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(32, 33, 36, 0.5);
+  backdrop-filter: blur(10px);
+  overflow: auto;
+  padding: 25px;
+  z-index: 6;
+  opacity: 0;
+  animation: paymentFadeIn 0.2s ease forwards;
+
+  &::before {
+    content: "";
+    height: 100%;
+    display: inline-block;
+    vertical-align: middle;
+  }
+
+  .checkout-box {
+    background-color: $dark;
+    display: inline-block;
+    width: 100%;
+    max-width: 550px;
+    vertical-align: middle;
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 10px;
+    z-index: 7;
+    opacity: 0;
+    animation: paymentModalIn 0.4s ease forwards;
+
+    .checkout-upper-wrapper {
+      display: flex;
+      flex-direction: column-reverse;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 25px;
+      width: 100%;
+      padding: 1.5rem;
+      border-bottom: 1px solid $darkBlue;
+
+      @include breakpoint(tablet) {
+        flex-direction: row;
+      }
+
+      .checkout-title {
+        font-size: 1.5rem;
+        font-weight: 500;
+        font-family: $montserrat;
+        color: $white;
+        text-align: center;
+        width: 100%;
+
+        @include breakpoint(tablet) {
+          text-align: left;
+        }
+      }
+
+      .close-btn {
+        background-color: transparent;
+        border: none;
+        font-size: 2rem;
+        cursor: pointer;
+        outline: none;
+        color: $white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+
+    .checkout-content-logged {
+      width: 100%;
+      padding: 1.5rem;
+
+      .checkout-info {
+        background-color: $darkPurple;
+        border: 1px solid $darkBlue;
+        border-radius: 8px;
+        padding: 10px;
+        margin-bottom: 15px;
+
+        p {
+          color: rgba(255, 255, 255, 0.75);
+          font-size: 1rem;
+
+          strong {
+            color: white;
+          }
+        }
+      }
+
+      .checkout-user-box {
+        background-color: $darkBlue;
+        border-radius: 8px;
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 15px;
+
+        @include breakpoint(tablet) {
+          flex-direction: row;
+        }
+
+        .checkout-user-profile-photo {
+          width: 70px;
+          min-width: 70px;
+          max-width: 70px;
+          height: 70px;
+          min-height: 70px;
+          max-height: 70px;
+          border-radius: 50%;
+          overflow: hidden;
+
+          @include breakpoint(tablet) {
+            width: 50px;
+            min-width: 50px;
+            max-width: 50px;
+            height: 50px;
+            min-height: 50px;
+            max-height: 50px;
+          }
+
+          img {
+            width: 100%;
+            height: auto;
+            object-fit: cover;
+          }
+        }
+      }
+
+      .checkout-user-infos {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+
+        .checkout-user-name {
+          color: white;
+          font-size: 1.25rem;
+          font-weight: 400;
+        }
+
+        .checkout-user-tel {
+          font-size: 1rem;
+          font-weight: 400;
+          color: rgba(255, 255, 255, 0.75);
+        }
+      }
+    }
+
+    .checkout-content {
+      width: 100%;
+      padding: 1.5rem;
+
+      .checkout-info {
+        background-color: $darkPurple;
+        border: 1px solid $darkBlue;
+        border-radius: 8px;
+        padding: 10px;
+        margin-bottom: 15px;
+
+        p {
+          color: rgba(255, 255, 255, 0.75);
+          font-size: 1rem;
+
+          strong {
+            color: white;
+          }
+        }
+      }
+
+      .checkout-label {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        color: white;
+        font-size: 1rem;
+        font-weight: 500;
+        margin-bottom: 15px;
+
+        .checkout-input {
+          width: 100%;
+          padding: 10px 16px;
+          border: 1px solid #c9c9c9;
+          border-radius: 10px;
+          box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 5%);
+          outline: none;
+          font-size: 1rem;
+          color: #5a5a5a;
+        }
+      }
+
+      .checkout-message-box {
+        width: 100%;
+        padding: 10px;
+        background-color: #fff3cd;
+        border: 1px solid #ffe181;
+        border-radius: 8px;
+        margin-bottom: 15px;
+
+        .checkout-message {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          color: #666152;
+        }
+      }
+
+      .checkout-next-btn {
+        width: 100%;
+        background-color: $blue;
+        border: none;
+        border-radius: 6px;
+        padding: 10px 20px;
+        font-size: 1rem;
+        font-weight: 600;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        outline: none;
+        cursor: pointer;
+        transition: background 0.3s ease;
+
+        &:hover {
+          background-color: $darkBlueHover;
+        }
+      }
+    }
+
+    .checkout-terms-description {
+      font-size: 0.95rem;
+      color: rgba(255, 255, 255, 0.75);
+      margin-bottom: 20px;
+
+      a {
+        color: white;
+        text-decoration: none;
+        font-weight: 500;
+      }
+    }
+
+    .checkout-btn-wrapper {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+
+      .checkout-next-btn {
+        background-color: $blue;
+        border: none;
+        border-radius: 6px;
+        padding: 10px 20px;
+        font-size: 1rem;
+        font-weight: 600;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        outline: none;
+        cursor: pointer;
+        transition: background 0.3s ease;
+
+        &:hover {
+          background-color: $darkBlueHover;
+        }
+      }
+
+      .checkout-change-user-btn {
+        background-color: transparent;
+        border: none;
+        border-radius: 6px;
+        padding: 10px 20px;
+        font-size: 1rem;
+        font-weight: 600;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        outline: none;
+        cursor: pointer;
+      }
+    }
+  }
+}

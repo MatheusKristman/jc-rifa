@@ -14,15 +14,7 @@ import useHeaderStore from "../../../stores/useHeaderStore";
 import useGeneralStore from "../../../stores/useGeneralStore";
 
 const RaffleSelectedContent = () => {
-  const { openPaymentModal, setQrCodePayment, setPaymentLink } =
-    useBuyNumbersStore(
-      (state) => ({
-        openPaymentModal: state.openPaymentModal,
-        setQrCodePayment: state.setQrCodePayment,
-        setPaymentLink: state.setPaymentLink,
-      }),
-      shallow,
-    );
+  const { openPaymentModal, setQrCodePayment, setPaymentLink, numberQuant, setNumberQuant } = useBuyNumbersStore();
   const { openLogin } = useHeaderStore((state) => ({
     openLogin: state.openLogin,
   }));
@@ -40,7 +32,6 @@ const RaffleSelectedContent = () => {
 
   const [raffleSelected, setRaffleSelected] = useState({});
   const [raffleSelectedImageUrl, setRaffleSelectedImageUrl] = useState("");
-  const [numberQuant, setNumberQuant] = useState(0);
   const [isBuying, setIsBuying] = useState(false);
 
   const { selected } = useParams();
@@ -76,7 +67,7 @@ const RaffleSelectedContent = () => {
       return;
     }
 
-    setNumberQuant((prev) => prev + quant);
+    setNumberQuant(numberQuant + quant);
   };
 
   const decrementNumberQuant = (quant) => {
@@ -84,8 +75,12 @@ const RaffleSelectedContent = () => {
       return;
     }
 
-    setNumberQuant((prev) => prev - quant);
+    setNumberQuant(numberQuant - quant);
   };
+
+  const finishBuy = () => {
+    openPaymentModal();
+  }
 
   const handleBuy = () => {
     if (numberQuant === 0 || raffleSelected.isFinished) {
@@ -94,7 +89,7 @@ const RaffleSelectedContent = () => {
 
     if (
       numberQuant <=
-        raffleSelected.quantNumbers - raffleSelected.quantBuyedNumbers &&
+      raffleSelected.quantNumbers - raffleSelected.quantBuyedNumbers &&
       isUserLogged
     ) {
       setIsBuying(true);
@@ -171,8 +166,7 @@ const RaffleSelectedContent = () => {
       raffleSelected.quantNumbers - raffleSelected.quantBuyedNumbers
     ) {
       toast.error(
-        `Selecione a quantidade até ${
-          raffleSelected.quantNumbers - raffleSelected.quantBuyedNumbers
+        `Selecione a quantidade até ${raffleSelected.quantNumbers - raffleSelected.quantBuyedNumbers
         }`,
         {
           position: "top-right",
@@ -215,13 +209,11 @@ const RaffleSelectedContent = () => {
                 JSON.stringify(import.meta.env.MODE) ===
                 JSON.stringify("development")
               ) {
-                url = `${import.meta.env.VITE_API_KEY_DEV}${
-                  import.meta.env.VITE_API_PORT
-                }/raffle-uploads/${raffle.raffleImage}`;
+                url = `${import.meta.env.VITE_API_KEY_DEV}${import.meta.env.VITE_API_PORT
+                  }/raffle-uploads/${raffle.raffleImage}`;
               } else {
-                url = `${import.meta.env.VITE_API_KEY}/raffle-uploads/${
-                  raffle.raffleImage
-                }`;
+                url = `${import.meta.env.VITE_API_KEY}/raffle-uploads/${raffle.raffleImage
+                  }`;
               }
             } else {
               url = null;
@@ -301,7 +293,7 @@ const RaffleSelectedContent = () => {
         </Link>
 
         {!raffleSelected?.isFinished ||
-        raffleSelected?.quantBuyedNumbers < raffleSelected?.quantNumbers ? (
+          raffleSelected?.quantBuyedNumbers < raffleSelected?.quantNumbers ? (
           <>
             <div className="raffle-selected__raffle-selected-content__container__buy-numbers-box">
               <span className="raffle-selected__raffle-selected-content__container__buy-numbers-box__desc">
@@ -421,8 +413,8 @@ const RaffleSelectedContent = () => {
                   onClick={() => incrementNumberQuant(1)}
                   disabled={
                     numberQuant ===
-                      raffleSelected?.quantNumbers -
-                        raffleSelected?.quantBuyedNumbers || isBuying
+                    raffleSelected?.quantNumbers -
+                    raffleSelected?.quantBuyedNumbers || isBuying
                   }
                   type="button"
                   className="raffle-selected__raffle-selected-content__container__buy-numbers-box__selected-numbers-wrapper__btn"
@@ -433,23 +425,23 @@ const RaffleSelectedContent = () => {
             </div>
 
             <button
-              onClick={handleBuy}
+              onClick={finishBuy}
               type="button"
               style={
                 isBuying
                   ? {
-                      filter: "brightness(80%)",
-                      pointerEvents: "none",
-                    }
+                    filter: "brightness(80%)",
+                    pointerEvents: "none",
+                  }
                   : isRaffleLoading
-                  ? { pointerEvents: "none" }
-                  : raffleSelected?.quantNumbers ===
-                    raffleSelected?.quantBuyedNumbers
-                  ? {
-                      filter: "brightness(80%)",
-                      pointerEvents: "none",
-                    }
-                  : {}
+                    ? { pointerEvents: "none" }
+                    : raffleSelected?.quantNumbers ===
+                      raffleSelected?.quantBuyedNumbers
+                      ? {
+                        filter: "brightness(80%)",
+                        pointerEvents: "none",
+                      }
+                      : {}
               }
               className="raffle-selected__raffle-selected-content__container__buy-btn"
             >

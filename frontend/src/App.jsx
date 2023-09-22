@@ -16,6 +16,7 @@ import {
   RaffleManagement,
   NewRaffle,
   EditRaffle,
+  BuyedRaffle,
 } from "./pages";
 import ProtectedRoute from "./ProtectedRoute";
 import ProtectedRouteAdmin from "./ProtectedRouteAdmin";
@@ -66,6 +67,14 @@ function App() {
               <ProtectedRouteAdmin>
                 <EditRaffle />
               </ProtectedRouteAdmin>
+            }
+          />
+          <Route
+            path="/buyed-raffle/:id"
+            element={
+              <ProtectedRoute>
+                <BuyedRaffle />
+              </ProtectedRoute>
             }
           />
         </Routes>

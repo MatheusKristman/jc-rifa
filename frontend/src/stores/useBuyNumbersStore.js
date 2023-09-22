@@ -8,6 +8,8 @@ const useBuyNumbersStore = create((set) => ({
   setQrCodePayment: (value) => set(() => ({ qrCodePayment: value })),
   paymentLink: "",
   setPaymentLink: (value) => set(() => ({ paymentLink: value })),
+  numberQuant: 0,
+  setNumberQuant: (quant) => set(() => ({ numberQuant: quant })),
 }));
 
 export default useBuyNumbersStore;
