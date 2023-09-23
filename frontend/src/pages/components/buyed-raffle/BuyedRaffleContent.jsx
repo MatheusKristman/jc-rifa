@@ -1,11 +1,49 @@
+import { useEffect, useState } from "react";
 import { Clock2, CheckCheck, CheckCircle, XCircle } from "lucide-react";
 import { AiOutlineInfoCircle } from "react-icons/ai";
 import { Link } from "react-router-dom";
 import { QRCodeSVG } from "qrcode.react";
+import { useTimer } from "react-timer-hook";
 
 import defaultPrize from "../../../assets/default-prize.jpg";
 
 const BuyedRaffleContent = () => {
+  const [now, setNow] = useState(new Date());
+  const [time, setTime] = useState(new Date(new Date().getTime() + 1 * 60 * 1000));
+  const [percentage, setPercentage] = useState("");
+
+  const {
+    seconds,
+    minutes
+  } = useTimer({ expiryTimestamp: time, autoStart: true });
+
+  function formatTimer(number) {
+    return number.toString().padStart(2, "0");
+  }
+
+  useEffect(() => {
+    function calculatePercentage() {
+      const diff = time.getTime() - now.getTime();
+      const miliseconds = 10 * 60 * 1000;
+
+      if (diff <= 0) {
+        setPercentage("100%");
+        clearInterval(timerId);
+      } else {
+        const ratio = 100 - (Math.max(0, Math.min(diff / miliseconds * 100, 100)));
+
+        setPercentage(ratio.toFixed(2) + "%");
+        setNow(new Date());
+      }
+    }
+
+    const timerId = setInterval(calculatePercentage, 1000);
+
+    return () => {
+      clearInterval(timerId);
+    }
+  }, [time, now, setNow, setPercentage]);
+
   return (
     <div className="buyed-raffle-container">
       <div className="buyed-raffle-status-wrapper">
@@ -23,10 +61,10 @@ const BuyedRaffleContent = () => {
 
       <div className="buyed-raffle-box">
         <div className="payment-expiration-wrapper">
-          <span className="payment-expiration-timer">Você tem <strong>09:50</strong> para pagar</span>
+          <span className="payment-expiration-timer">Você tem <strong>{formatTimer(minutes)}:{formatTimer(seconds)}</strong> para pagar</span>
 
           <div className="payment-expiration-progress-bar-container">
-            <div style={{ width: "10%" }} className="payment-expiration-progress-bar" />
+            <div style={{ width: percentage }} className="payment-expiration-progress-bar" />
           </div>
         </div>
 
