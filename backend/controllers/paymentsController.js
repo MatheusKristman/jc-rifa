@@ -11,6 +11,7 @@ export const pay = async (req, res) => {
     transaction_amount: Math.round(req.body.fullPrice * 100) / 100,
     description: req.body.title,
     payment_method_id: "pix",
+    date_of_expiration: new Date(new Date().getTime() + 10 * 60 * 1000),
     payer: {
       email: req.body.email,
       first_name: req.body.firstName,
@@ -20,6 +21,10 @@ export const pay = async (req, res) => {
         number: req.body.cpf,
       },
     },
+    metadata: {
+      payerId: req.body.id,
+      raffleId: req.body.raffleId
+    }
   };
 
   mercadopago.payment

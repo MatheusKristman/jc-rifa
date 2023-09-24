@@ -166,7 +166,7 @@ export const loginAdmin = async (req, res) => {
 };
 
 export const buyRaffle = async (req, res) => {
-  const { id, raffleId, paymentId, pricePaid, status, numberQuant } = req.body;
+  const { id, raffleId, paymentId, pricePaid, status, numberQuant, qrCode } = req.body;
 
   try {
     const selectedUser = await Account.findOne({ _id: id });
@@ -272,6 +272,7 @@ export const buyRaffle = async (req, res) => {
             status,
             numberQuant,
             numbersBuyed,
+            qrCode
           },
         },
       },

@@ -79,6 +79,21 @@ const RaffleSelectedContent = () => {
   };
 
   const finishBuy = () => {
+    if (numberQuant === 0) {
+      toast.error("Selecione as quantidades de números que deseja comprar");
+      return;
+    }
+
+    if (raffleSelected.isFinished) {
+      toast.error("Essa rifa já foi finalizada, não é mais possivel comprar números");
+      return;
+    }
+
+    if (numberQuant > raffleSelected.quantNumbers - raffleSelected.quantBuyedNumbers) {
+      toast.error(`Selecione a quantidade até ${raffleSelected.quantNumbers - raffleSelected.quantBuyedNumbers}`);
+      return;
+    }
+
     openPaymentModal();
   }
 

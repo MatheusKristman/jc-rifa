@@ -264,8 +264,7 @@ const HeaderMenuLogged = () => {
         JSON.stringify(import.meta.env.MODE) === JSON.stringify("development")
       ) {
         setProfileImageUrl(
-          `${import.meta.env.VITE_API_KEY_DEV}${
-            import.meta.env.VITE_API_PORT
+          `${import.meta.env.VITE_API_KEY_DEV}${import.meta.env.VITE_API_PORT
           }/user-uploads/${user.profileImage}`,
         );
       } else {
@@ -678,8 +677,8 @@ const LogInModal = () => {
                   style={
                     errors.password
                       ? {
-                          borderColor: "rgb(209, 52, 52)",
-                        }
+                        borderColor: "rgb(209, 52, 52)",
+                      }
                       : {}
                   }
                   className="header__login-modal-overlay__box__content__form__password-box__input"

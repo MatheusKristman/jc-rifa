@@ -5,11 +5,7 @@ import api from "../services/api";
 import useUserStore from "../stores/useUserStore";
 
 const useIsUserLogged = () => {
-  const { setUser, userLogged, userNotLogged } = useUserStore((state) => ({
-    setUser: state.setUser,
-    userLogged: state.userLogged,
-    userNotLogged: state.userNotLogged,
-  }));
+  const { setUser, userLogged, userNotLogged } = useUserStore();
 
   const location = useLocation();
   const navigate = useNavigate();

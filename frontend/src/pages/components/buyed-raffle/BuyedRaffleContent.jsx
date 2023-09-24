@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import { Clock2, CheckCheck, CheckCircle, XCircle } from "lucide-react";
 import { AiOutlineInfoCircle } from "react-icons/ai";
 import { Link } from "react-router-dom";
@@ -9,17 +10,21 @@ import defaultPrize from "../../../assets/default-prize.jpg";
 
 const BuyedRaffleContent = () => {
   const [now, setNow] = useState(new Date());
-  const [time, setTime] = useState(new Date(new Date().getTime() + 1 * 60 * 1000));
-  const [percentage, setPercentage] = useState("");
+  const [time, setTime] = useState(new Date(new Date().getTime() + 10 * 60 * 1000));
+  const [percentage, setPercentage] = useState("0%");
+  const [paymentStatus, setPaymentStatus] = useState("pending"); // default value is defined on get function from mercado pago api
+  const [raffleSelected, setRaffleSelected] = useState("")
+
+  const { id } = useParams();
 
   const {
     seconds,
     minutes
   } = useTimer({ expiryTimestamp: time, autoStart: true });
 
-  function formatTimer(number) {
-    return number.toString().padStart(2, "0");
-  }
+  useEffect(() => {
+
+  }, [id]);
 
   useEffect(() => {
     function calculatePercentage() {
@@ -44,19 +49,44 @@ const BuyedRaffleContent = () => {
     }
   }, [time, now, setNow, setPercentage]);
 
+  function formatTimer(number) {
+    return number.toString().padStart(2, "0");
+  }
+
   return (
     <div className="buyed-raffle-container">
       <div className="buyed-raffle-status-wrapper">
-        <Clock2 color="#eccb27" size={50} strokeWidth={1} />
+        {paymentStatus == "pending" || paymentStatus == "in_process" || paymentStatus == "in_mediation" ? (
+          <>
+            <Clock2 color="#eccb27" size={50} strokeWidth={1} />
 
-        {/*<CheckCircle color="#7DDD5A" size={50} strokeWidth={1} />*/}
+            <div className="status-info-wrapper">
+              <h2 className="status-title">Aguardando Pagamento!</h2>
+              <span className="status-desc">Finalize a compra</span>
+            </div>
+          </>) : null}
 
-        {/*<XCircle color="#D13434" size={50} strokeWidth={1} />*/}
+        {paymentStatus == "approved" ? (
+          <>
+            <CheckCircle color="#7DDD5A" size={50} strokeWidth={1} />
 
-        <div className="status-info-wrapper">
-          <h2 className="status-title">Aguardando Pagamento!</h2>
-          <span className="status-desc">Finalize a compra</span>
-        </div>
+            <div className="status-info-wrapper">
+              <h2 className="status-title">Pagamento confirmado!</h2>
+              <span className="status-desc">Aguarde o sorteio</span>
+            </div>
+          </>
+        ) : null}
+
+        {paymentStatus == "rejected" || paymentStatus == "cancelled" || paymentStatus == "refunded" || paymentStatus == "charged_back" ? (
+          <>
+            <XCircle color="#D13434" size={50} strokeWidth={1} />
+
+            <div className="status-info-wrapper">
+              <h2 className="status-title">Pagamento Cancelado!</h2>
+              <span className="status-desc">Realize uma nova solicitação</span>
+            </div>
+          </>
+        ) : null}
       </div>
 
       <div className="buyed-raffle-box">

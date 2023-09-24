@@ -23,6 +23,7 @@ const AccountSchema = new mongoose.Schema({
         ref: "Raffles",
         required: true,
       },
+      qrCode: { type: String },
       pricePaid: { type: Number },
       status: { type: String },
       numberQuant: { type: Number },
