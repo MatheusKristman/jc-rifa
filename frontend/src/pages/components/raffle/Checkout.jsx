@@ -325,9 +325,11 @@ const Checkout = () => {
           })
           .then((res) => {
             setIsBuying(false);
-            setUser(res.data);
+            setUser(res.data.userUpdated);
             handleClose();
-            navigate(`/buyed-raffle/${raffleSelected._id}`);
+            console.log(res.data);
+
+            navigate(`/buyed-raffle/${res.data.paymentId}`);
           })
           .catch((error) => {
             console.error(error);

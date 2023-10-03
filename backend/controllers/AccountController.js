@@ -272,7 +272,8 @@ export const buyRaffle = async (req, res) => {
             status,
             numberQuant,
             numbersBuyed,
-            qrCode
+            qrCode,
+            createdAt: Date.now()
           },
         },
       },
@@ -281,7 +282,7 @@ export const buyRaffle = async (req, res) => {
       },
     );
 
-    return res.status(200).send(userUpdated);
+    return res.status(200).json({ userUpdated, paymentId });
   } catch (error) {
     return res.status(400).send(error.message);
   }
@@ -385,11 +386,11 @@ export const readPayment = async (req, res) => {
 };
 
 export const getPayment = async (req, res) => {
-  const { id, raffleId } = req.body;
+  const { id, paymentId } = req.body;
 
   try {
     const userRaffle = await Account.findOne(
-      { _id: id, "rafflesBuyed.raffleId": raffleId },
+      { _id: id, "rafflesBuyed.paymentId": paymentId },
       "rafflesBuyed.$"
     );
 

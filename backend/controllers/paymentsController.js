@@ -32,3 +32,11 @@ export const pay = async (req, res) => {
     .then((response) => res.status(200).send({ response }))
     .catch((error) => res.status(400).send({ error: error.message }));
 };
+
+export const webhook = async (req, res) => {
+  const event = req.body;
+
+  console.log("Recebeu um evento do webhook:", event);
+
+  res.status(200).send(event);
+}

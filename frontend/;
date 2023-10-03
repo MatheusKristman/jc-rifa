@@ -10,7 +10,6 @@ import defaultPrize from "../../../assets/default-prize.jpg";
 import api from "../../../services/api";
 import useUserStore from "../../../stores/useUserStore";
 import useTimer from "../../../hooks/useTimer";
-import useTimerStore from "../../../stores/useTimerStore";
 
 const BuyedRaffleContent = () => {
   const [raffleId, setRaffleId] = useState("");
@@ -32,8 +31,7 @@ const BuyedRaffleContent = () => {
 
   const { id } = useParams();
 
-  const { intervalId } = useTimerStore();
-  const { start, clear, countdown } = useTimer();
+  const { start, countdown } = useTimer();
 
   useEffect(() => {
     api
@@ -46,21 +44,19 @@ const BuyedRaffleContent = () => {
         setRaffleId(res.data.raffleId);
 
         const createdAt = new Date(res.data.createdAt);
+        // const expiresIn = createdAt.getTime() + 10 * 60 * 1000;
         const expiresIn = addMinutes(createdAt, 10);
         const day = createdAt.getUTCDate();
         const month = createdAt.getUTCMonth() + 1;
         const year = createdAt.getUTCFullYear();
 
-        const hour = createdAt.getHours();
-        const minute = createdAt.getMinutes();
-
-        console.log(hour);
+        const hour = createdAt.getUTCHours();
+        const minute = createdAt.getUTCMinutes();
 
         setBuyDate(`${day < 10 ? "0" + day : day}/${month < 10 ? "0" + month : month}/${year}`);
         setBuyTime(`${hour}h${minute}`);
         setTime(expiresIn.getTime());
         start(differenceInSeconds(expiresIn.getTime(), now))
-        // start(10)
 
         console.log("time: ", expiresIn);
         console.log("now: ", now);
@@ -70,8 +66,9 @@ const BuyedRaffleContent = () => {
 
   useEffect(() => {
     if (raffleId) {
+
       api
-        .get(`raffle/get-raffle-selected/${raffleId}`)
+        .get(`raffle/get-raffle-selected/${id}`)
         .then((res) => {
           setRaffleSelected(res.data)
           setRafflePrice(res.data.price)
@@ -116,10 +113,16 @@ const BuyedRaffleContent = () => {
 
     const timerId = setInterval(calculatePercentage, 1000);
 
+
+
     return () => {
       clearInterval(timerId);
     }
   }, [time, now, setNow, setPercentage]);
+
+  function formatTimer(number) {
+    return number.toString().padStart(2, "0");
+  }
 
   function handleCopyPix() {
     navigator.clipboard.writeText(pixCode);
@@ -130,6 +133,7 @@ const BuyedRaffleContent = () => {
       setPixCopied(false);
     }, 3000);
   }
+
 
   return (
     <div className="buyed-raffle-container">
@@ -169,7 +173,7 @@ const BuyedRaffleContent = () => {
 
       <div className="buyed-raffle-box">
         <div className="payment-expiration-wrapper">
-          <span className="payment-expiration-timer">Você tem <strong>{countdown.mins}:{countdown.secs}</strong> para pagar</span>
+          <span className="payment-expiration-timer">Você tem <strong>{formatTimer(countdown.mins)}:{formatTimer(countdown.secs)}</strong> para pagar</span>
 
           <div className="payment-expiration-progress-bar-container">
             <div style={{ width: percentage }} className="payment-expiration-progress-bar" />

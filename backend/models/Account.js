@@ -28,7 +28,7 @@ const AccountSchema = new mongoose.Schema({
       status: { type: String },
       numberQuant: { type: Number },
       numbersBuyed: { type: Array },
-      createdAt: { type: Date, default: new Date() }
+      createdAt: { type: Date }
     },
   ],
   admin: { type: Boolean, default: false },
