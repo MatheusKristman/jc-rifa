@@ -384,6 +384,23 @@ export const readPayment = async (req, res) => {
   }
 };
 
+export const getPayment = async (req, res) => {
+  const { id, raffleId } = req.body;
+
+  try {
+    const userRaffle = await Account.findOne(
+      { _id: id, "rafflesBuyed.raffleId": raffleId },
+      "rafflesBuyed.$"
+    );
+
+    console.log(userRaffle);
+
+    return res.status(200).send(userRaffle.rafflesBuyed[0]);
+  } catch (error) {
+    return res.status(400).send(error.message);
+  }
+}
+
 export const paymentCanceled = async (req, res) => {
   const { id, paymentId, raffleId } = req.query;
 

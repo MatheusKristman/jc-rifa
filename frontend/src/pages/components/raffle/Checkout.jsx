@@ -59,7 +59,10 @@ const Checkout = () => {
 
       api
         .get(`/raffle/get-raffle-selected/${selected}`)
-        .then((res) => setRaffleSelected(res.data))
+        .then((res) => {
+          console.log(res.data);
+          setRaffleSelected(res.data);
+        })
         .catch((error) => console.error(error))
         .finally(() => setToRaffleNotLoad())
     }
@@ -159,7 +162,7 @@ const Checkout = () => {
           .then((res) => {
             setUser({ ...res.data });
             userLogged();
-            handleFinishPaymentPage();
+            // handleFinishPaymentPage();
           })
           .catch((error) => {
             toast.error("Ocorreu um erro, tente novamente", {
@@ -240,7 +243,7 @@ const Checkout = () => {
             userLogged();
             setIsBuying(false);
 
-            handleFinishPaymentPage();
+            // handleFinishPaymentPage();
           })
           .catch((error) => {
             toast.error("Ocorreu um erro, tente novamente", {
@@ -391,7 +394,7 @@ const Checkout = () => {
         ) : (
           <form onSubmit={handleSubmit(onSubmit)} className="checkout-content">
             <div className="checkout-info">
-              <p>Você está adquirindo <strong>4</strong> unidade(s) do produto <strong>EDIÇÃO 246 - 1 TOYOTA COROLLA + 1 HONDA XRE 300</strong></p>
+              <p>Você está adquirindo <strong>{numberQuant}</strong> numero(s) da rifa <strong>{raffleSelected?.title}</strong></p>
             </div>
 
             <label htmlFor="username" className="checkout-label">

@@ -3,6 +3,7 @@ import {
   getUser,
   readUserBuyedNumbers,
   readPayment,
+  getPayment,
   deleteCanceledNumbers,
   buyRaffle,
   getBuyedNumbers,
@@ -18,6 +19,7 @@ const router = express.Router();
 router.get("/is-user-logged", auth, getUser);
 router.get("/get-raffle-numbers/:cpf", readUserBuyedNumbers);
 router.post("/check-payment-status", readPayment);
+router.post("/get-payment", getPayment);
 router.post("/delete-canceled-numbers", deleteCanceledNumbers);
 router.post("/update-password", updatePassword);
 router.post("/raffle-buy", buyRaffle);
