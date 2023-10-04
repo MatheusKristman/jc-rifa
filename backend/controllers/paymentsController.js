@@ -6,7 +6,7 @@ mercadopago.configurations.setAccessToken(
 
 export const pay = async (req, res) => {
   const paymentData = {
-    notification_url: "https://eoqhcniy7v8myie.m.pipedream.net",
+    notification_url: "http://localhost:3000/payment/webhook",
     external_reference: req.body.id,
     transaction_amount: Math.round(req.body.fullPrice * 100) / 100,
     description: req.body.title,
@@ -34,9 +34,7 @@ export const pay = async (req, res) => {
 };
 
 export const webhook = async (req, res) => {
-  const event = req.body;
-
-  console.log("Recebeu um evento do webhook:", event);
+  console.log("Recebeu um evento do webhook:", req.body);
 
   res.status(200).send(event);
 }
